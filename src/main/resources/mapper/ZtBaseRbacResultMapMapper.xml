@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper">
+    <resultMap id="ZtBasicRbacEntityResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
+               extends="com.zhangzhuorui.framework.mybatis.simplebasemapper.ZtBaseResultMapMapper.ZtBasicEntityResultMap">
+    </resultMap>
+
+    <resultMap id="ZtBaseRbacLongIdResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBasicRbacEntityResultMap">
+        <id column="id" jdbcType="BIGINT" property="id" typeHandler="org.apache.ibatis.type.LongTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="ZtBaseRbacIntIdResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBasicRbacEntityResultMap">
+        <id column="id" jdbcType="INTEGER" property="id" typeHandler="org.apache.ibatis.type.IntegerTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="ZtBaseRbacStringIdResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBasicRbacEntityResultMap">
+        <id column="id" jdbcType="VARCHAR" property="id" typeHandler="org.apache.ibatis.type.StringTypeHandler"/>
+    </resultMap>
+</mapper>

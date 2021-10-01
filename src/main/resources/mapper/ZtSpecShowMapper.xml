@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangzhuorui.framework.rbacsystem.mapper.ZtSpecShowMapper">
+  <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtSpecShow"
+  extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
+  >
+    <!--@mbg.generated-->
+    <!--@Table zt_spec_show-->
+
+    <result column="vxe_table_name" jdbcType="VARCHAR" property="vxeTableName" />
+    <result column="vxe_field_name" jdbcType="VARCHAR" property="vxeFieldName" />
+    <result column="spec_type" jdbcType="VARCHAR" property="specType" />
+    <result column="spec_code" jdbcType="VARCHAR" property="specCode" />
+
+
+
+
+
+
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, vxe_table_name, vxe_field_name, spec_type, spec_code, gmt_create, gmt_update, 
+    created_by, updated_by, remark, created_by_name, updated_by_name
+  </sql>
+</mapper>

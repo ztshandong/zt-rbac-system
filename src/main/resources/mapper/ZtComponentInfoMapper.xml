@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangzhuorui.framework.rbacsystem.mapper.ZtComponentInfoMapper">
+    <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
+    >
+        <!--@mbg.generated-->
+        <!--@Table zt_component_info-->
+
+        <result column="this_code" jdbcType="VARCHAR" property="thisCode"/>
+        <result column="parent_code" jdbcType="VARCHAR" property="parentCode"/>
+        <result column="this_name" jdbcType="VARCHAR" property="thisName"/>
+        <result column="component_sort" jdbcType="INTEGER" property="componentSort"/>
+        <result column="component_route" jdbcType="VARCHAR" property="componentRoute"/>
+        <result column="component_path" jdbcType="VARCHAR" property="componentPath"/>
+        <result column="frame_flag" jdbcType="INTEGER" property="frameFlag"/>
+        <result column="enable_flag" jdbcType="INTEGER" property="enableFlag"/>
+        <result column="leaf_flag" jdbcType="INTEGER" property="leafFlag"/>
+        <result column="cache_flag" jdbcType="INTEGER" property="cacheFlag"/>
+        <result column="menu_type" jdbcType="VARCHAR" property="menuType"/>
+        <result column="button_code" jdbcType="VARCHAR" property="buttonCode"/>
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl"/>
+        <result column="resource_url" jdbcType="VARCHAR" property="resourceUrl"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, this_code, parent_code, this_name, component_sort, component_route, component_path,
+        frame_flag, enable_flag, leaf_flag, cache_flag, menu_type, button_code, icon_url,
+        resource_url, gmt_create, gmt_update, created_by, created_by_name, updated_by, updated_by_name,
+        remark
+    </sql>
+</mapper>

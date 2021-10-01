@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangzhuorui.framework.rbacsystem.mapper.ZtDeptInfoMapper">
+  <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo"
+  extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
+  >
+    <!--@mbg.generated-->
+    <!--@Table zt_dept_info-->
+
+    <result column="this_code" jdbcType="VARCHAR" property="thisCode" />
+    <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
+    <result column="root_code" jdbcType="VARCHAR" property="rootCode" />
+    <result column="this_name" jdbcType="VARCHAR" property="thisName" />
+    <result column="enable_flag" jdbcType="INTEGER" property="enableFlag" />
+    <result column="dept_level" jdbcType="INTEGER" property="deptLevel" />
+    <result column="dept_leader_code" jdbcType="VARCHAR" property="deptLeaderCode" />
+
+
+
+
+
+
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, this_code, parent_code, root_code, this_name, enable_flag, dept_level, dept_leader_code, 
+    gmt_create, gmt_update, created_by, updated_by, remark, created_by_name, updated_by_name
+  </sql>
+</mapper>
