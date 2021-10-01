@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhangzhuorui.framework.rbacsystem.mapper.ZtUserPostInfoMapper">
-  <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtUserPostInfo"
-  extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
-  >
-    <!--@mbg.generated-->
-    <!--@Table zt_user_post_info-->
-    <result column="user_code" jdbcType="VARCHAR" property="userCode" />
-    <result column="post_code" jdbcType="VARCHAR" property="postCode" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, user_code, post_code, gmt_create, gmt_update, created_by, updated_by, remark, 
-    created_by_name, updated_by_name
-  </sql>
+    <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtUserPostInfo"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
+    >
+        <!--@mbg.generated-->
+        <!--@Table zt_user_post_info-->
+        <result column="user_code" jdbcType="VARCHAR" property="userCode"/>
+        <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, user_code, post_code, gmt_create, gmt_update, created_by, updated_by, remark,
+        created_by_name, updated_by_name
+    </sql>
 </mapper>

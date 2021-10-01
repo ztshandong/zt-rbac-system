@@ -1,34 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhangzhuorui.framework.rbacsystem.mapper.ZtUserInfoMapper">
-  <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo"
-  extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
-  >
-    <!--@mbg.generated-->
-    <!--@Table zt_user_info-->
+    <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacLongIdResultMap"
+    >
+        <!--@mbg.generated-->
+        <!--@Table zt_user_info-->
 
-    <result column="user_code" jdbcType="VARCHAR" property="userCode" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="user_nick_name" jdbcType="VARCHAR" property="userNickName" />
-    <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
-    <result column="user_mobile" jdbcType="VARCHAR" property="userMobile" />
-    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
-    <result column="admin_flag" jdbcType="INTEGER" property="adminFlag" />
-    <result column="block_flag" jdbcType="INTEGER" property="blockFlag" />
-    <result column="default_dept_code" jdbcType="VARCHAR" property="defaultDeptCode" />
-    <result column="default_post_code" jdbcType="VARCHAR" property="defaultPostCode" />
-
-
-
-
-
-
-
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, user_code, user_name, user_nick_name, user_pwd, user_mobile, avatar, admin_flag, 
-    block_flag, default_dept_code, default_post_code, gmt_create, gmt_update, created_by, updated_by, remark,
-    created_by_name, updated_by_name
-  </sql>
+        <result column="user_code" jdbcType="VARCHAR" property="userCode"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_nick_name" jdbcType="VARCHAR" property="userNickName"/>
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd"/>
+        <result column="user_mobile" jdbcType="VARCHAR" property="userMobile"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="admin_flag" jdbcType="INTEGER" property="adminFlag"/>
+        <result column="block_flag" jdbcType="INTEGER" property="blockFlag"/>
+        <result column="default_dept_code" jdbcType="VARCHAR" property="defaultDeptCode"/>
+        <result column="default_post_code" jdbcType="VARCHAR" property="defaultPostCode"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, user_code, user_name, user_nick_name, user_pwd, user_mobile, avatar, admin_flag,
+        block_flag, default_dept_code, default_post_code, gmt_create, gmt_update, created_by, updated_by, remark,
+        created_by_name, updated_by_name
+    </sql>
 </mapper>
