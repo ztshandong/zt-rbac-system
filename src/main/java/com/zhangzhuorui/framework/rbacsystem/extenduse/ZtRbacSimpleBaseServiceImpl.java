@@ -6,11 +6,13 @@ import com.zhangzhuorui.framework.core.ZtUtils;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.mybatis.core.ZtQueryWrapper;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.ZtSimpleBaseServiceImpl;
+import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -31,6 +33,16 @@ import java.util.stream.Collectors;
  * @updateRemark :
  */
 public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> extends ZtSimpleBaseServiceImpl<T> implements IZtRbacSimpleBaseService<T> {
+
+    @Autowired
+    ZtJwtTokenUtil ztJwtTokenUtil;
+
+    @Override
+    public ZtUserInfo getUserInfoFromToken() {
+        String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
+        ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
+        return userInfoFromToken;
+    }
 
     /**
      * 数据权限 判断 ZtDataScopeTypeEnum 与 ZtQueryTypeEnum

@@ -2,6 +2,7 @@ package com.zhangzhuorui.framework.rbacsystem.extenduse;
 
 import com.zhangzhuorui.framework.core.ZtPropertyFunc;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.IZtSimpleBaseService;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 
 /**
  * @author :  张涛 zhangtao
@@ -13,6 +14,8 @@ import com.zhangzhuorui.framework.mybatis.simplebaseservice.IZtSimpleBaseService
  * @updateRemark :
  */
 public interface IZtRbacSimpleBaseService<T extends ZtRbacBasicEntity> extends IZtSimpleBaseService<T> {
+
+    ZtUserInfo getUserInfoFromToken();
 
     /**
      * 部门编号字段名

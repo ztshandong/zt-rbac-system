@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @updateRemark :
  */
 @EnableCaching
-@Configuration(proxyBeanMethods = false)
+@Configuration(proxyBeanMethods = true)
 public class ZtCacheManager {
 
     public final static String CAFFEINE_CACHE = "caffeineCache";
@@ -32,7 +34,7 @@ public class ZtCacheManager {
     public Cache caffeineCache() {
         com.github.benmanes.caffeine.cache.Cache<Object, Object> build = Caffeine.newBuilder()
                 // 设置最后一次写入或访问后经过固定时间过期
-                .expireAfterWrite(60, TimeUnit.SECONDS)
+                .expireAfterWrite(12, TimeUnit.HOURS)
                 // 初始的缓存空间大小
                 .initialCapacity(100)
                 // 缓存的最大条数
@@ -50,4 +52,13 @@ public class ZtCacheManager {
         return simpleCacheManager;
     }
 
+    @Bean
+    public KeyGenerator allDeptInfoKeyGenerator() {
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object target, Method method, Object... params) {
+                return ZtCacheUtil.ALL_DEPT_INFO;
+            }
+        };
+    }
 }

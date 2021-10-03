@@ -5,6 +5,7 @@ import com.google.common.base.Predicates;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +14,17 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author :  zhangtao
@@ -30,6 +38,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class ZtSwaggerConfig {
+
+    @Autowired
+    ZtJwtTokenUtil ztJwtTokenUtil;
+
     @Value("${swagger.enable:true}")
     Boolean enable;
 
@@ -49,6 +61,8 @@ public class ZtSwaggerConfig {
                 .build()
                 .pathMapping("/")
                 .apiInfo(apiInfo())
+                .securitySchemes(securitySchemas())
+                .securityContexts(securityContexts())
                 .enable(enable);
     }
 
@@ -61,6 +75,29 @@ public class ZtSwaggerConfig {
                 .contact(contact)
                 .version("1.0")
                 .build();
+    }
+
+    private List<SecurityContext> securityContexts() {
+        List<SecurityContext> securityContextList = new ArrayList<>();
+        List<SecurityReference> securityReferenceList = new ArrayList<>();
+        securityReferenceList.add(new SecurityReference(ztJwtTokenUtil.getTokenHeader(), scopes()));
+        securityContextList.add(SecurityContext
+                .builder()
+                .securityReferences(securityReferenceList)
+                .forPaths(PathSelectors.any())
+                .build()
+        );
+        return securityContextList;
+    }
+
+    private AuthorizationScope[] scopes() {
+        return new AuthorizationScope[]{new AuthorizationScope("global", "accessAnything")};
+    }
+
+    private List<ApiKey> securitySchemas() {
+        List<ApiKey> apiKeyList = new ArrayList<>();
+        apiKeyList.add(new ApiKey(ztJwtTokenUtil.getTokenHeader(), ztJwtTokenUtil.getTokenHeader(), "header"));
+        return apiKeyList;
     }
 }
 

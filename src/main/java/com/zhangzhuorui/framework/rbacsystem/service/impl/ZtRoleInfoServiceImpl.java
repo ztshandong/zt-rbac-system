@@ -1,13 +1,24 @@
 package com.zhangzhuorui.framework.rbacsystem.service.impl;
 
-import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
+import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
+import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtExcludeInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserDeptInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleStatusEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseServiceImpl;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtExcludeInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
-import org.springframework.cache.Cache;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtUserDeptInfoService;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 基于张涛极速开发框架的RBAC权限管理系统 服务实现类
@@ -23,8 +34,17 @@ import javax.annotation.Resource;
 @Service
 public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInfo> implements IZtRoleInfoService {
 
-    @Resource(name = ZtCacheManager.CAFFEINE_CACHE)
-    Cache caffeineCache;
+    @Autowired
+    ZtJwtTokenUtil ztJwtTokenUtil;
+
+    @Autowired
+    IZtExcludeInfoService iZtExcludeInfoService;
+
+    @Autowired
+    IZtDeptInfoService iZtDeptInfoService;
+
+    @Autowired
+    IZtUserDeptInfoService iZtUserDeptInfoService;
 
     @Override
     public String getTableName() {
@@ -36,8 +56,23 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      * 1.查询用户部门关联表，排除特定部门
      * 2.查询子部门，排除特定部门
      */
+    @SneakyThrows
     public void getCurUserDeptInfos() {
+        ZtUserInfo userInfoFromToken = getUserInfoFromToken();
+        String userCode = userInfoFromToken.getUserCode();
 
+        ZtUserDeptInfo ztUserDeptInfo = new ZtUserDeptInfo();
+        ztUserDeptInfo.setUserCode(userCode);
+        List<ZtUserDeptInfo> ztUserDeptInfos = iZtUserDeptInfoService.ztSimpleGetList(ztUserDeptInfo);
+
+        ZtExcludeInfo ztExcludeInfo = new ZtExcludeInfo();
+        ztExcludeInfo.setUserCode(userCode);
+        ztExcludeInfo.setExcludeType(ZtRoleStatusEnum.DEPT);
+        List<ZtExcludeInfo> ztExcludeDeptList = iZtExcludeInfoService.ztSimpleGetList(ztExcludeInfo);
+        List<String> ztExcludeDeptCodes = ztExcludeDeptList.stream().map(ZtExcludeInfo::getExcludeCode).collect(Collectors.toList());
+
+        ZtParamEntity<ZtDeptInfo> ztDeptInfoZtParamEntity = iZtDeptInfoService.ztSimpleSelectAll();
+        List<ZtDeptInfo> allZtDeptList = iZtDeptInfoService.getList(ztDeptInfoZtParamEntity);
     }
 
     /**

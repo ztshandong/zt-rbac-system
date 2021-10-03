@@ -183,13 +183,13 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
     /*
     public static void main(String[] args) {
         ZtUserInfo ztUserInfo = new ZtUserInfo();
-        ztUserInfo.setId(10L);
-        ztUserInfo.setUserCode("admin");
+        ztUserInfo.setId(2L);
+        ztUserInfo.setUserCode("zhangtao");
         ztUserInfo.setAscFlag(null);
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIMS_USER_ID, ztUserInfo.getId());
         final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + 24 * 60 * 60);
+        final Date expirationDate = new Date(createdDate.getTime() + DEFAULT_JWT_EXPIRATION);
 
         String token = Jwts.builder()
                 .setId(String.valueOf(ztUserInfo.getId()))
@@ -214,6 +214,6 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
         ZtUserInfo ztUserInfo1 = JSON.parseObject(subject, ZtUserInfo.class);
         System.out.println();
     }
-    */
+     */
 
 }
