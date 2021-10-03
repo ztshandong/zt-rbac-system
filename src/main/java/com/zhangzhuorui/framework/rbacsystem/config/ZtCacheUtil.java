@@ -41,6 +41,8 @@ public class ZtCacheUtil {
                     caffeineCache.evict(cName);
                 }
             }
+        } else {
+            caffeineCache.evict(cacheName);
         }
     }
 

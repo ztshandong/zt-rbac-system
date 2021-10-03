@@ -1,5 +1,8 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import com.zhangzhuorui.framework.core.ZtPage;
+import com.zhangzhuorui.framework.core.ZtResBeanEx;
+import com.zhangzhuorui.framework.core.ZtStrUtils;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
@@ -33,6 +36,13 @@ public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo>
         return (IZtDeptInfoService) super.getIZtSimpleBaseService();
     }
 
+    @Override
+    @RequestMapping(value = ZtStrUtils.SELECT_SIMPLE_ALL, method = RequestMethod.POST)
+    @ResponseBody
+    public ZtResBeanEx<ZtPage<ZtDeptInfo>> ztSimpleSelectAll() throws Exception {
+        return super.ztSimpleSelectAll();
+    }
+
     @RequestMapping(value = "getCurUserDeptCodes", method = RequestMethod.POST)
     @ResponseBody
     public List<String> getCurUserDeptCodes() {
@@ -40,5 +50,6 @@ public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo>
         List<String> curUserDeptCodes = getIZtSimpleBaseService().getCurUserDeptCodes(userInfoFromToken);
         return curUserDeptCodes;
     }
+
 }
 
