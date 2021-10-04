@@ -150,7 +150,66 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                             }
                         }
                         if (dataScopeUserFlag()) {
+                            Boolean and, or;
+                            Optional<ZtRoleInfo> postCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
+                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
+                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                        ;
+                            }).findAny();
 
+                            Optional<ZtRoleInfo> userCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
+                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
+                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                        ;
+                            }).findAny();
+
+                            and = postCustomAnd.isPresent() || userCustomAnd.isPresent();
+
+                            Optional<ZtRoleInfo> postCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
+                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
+                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
+                                        ;
+                            }).findAny();
+
+                            Optional<ZtRoleInfo> userCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
+                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
+                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
+                                        ;
+                            }).findAny();
+
+                            or = postCustomOr.isPresent() || userCustomOr.isPresent();
+
+                            if (and && or) {
+                                //6
+                                List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
+                                ztQueryWrapper.andIn(getUserCodeField(), curUserDataRoleAndUserCodes);
+
+                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
+                                //同一个字段，多个条件
+                                ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
+                                tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
+                                tmp.setList(curUserDataRoleOrUserCodes);
+                                tmp.setQueryType(ZtQueryTypeEnum.OR);
+                                String fieldName = ZtColumnUtil.getFieldName(getUserCodeField());
+                                tmp.setFieldName(fieldName);
+                                String columnName = getColumnName(fieldName);
+                                tmp.setColumnName(columnName);
+                                conditons.add(tmp);
+
+                            } else if (and) {
+                                //7
+                                List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
+                                ztQueryWrapper.andIn(getUserCodeField(), curUserDataRoleAndUserCodes);
+                            } else if (or) {
+                                //7
+                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                ztQueryWrapper.orIn(getUserCodeField(), curUserDataRoleOrUserCodes);
+                            } else {
+                                //8
+                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                ztQueryWrapper.orIn(getUserCodeField(), curUserDataRoleOrUserCodes);
+                            }
                         }
                     }
                 }
