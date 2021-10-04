@@ -15,7 +15,9 @@ import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
  */
 public interface IZtRbacSimpleBaseService<T extends ZtRbacBasicEntity> extends IZtSimpleBaseService<T> {
 
-    ZtUserInfo getUserInfoFromToken();
+    ZtUserInfo getSimpleUserInfoFromToken();
+
+    ZtUserInfo getFullUserInfoFromToken();
 
     /**
      * 部门编号字段名

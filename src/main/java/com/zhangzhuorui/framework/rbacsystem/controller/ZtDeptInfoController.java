@@ -46,7 +46,7 @@ public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo>
     @RequestMapping(value = "getCurUserDeptCodes", method = RequestMethod.POST)
     @ResponseBody
     public List<String> getCurUserDeptCodes() {
-        ZtUserInfo userInfoFromToken = getIZtSimpleBaseService().getUserInfoFromToken();
+        ZtUserInfo userInfoFromToken = getIZtSimpleBaseService().getSimpleUserInfoFromToken();
         List<String> curUserDeptCodes = getIZtSimpleBaseService().getCurUserDeptCodes(userInfoFromToken);
         return curUserDeptCodes;
     }

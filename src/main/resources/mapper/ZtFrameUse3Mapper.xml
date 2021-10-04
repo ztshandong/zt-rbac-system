@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangzhuorui.framework.rbacsystem.biz.ZtFrameUse3Mapper">
+    <resultMap id="BaseResultMap" type="com.zhangzhuorui.framework.rbacsystem.biz.ZtFrameUse3"
+               extends="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper.ZtBaseRbacStringIdResultMap">
+        <!--@mbg.generated-->
+        <!--@Table zt_frame_use3-->
+        <result column="udf_1" jdbcType="VARCHAR" property="udf1"/>
+        <result column="enum_1" jdbcType="VARCHAR" property="enum1"/>
+        <result column="version" jdbcType="BIGINT" property="version"/>
+        <result column="udf_2" jdbcType="VARCHAR" property="udf2"/>
+        <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag"/>
+        <result column="biz_dept_code" jdbcType="VARCHAR" property="bizDeptCode"/>
+        <result column="biz_user_code" jdbcType="VARCHAR" property="bizUserCode"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, udf_1, gmt_create, gmt_update, created_by, updated_by, remark, enum_1, version,
+        created_by_name, updated_by_name, udf_2, delete_flag, biz_dept_code, biz_user_code
+    </sql>
+</mapper>

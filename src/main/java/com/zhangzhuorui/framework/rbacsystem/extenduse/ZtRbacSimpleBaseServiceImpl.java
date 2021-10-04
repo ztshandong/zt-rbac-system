@@ -15,6 +15,7 @@ import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,23 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     @Autowired
     IZtDeptInfoService iZtDeptInfoService;
 
+    @Autowired
+    IZtUserInfoService iZtUserInfoService;
+
     @Override
-    public ZtUserInfo getUserInfoFromToken() {
+    public ZtUserInfo getSimpleUserInfoFromToken() {
         String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
         ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
+        return userInfoFromToken;
+    }
+
+    @Override
+    @SneakyThrows
+    public ZtUserInfo getFullUserInfoFromToken() {
+        ZtUserInfo userInfoFromToken = getSimpleUserInfoFromToken();
+        ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = iZtUserInfoService.getInitZtParamEntity(userInfoFromToken);
+        ztUserInfoZtParamEntity = iZtUserInfoService.ztSimpleSelectByPrimaryKey(ztUserInfoZtParamEntity);
+        userInfoFromToken = iZtUserInfoService.getObj(ztUserInfoZtParamEntity);
         return userInfoFromToken;
     }
 
@@ -72,13 +86,13 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     @Override
     public ZtParamEntity<T> afterUseCommonZtQueryWrapper(ZtParamEntity<T> ztParamEntity, SqlCommandType sqlCommandType) {
         if (sqlCommandType.equals(SqlCommandType.SELECT)) {
-            ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
-            if (userInfo == null) {
-                userInfo = getUserInfoFromToken();
-            }
             T entity = ztParamEntity.getEntity();
             ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();
             if (dataScopeDeptFlag() || dataScopeUserFlag()) {
+                ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+                if (userInfo == null) {
+                    userInfo = getFullUserInfoFromToken();
+                }
                 List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
                 ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = iZtRoleInfoService.ztSimpleSelectAll();
                 List<ZtRoleInfo> curUserDataRoleInfoList = iZtRoleInfoService.getList(ztRoleInfoZtParamEntity);

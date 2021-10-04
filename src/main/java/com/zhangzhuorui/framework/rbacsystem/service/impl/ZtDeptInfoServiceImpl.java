@@ -81,6 +81,7 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
         // ZtUserInfo userInfo = getUserInfoFromToken();
         String userCode = userInfo.getUserCode();
         Set<String> curUserDeptCodeSet = new HashSet<>();
+        curUserDeptCodeSet.add(userInfo.getDefaultDeptCode());
         //用户所属部门
         ZtUserDeptInfo ztUserDeptInfo = new ZtUserDeptInfo();
         ztUserDeptInfo.setUserCode(userCode);

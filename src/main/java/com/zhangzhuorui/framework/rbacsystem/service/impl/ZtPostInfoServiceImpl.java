@@ -80,6 +80,7 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
         String userCode = userInfo.getUserCode();
 
         Set<String> curUserAllPostCodeSet = new HashSet<>();
+        curUserAllPostCodeSet.add(userInfo.getDefaultPostCode());
 
         //用户所属职位
         ZtUserPostInfo ztUserPostInfo = new ZtUserPostInfo();
