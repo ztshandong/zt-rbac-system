@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,7 +82,6 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
         // ZtUserInfo userInfo = getUserInfoFromToken();
         String userCode = userInfo.getUserCode();
         Set<String> curUserDeptCodeSet = new HashSet<>();
-        curUserDeptCodeSet.add(userInfo.getDefaultDeptCode());
         //用户所属部门
         ZtUserDeptInfo ztUserDeptInfo = new ZtUserDeptInfo();
         ztUserDeptInfo.setUserCode(userCode);
@@ -109,6 +109,11 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
 
         //仍然还要再筛一遍
         curUserDeptCodeSet.removeAll(ztExcludeDeptCodes);
+
+        //默认部门一定有权限
+        if (!StringUtils.isEmpty(userInfo.getDefaultDeptCode())) {
+            curUserDeptCodeSet.add(userInfo.getDefaultDeptCode());
+        }
 
         //用户所属的最终的部门
         List<String> curUserDeptCodes = new ArrayList<>(curUserDeptCodeSet);

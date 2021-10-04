@@ -16,6 +16,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,7 +81,6 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
         String userCode = userInfo.getUserCode();
 
         Set<String> curUserAllPostCodeSet = new HashSet<>();
-        curUserAllPostCodeSet.add(userInfo.getDefaultPostCode());
 
         //用户所属职位
         ZtUserPostInfo ztUserPostInfo = new ZtUserPostInfo();
@@ -111,6 +111,11 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
 
         //仍然还要再筛一遍
         curUserAllPostCodeSet.removeAll(ztExcludePostCodes);
+
+        //默认岗位一定有权限
+        if (!StringUtils.isEmpty(userInfo.getDefaultPostCode())) {
+            curUserAllPostCodeSet.add(userInfo.getDefaultPostCode());
+        }
 
         //用户所属的最终的职位
         List<String> curUserPostCodes = new ArrayList<>(curUserAllPostCodeSet);

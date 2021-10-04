@@ -2,6 +2,7 @@ package com.zhangzhuorui.framework.rbacsystem.extenduse;
 
 import com.zhangzhuorui.framework.core.ZtColumnUtil;
 import com.zhangzhuorui.framework.core.ZtQueryConditionEntity;
+import com.zhangzhuorui.framework.core.ZtQueryInHelper;
 import com.zhangzhuorui.framework.core.ZtQueryTypeEnum;
 import com.zhangzhuorui.framework.core.ZtQueryWrapperEnum;
 import com.zhangzhuorui.framework.core.ZtUtils;
@@ -134,14 +135,20 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                             if (deptCustomAnd.size() > 0 && deptCustomOr.size() > 0) {
                                 //3
                                 List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
-                                ztQueryWrapper.andIn(getDeptCodeField(), curUserDataRoleAndDeptCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
+                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
 
                                 List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
                                 LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
                                 //同一个字段，多个条件
                                 ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
                                 tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
-                                tmp.setList(curUserDataRoleOrDeptCodes);
+
+                                ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
+                                ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
+
+                                tmp.setList(ztQueryInHelper2);
                                 tmp.setQueryType(ZtQueryTypeEnum.OR);
                                 String fieldName = ZtColumnUtil.getFieldName(getDeptCodeField());
                                 tmp.setFieldName(fieldName);
@@ -152,15 +159,21 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                             } else if (deptCustomAnd.size() > 0) {
                                 //4
                                 List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
-                                ztQueryWrapper.andIn(getDeptCodeField(), curUserDataRoleAndDeptCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
+                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
                             } else if (deptCustomOr.size() > 0) {
                                 //4
                                 List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
-                                ztQueryWrapper.orIn(getDeptCodeField(), curUserDataRoleOrDeptCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
+                                ztQueryWrapper.orIn(getDeptCodeField(), ztQueryInHelper);
                             } else {
                                 //5
                                 List<String> curUserDeptCodes = iZtDeptInfoService.getCurUserDeptCodes(userInfo);
-                                ztQueryWrapper.andIn(getDeptCodeField(), curUserDeptCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDeptCodes));
+                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
                             }
                         }
                         if (dataScopeUserFlag()) {
@@ -196,14 +209,20 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                             if (and && or) {
                                 //6
                                 List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
-                                ztQueryWrapper.andIn(getUserCodeField(), curUserDataRoleAndUserCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
+                                ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
 
                                 List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
                                 LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
                                 //同一个字段，多个条件
                                 ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
                                 tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
-                                tmp.setList(curUserDataRoleOrUserCodes);
+
+                                ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
+                                ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+
+                                tmp.setList(ztQueryInHelper2);
                                 tmp.setQueryType(ZtQueryTypeEnum.OR);
                                 String fieldName = ZtColumnUtil.getFieldName(getUserCodeField());
                                 tmp.setFieldName(fieldName);
@@ -214,15 +233,21 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                             } else if (and) {
                                 //7
                                 List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
-                                ztQueryWrapper.andIn(getUserCodeField(), curUserDataRoleAndUserCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
+                                ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
                             } else if (or) {
                                 //7
                                 List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
-                                ztQueryWrapper.orIn(getUserCodeField(), curUserDataRoleOrUserCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+                                ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
                             } else {
                                 //8
                                 List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
-                                ztQueryWrapper.orIn(getUserCodeField(), curUserDataRoleOrUserCodes);
+                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+                                ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
                             }
                         }
                     }

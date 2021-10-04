@@ -283,7 +283,6 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         for (ZtRoleInfo ztRoleInfo : curUserDeptCustomOrList) {
             curUserDeptCodeSet.addAll(ztRoleInfo.getRoleCustom());
         }
-
         List<String> curUserDataRoleDeptCodes = new ArrayList<>(curUserDeptCodeSet);
         return curUserDataRoleDeptCodes;
     }
@@ -342,7 +341,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         for (ZtRoleInfo ztRoleInfo : curUserCustomAndList) {
             curUserDataRoleUserCodeSet.retainAll(ztRoleInfo.getRoleCustom());
         }
-
+        curUserDataRoleUserCodeSet.add(userInfo.getUserCode());
         List<String> curUserDataRoleUserCodeList = new ArrayList<>(curUserDataRoleUserCodeSet);
         return curUserDataRoleUserCodeList;
     }
@@ -401,7 +400,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         for (ZtRoleInfo ztRoleInfo : curUserCustomAndList) {
             curUserDataRoleUserCodeSet.addAll(ztRoleInfo.getRoleCustom());
         }
-
+        curUserDataRoleUserCodeSet.add(userInfo.getUserCode());
         List<String> curUserDataRoleUserCodeList = new ArrayList<>(curUserDataRoleUserCodeSet);
         return curUserDataRoleUserCodeList;
     }

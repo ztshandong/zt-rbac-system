@@ -100,9 +100,9 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
 
     /*
     SELECT DISTINCT
-        918bb_zt_frame_use2.`created_by` AS createdBy,
-        918bb_zt_frame_use2.`created_by_name` AS createdByName,
-        918bb_zt_frame_use2.`updated_by_name` AS otherParams,
+        0b315_zt_frame_use2.`created_by` AS createdBy,
+        0b315_zt_frame_use2.`created_by_name` AS createdByName,
+        0b315_zt_frame_use2.`updated_by_name` AS otherParams,
         t1.`created_by` AS createdBy,
         t1.`created_by_name` AS createdByName,
         t1.`del_flag` AS delFlag,
@@ -133,21 +133,21 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
     FROM
         zt_frame_use3
         LEFT JOIN zt_frame_use1 AS t1 ON t1.`udf_1` = zt_frame_use3.`udf_1`
-        INNER JOIN zt_frame_use2 AS 918bb_zt_frame_use2 ON 918bb_zt_frame_use2.`id` = t1.`udf_2`
+        INNER JOIN zt_frame_use2 AS 0b315_zt_frame_use2 ON 0b315_zt_frame_use2.`id` = t1.`udf_2`
     WHERE
         1 = 1
         AND ( zt_frame_use3.`delete_flag` = FALSE )
         AND ( zt_frame_use3.`udf_1` = 'string' )
         AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
-        AND ( zt_frame_use3.`id` IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( NULL AND NOT NULL ) ) ) )
-        OR ( zt_frame_use3.`biz_user_code` IN ( NULL AND NOT NULL ) )
+        AND ( zt_frame_use3.`id` IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( 'zhangtao' ) ) ) )
+        OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
         AND (
             1 = 1
             AND ( zt_frame_use3.`delete_flag` = FALSE )
             AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
             AND ( zt_frame_use3.`created_by` IN ( '王五', '赵六' ) )
             OR ( zt_frame_use3.`remark` LIKE '%%备注%%' )
-            OR ( zt_frame_use3.`biz_user_code` IN ( NULL AND NOT NULL ) )
+            OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
             OR ( zt_frame_use3.`created_by` IN ( '张三', '李四' ) )
         )
         OR (
@@ -156,7 +156,7 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
             AND ( zt_frame_use3.`remark` LIKE '%%备注%%' )
             AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
             AND ( zt_frame_use3.`created_by` IN ( '张三', '李四' ) )
-            OR ( zt_frame_use3.`biz_user_code` IN ( NULL AND NOT NULL ) )
+            OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
         )
         AND ( t1.`dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
         AND ( t1.`gmt_update` IS NOT NULL )
@@ -168,11 +168,11 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
             AND ( t1.`gmt_update` IS NOT NULL )
             OR ( t1.`remark` LIKE '%inneraaa%' )
             OR ( t1.`udf_1` IN ( 'innerbbb', 'innerccc' ) )
-            OR ( t1.`id` NOT IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( NULL AND NOT NULL ) ) ) )
+            OR ( t1.`id` NOT IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( 'zhangtao' ) ) ) )
         )
-        AND ( 918bb_zt_frame_use2.`remark` IN ( 'fff', 'ggg' ) )
-        OR ( 918bb_zt_frame_use2.`udf_1` LIKE '%d%' )
-        OR ( 918bb_zt_frame_use2.`user_code` IN ( NULL AND NOT NULL ) )
+        AND ( 0b315_zt_frame_use2.`remark` IN ( 'fff', 'ggg' ) )
+        OR ( 0b315_zt_frame_use2.`udf_1` LIKE '%d%' )
+        OR ( 0b315_zt_frame_use2.`user_code` IN ( 'zhangtao' ) )
         LIMIT 0,1000
      */
     @Override
@@ -284,7 +284,7 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
         ztRootQueryWrapper.innerJoin(ztFrameUse2JoinWrapper, ZtFrameUse2::getId, ztFrameUse1JoinWrapper, ZtFrameUse1::getUdf2);
 
         /**
-         * 一定要ztRootQueryWrapper.join之后添加列
+         * 一定要ztRootQueryWrapper.join之后操作列
          * 联表查询会取别名，因为联表查询结果解析不是用的ResultMap
          */
         //select添加全部列 joinWrapper为null就是ztRootQueryWrapper对应的表
