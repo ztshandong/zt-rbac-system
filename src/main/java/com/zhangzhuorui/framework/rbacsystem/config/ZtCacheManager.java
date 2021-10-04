@@ -71,4 +71,9 @@ public class ZtCacheManager {
             }
         };
     }
+
+    @Bean
+    public KeyGenerator allRoleInfoKeyGenerator() {
+        return (target, method, params) -> ZtCacheUtil.ALL_ROLE_INFO;
+    }
 }

@@ -26,6 +26,9 @@ public class ZtCacheUtil {
     //所有职位缓存key
     public final static String ALL_POST_INFO = "allPostInfo";
 
+    //所有角色缓存key
+    public final static String ALL_ROLE_INFO = "allRoleInfo";
+
     public final static String KEY_GENERATOR = "KeyGenerator";
 
     //当前用户所属所有有效部门缓存前缀
@@ -33,6 +36,9 @@ public class ZtCacheUtil {
 
     //当前用户所属所有有效职位缓存前缀
     public final static String CUR_USER_POST_CODES = "'curUserPostCodes:'";
+
+    //当前用户所属所有有效角色缓存前缀
+    public final static String CUR_USER_ROLE_CODES = "'curUserRoleCodes:'";
 
     @Resource(name = ZtCacheManager.CAFFEINE_CACHE)
     Cache caffeineCache;

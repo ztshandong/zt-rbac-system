@@ -79,47 +79,48 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
     public List<String> getCurUserPostCodes(ZtUserInfo userInfo) {
         String userCode = userInfo.getUserCode();
 
+        Set<String> curUserAllPostCodeSet = new HashSet<>();
+
         //用户所属职位
         ZtUserPostInfo ztUserPostInfo = new ZtUserPostInfo();
         ztUserPostInfo.setUserCode(userCode);
         List<ZtUserPostInfo> ztUserPostInfoList = iZtUserPostInfoService.ztSimpleGetList(ztUserPostInfo);
-        List<String> ztCurUserPostCodes_1 = ztUserPostInfoList.stream().map(ZtUserPostInfo::getPostCode).collect(Collectors.toList());
-
+        List<String> ztCurUserPostCodes_1 = ztUserPostInfoList.stream().map(ZtUserPostInfo::getPostCode).distinct().collect(Collectors.toList());
+        curUserAllPostCodeSet.addAll(ztCurUserPostCodes_1);
         //排除的职位
         ZtExcludeInfo ztExcludeInfo = new ZtExcludeInfo();
         ztExcludeInfo.setUserCode(userCode);
         ztExcludeInfo.setExcludeType(ZtRoleStatusEnum.POST);
         List<ZtExcludeInfo> ztExcludePostList = iZtExcludeInfoService.ztSimpleGetList(ztExcludeInfo);
-        List<String> ztExcludePostCodes = ztExcludePostList.stream().map(ZtExcludeInfo::getExcludeCode).collect(Collectors.toList());
+        List<String> ztExcludePostCodes = ztExcludePostList.stream().map(ZtExcludeInfo::getExcludeCode).distinct().collect(Collectors.toList());
 
-        ztCurUserPostCodes_1.removeAll(ztExcludePostCodes);
+        curUserAllPostCodeSet.removeAll(ztExcludePostCodes);
 
         ZtParamEntity<ZtPostInfo> ztPostInfoZtParamEntity = getThisService().ztSimpleSelectAll();
         //所有的职位
         List<ZtPostInfo> allZtPostList = getThisService().getList(ztPostInfoZtParamEntity);
 
-        List<ZtPostInfo> ztPostInfoList_1 = allZtPostList.stream().filter(t -> ztCurUserPostCodes_1.contains(t.getThisCode())).collect(Collectors.toList());
+        //当前所属职位
+        List<ZtPostInfo> ztPostInfoList_1 = allZtPostList.stream().filter(t -> curUserAllPostCodeSet.contains(t.getThisCode())).distinct().collect(Collectors.toList());
 
         //查找当前职位的子职位
-        Set<ZtPostInfo> curUserAllPostSet = new HashSet<>(ztPostInfoList_1);
         for (ZtPostInfo parentPost : ztPostInfoList_1) {
-            getChildPosts(parentPost, allZtPostList, curUserAllPostSet);
+            getChildPosts(parentPost, allZtPostList, curUserAllPostCodeSet);
         }
 
         //仍然还要再筛一遍
-        curUserAllPostSet = curUserAllPostSet.stream().filter(t -> !ztExcludePostCodes.contains(t.getThisCode())).collect(Collectors.toSet());
+        curUserAllPostCodeSet.removeAll(ztExcludePostCodes);
 
         //用户所属的最终的职位
-        List<ZtPostInfo> curUserDeptInfoList = new ArrayList<>(curUserAllPostSet);
-
-        List<String> curUserPostCodes = curUserDeptInfoList.stream().map(ZtPostInfo::getThisCode).collect(Collectors.toList());
+        List<String> curUserPostCodes = new ArrayList<>(curUserAllPostCodeSet);
         return curUserPostCodes;
     }
 
-    public void getChildPosts(ZtPostInfo parentPost, List<ZtPostInfo> allZtPostList, Set<ZtPostInfo> curUserAllPostSet) {
+    public void getChildPosts(ZtPostInfo parentPost, List<ZtPostInfo> allZtPostList, Set<String> curUserAllPostSet) {
         List<ZtPostInfo> childs = allZtPostList.stream().filter(t -> t.getParentCode().equalsIgnoreCase(parentPost.getThisCode())).collect(Collectors.toList());
         if (childs.size() > 0) {
-            curUserAllPostSet.addAll(childs);
+            List<String> collect = childs.stream().map(ZtPostInfo::getThisCode).collect(Collectors.toList());
+            curUserAllPostSet.addAll(collect);
             for (ZtPostInfo child : childs) {
                 getChildPosts(child, allZtPostList, curUserAllPostSet);
             }
