@@ -40,6 +40,18 @@ public class ZtCacheUtil {
     //当前用户所属所有有效角色缓存前缀
     public final static String CUR_USER_ROLE_CODES = "'curUserRoleCodes:'";
 
+    //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
+    public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "'curUserDataRoleAndDeptCodes:'";
+
+    //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 OR
+    public final static String CUR_USER_DATA_ROLE_OR_DEPT_CODES = "'curUserDataRoleOrDeptCodes:'";
+
+    //当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 AND
+    public final static String CUR_USER_DATA_ROLE_AND_USER_CODES = "'curUserDataRoleAndUserCodes:'";
+
+    //当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 OR
+    public final static String CUR_USER_DATA_ROLE_OR_USER_CODES = "'curUserDataRoleOrUserCodes:'";
+
     @Resource(name = ZtCacheManager.CAFFEINE_CACHE)
     Cache caffeineCache;
 

@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.service.impl;
 
+import com.zhangzhuorui.framework.core.ZtQueryTypeEnum;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
@@ -10,6 +11,8 @@ import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRolePostInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserPostInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleStatusEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseServiceImpl;
@@ -21,6 +24,7 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleDeptInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRolePostInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleUserInfoService;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -70,6 +74,9 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
 
     @Autowired
     IZtPostInfoService iZtPostInfoService;
+
+    @Autowired
+    IZtUserPostInfoService iZtUserPostInfoService;
 
     @Autowired
     IZtRoleDeptInfoService iZtRoleDeptInfoService;
@@ -211,41 +218,192 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
 
     /**
      * 数据权限：dataScopeDeptFlag使用
+     * 当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
      * 1.getCurUserAllRoleCodes
      * 2.过滤数据角色与综合角色
      * 3.ZtQueryTypeEnum是AND的DEPT_CUSTOM与getCurUserDeptCodes取交集
-     * 4.添加ZtQueryTypeEnum是OR的DEPT_CUSTOM
      */
+    @Override
     @SneakyThrows
-    public void getCurUserDataRoleDepts(ZtUserInfo userInfo) {
+    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES + "+#userInfo.userCode")
+    public List<String> getCurUserDataRoleAndDeptCodes(ZtUserInfo userInfo) {
+        //1
         List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
         ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = getThisService().ztSimpleSelectAll();
         List<ZtRoleInfo> allZtRoleList = getThisService().getList(ztRoleInfoZtParamEntity);
-        List<ZtRoleInfo> curUserAllRoleList = allZtRoleList.stream().filter(t -> !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType()) && curUserAllRoleCodes.contains(t.getThisCode())).collect(Collectors.toList());
 
+        List<String> curUserDeptCodes = iZtDeptInfoService.getCurUserDeptCodes(userInfo);
+        Set<String> curUserDeptCodeSet = new HashSet<>(curUserDeptCodes);
+
+        //2
+        List<ZtRoleInfo> curUserDeptCustomAndList = allZtRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.AND.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.DEPT_CUSTOM.equals(t.getDataScopeType())
+                    && !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType())
+                    && curUserAllRoleCodes.contains(t.getThisCode())
+                    ;
+        }).collect(Collectors.toList());
+        //3
+        for (ZtRoleInfo ztRoleInfo : curUserDeptCustomAndList) {
+            curUserDeptCodeSet.retainAll(ztRoleInfo.getRoleCustom());
+        }
+
+        List<String> curUserDataRoleDeptCodes = new ArrayList<>(curUserDeptCodeSet);
+        return curUserDataRoleDeptCodes;
     }
 
     /**
+     * 数据权限：dataScopeDeptFlag使用
+     * 当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 OR
      * 1.getCurUserAllRoleCodes
      * 2.过滤数据角色与综合角色
-     * 3.ZtQueryTypeEnum是AND的POST_CUSTOM与getCurUserPostCodes取交集
-     * 4.添加ZtQueryTypeEnum是OR的POST_CUSTOM
+     * 3.getCurUserDeptCodes添加ZtQueryTypeEnum是OR的DEPT_CUSTOM
      */
-    public void getCurUserDataRolePosts() {
+    @Override
+    @SneakyThrows
+    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "+#userInfo.userCode")
+    public List<String> getCurUserDataRoleOrDeptCodes(ZtUserInfo userInfo) {
+        //1
+        List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
+        ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtRoleInfo> allZtRoleList = getThisService().getList(ztRoleInfoZtParamEntity);
 
+        List<String> curUserDeptCodes = iZtDeptInfoService.getCurUserDeptCodes(userInfo);
+        Set<String> curUserDeptCodeSet = new HashSet<>(curUserDeptCodes);
+
+        //2
+        List<ZtRoleInfo> curUserDeptCustomOrList = allZtRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.OR.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.DEPT_CUSTOM.equals(t.getDataScopeType())
+                    && !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType())
+                    && curUserAllRoleCodes.contains(t.getThisCode())
+                    ;
+        }).collect(Collectors.toList());
+        //3
+        for (ZtRoleInfo ztRoleInfo : curUserDeptCustomOrList) {
+            curUserDeptCodeSet.addAll(ztRoleInfo.getRoleCustom());
+        }
+
+        List<String> curUserDataRoleDeptCodes = new ArrayList<>(curUserDeptCodeSet);
+        return curUserDataRoleDeptCodes;
     }
 
     /**
      * 数据权限：dataScopeUserFlag使用
-     * getCurUserDataRolePosts获得对应的用户，userLists
-     * 1.getCurUserAllRoleCodes
-     * 2.过滤数据角色与综合角色
-     * 3.ZtQueryTypeEnum是AND的USER_CUSTOM与userLists取交集
-     * 4.添加ZtQueryTypeEnum是OR的USER_CUSTOM
+     * 当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 AND
+     * 职位最终会转换成用户
+     * 1.getCurUserAllRoleCodes 获取所有角色，过滤数据角色与综合角色
+     * 2.getCurUserPostCodes 获取用户所有职位
+     * 3.ZtQueryTypeEnum是AND的POST_CUSTOM与getCurUserPostCodes取交集
+     * 4.根据职位查询出用户 curUserDataRoleUserCodeSet
+     * 5.ZtQueryTypeEnum是AND的USER_CUSTOM与curUserDataRoleUserCodeSet取交集
      */
-    public void getCurUserDataRoleUsers() {
+    @Override
+    @SneakyThrows
+    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "+#userInfo.userCode")
+    public List<String> getCurUserDataRoleAndUserCodes(ZtUserInfo userInfo) {
 
+        List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
+        ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtRoleInfo> curUserAllRoleList = getThisService().getList(ztRoleInfoZtParamEntity);
+        //1
+        curUserAllRoleList = curUserAllRoleList.stream().filter(t -> !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType()) && curUserAllRoleCodes.contains(t.getThisCode())).collect(Collectors.toList());
+
+        //2
+        List<String> curUserPostCodes = iZtPostInfoService.getCurUserPostCodes(userInfo);
+        Set<String> curUserPostCodeSet = new HashSet<>(curUserPostCodes);
+
+        //3
+        List<ZtRoleInfo> curUserPostCustomAndList = curUserAllRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.AND.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.POST_CUSTOM.equals(t.getDataScopeType())
+                    ;
+        }).collect(Collectors.toList());
+        for (ZtRoleInfo ztRoleInfo : curUserPostCustomAndList) {
+            curUserPostCodeSet.retainAll(ztRoleInfo.getRoleCustom());
+        }
+
+        //4
+        ZtUserPostInfo ztUserPostInfo = new ZtUserPostInfo();
+        ZtParamEntity<ZtUserPostInfo> ztUserPostInfoZtParamEntity = iZtUserPostInfoService.getInitZtParamEntityWithOutCount(ztUserPostInfo);
+        ztUserPostInfoZtParamEntity.andIn(ZtUserPostInfo::getPostCode, new ArrayList(curUserPostCodeSet));
+        ztUserPostInfoZtParamEntity = iZtUserPostInfoService.ztSimpleSelectProviderWithoutCount(ztUserPostInfoZtParamEntity);
+        List<ZtUserPostInfo> ztUserPostInfoList = iZtUserPostInfoService.getList(ztUserPostInfoZtParamEntity);
+        List<String> userCodes = ztUserPostInfoList.stream().map(ZtUserPostInfo::getUserCode).collect(Collectors.toList());
+
+        Set<String> curUserDataRoleUserCodeSet = new HashSet<>(userCodes);
+
+        //5
+        List<ZtRoleInfo> curUserCustomAndList = curUserAllRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.AND.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.USER_CUSTOM.equals(t.getDataScopeType())
+                    ;
+        }).collect(Collectors.toList());
+        for (ZtRoleInfo ztRoleInfo : curUserCustomAndList) {
+            curUserDataRoleUserCodeSet.retainAll(ztRoleInfo.getRoleCustom());
+        }
+
+        List<String> curUserDataRoleUserCodeList = new ArrayList<>(curUserDataRoleUserCodeSet);
+        return curUserDataRoleUserCodeList;
     }
 
+    /**
+     * 数据权限：dataScopeUserFlag使用
+     * 当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 OR
+     * 职位最终会转换成用户
+     * 1.getCurUserAllRoleCodes 获取所有角色，过滤数据角色与综合角色
+     * 2.getCurUserPostCodes 获取用户所有职位
+     * 3.getCurUserPostCodes添加ZtQueryTypeEnum是OR的POST_CUSTOM
+     * 4.根据职位查询出用户 curUserDataRoleUserCodeSet
+     * 5.curUserDataRoleUserCodeSet添加ZtQueryTypeEnum是OR的USER_CUSTOM
+     */
+    @Override
+    @SneakyThrows
+    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "+#userInfo.userCode")
+    public List<String> getCurUserDataRoleOrUserCodes(ZtUserInfo userInfo) {
+
+        List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
+        ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtRoleInfo> curUserAllRoleList = getThisService().getList(ztRoleInfoZtParamEntity);
+        //1
+        curUserAllRoleList = curUserAllRoleList.stream().filter(t -> !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType()) && curUserAllRoleCodes.contains(t.getThisCode())).collect(Collectors.toList());
+
+        //2
+        List<String> curUserPostCodes = iZtPostInfoService.getCurUserPostCodes(userInfo);
+        Set<String> curUserPostCodeSet = new HashSet<>(curUserPostCodes);
+
+        //3
+        List<ZtRoleInfo> curUserPostCustomAndList = curUserAllRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.OR.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.POST_CUSTOM.equals(t.getDataScopeType())
+                    ;
+        }).collect(Collectors.toList());
+        for (ZtRoleInfo ztRoleInfo : curUserPostCustomAndList) {
+            curUserPostCodeSet.addAll(ztRoleInfo.getRoleCustom());
+        }
+
+        //4
+        ZtUserPostInfo ztUserPostInfo = new ZtUserPostInfo();
+        ZtParamEntity<ZtUserPostInfo> ztUserPostInfoZtParamEntity = iZtUserPostInfoService.getInitZtParamEntityWithOutCount(ztUserPostInfo);
+        ztUserPostInfoZtParamEntity.andIn(ZtUserPostInfo::getPostCode, new ArrayList(curUserPostCodeSet));
+        ztUserPostInfoZtParamEntity = iZtUserPostInfoService.ztSimpleSelectProviderWithoutCount(ztUserPostInfoZtParamEntity);
+        List<ZtUserPostInfo> ztUserPostInfoList = iZtUserPostInfoService.getList(ztUserPostInfoZtParamEntity);
+        List<String> userCodes = ztUserPostInfoList.stream().map(ZtUserPostInfo::getUserCode).collect(Collectors.toList());
+
+        Set<String> curUserDataRoleUserCodeSet = new HashSet<>(userCodes);
+
+        //5
+        List<ZtRoleInfo> curUserCustomAndList = curUserAllRoleList.stream().filter(t -> {
+            return ZtQueryTypeEnum.OR.equals(t.getDataScopeOptType())
+                    && ZtDataScopeTypeEnum.USER_CUSTOM.equals(t.getDataScopeType())
+                    ;
+        }).collect(Collectors.toList());
+        for (ZtRoleInfo ztRoleInfo : curUserCustomAndList) {
+            curUserDataRoleUserCodeSet.addAll(ztRoleInfo.getRoleCustom());
+        }
+
+        List<String> curUserDataRoleUserCodeList = new ArrayList<>(curUserDataRoleUserCodeSet);
+        return curUserDataRoleUserCodeList;
+    }
 }
 
