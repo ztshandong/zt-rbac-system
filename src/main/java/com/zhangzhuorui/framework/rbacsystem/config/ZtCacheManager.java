@@ -61,4 +61,14 @@ public class ZtCacheManager {
             }
         };
     }
+
+    @Bean
+    public KeyGenerator allPostInfoKeyGenerator() {
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object target, Method method, Object... params) {
+                return ZtCacheUtil.ALL_POST_INFO;
+            }
+        };
+    }
 }

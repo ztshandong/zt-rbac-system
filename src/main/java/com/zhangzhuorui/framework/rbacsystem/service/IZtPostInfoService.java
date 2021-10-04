@@ -1,7 +1,10 @@
 package com.zhangzhuorui.framework.rbacsystem.service;
 
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtPostInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.IZtRbacSimpleBaseService;
+
+import java.util.List;
 
 /**
  * 基于张涛极速开发框架的RBAC权限管理系统 服务类
@@ -15,6 +18,8 @@ import com.zhangzhuorui.framework.rbacsystem.extenduse.IZtRbacSimpleBaseService;
  * @updateRemark :
  */
 public interface IZtPostInfoService extends IZtRbacSimpleBaseService<ZtPostInfo> {
+
+    List<String> getCurUserPostCodes(ZtUserInfo userInfo);
 
 }
 

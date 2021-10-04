@@ -53,6 +53,12 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
     IZtUserDeptInfoService iZtUserDeptInfoService;
 
     @Override
+    public void refreshCache() throws Exception {
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_DEPT_INFO);
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DEPT_CODES + "*");
+    }
+
+    @Override
     @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_DEPT_INFO + ZtCacheUtil.KEY_GENERATOR)
     public ZtParamEntity<ZtDeptInfo> ztSimpleSelectAll() throws Exception {
         ZtDeptInfo ztDeptInfo = new ZtDeptInfo();
@@ -124,15 +130,5 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
         }
     }
 
-    @Override
-    public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_DEPT_INFO);
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DEPT_CODES + "*");
-    }
-
-    @Override
-    public void refreshCache(String cacheName) {
-        ztCacheUtil.evictCaffeine(cacheName);
-    }
 }
 

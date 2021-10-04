@@ -42,15 +42,6 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     }
 
     /**
-     * 获取用户所有职位
-     * 1.查询用户职位关联表，排除特定职位
-     * 2.查询子职位，排除特定职位
-     */
-    public void getCurUserPostInfos() {
-
-    }
-
-    /**
      * 获取用户所有角色
      * 超级管理员有所有权限
      * <p>

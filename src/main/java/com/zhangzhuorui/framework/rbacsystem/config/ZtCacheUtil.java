@@ -20,12 +20,19 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class ZtCacheUtil {
 
+    //所有部门缓存key
     public final static String ALL_DEPT_INFO = "allDeptInfo";
+
+    //所有职位缓存key
+    public final static String ALL_POST_INFO = "allPostInfo";
 
     public final static String KEY_GENERATOR = "KeyGenerator";
 
     //当前用户所属所有有效部门缓存前缀
     public final static String CUR_USER_DEPT_CODES = "'curUserDeptCodes:'";
+
+    //当前用户所属所有有效职位缓存前缀
+    public final static String CUR_USER_POST_CODES = "'curUserPostCodes:'";
 
     @Resource(name = ZtCacheManager.CAFFEINE_CACHE)
     Cache caffeineCache;
