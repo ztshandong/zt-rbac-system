@@ -9,6 +9,7 @@ import com.zhangzhuorui.framework.core.ZtUtils;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.mybatis.core.ZtQueryWrapper;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.ZtSimpleBaseServiceImpl;
+import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
@@ -39,7 +40,10 @@ import java.util.stream.Collectors;
 public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> extends ZtSimpleBaseServiceImpl<T> implements IZtRbacSimpleBaseService<T> {
 
     @Autowired
-    ZtJwtTokenUtil ztJwtTokenUtil;
+    protected ZtCacheUtil ztCacheUtil;
+
+    @Autowired
+    protected ZtJwtTokenUtil ztJwtTokenUtil;
 
     @Autowired
     IZtRoleInfoService iZtRoleInfoService;

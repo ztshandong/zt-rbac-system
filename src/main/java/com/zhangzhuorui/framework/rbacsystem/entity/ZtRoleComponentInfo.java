@@ -26,7 +26,7 @@ public class ZtRoleComponentInfo extends ZtRbacBasicEntity<Long> {
     private String roleCode;
 
     /**
-     * 组件编号
+     * 组件编号。只保存末级组件leafFlag=true
      */
     @ApiModelProperty(value = "组件编号")
     private String componentCode;

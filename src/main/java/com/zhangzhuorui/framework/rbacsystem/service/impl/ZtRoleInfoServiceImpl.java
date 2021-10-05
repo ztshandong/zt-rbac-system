@@ -4,7 +4,6 @@ import com.zhangzhuorui.framework.core.ZtQueryTypeEnum;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
-import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtExcludeInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
@@ -16,6 +15,7 @@ import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleStatusEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseServiceImpl;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtComponentInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtExcludeInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtPostInfoService;
@@ -61,12 +61,6 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     }
 
     @Autowired
-    ZtJwtTokenUtil ztJwtTokenUtil;
-
-    @Autowired
-    ZtCacheUtil ztCacheUtil;
-
-    @Autowired
     IZtExcludeInfoService iZtExcludeInfoService;
 
     @Autowired
@@ -74,6 +68,9 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
 
     @Autowired
     IZtPostInfoService iZtPostInfoService;
+
+    @Autowired
+    IZtComponentInfoService iZtComponentInfoService;
 
     @Autowired
     IZtUserPostInfoService iZtUserPostInfoService;
@@ -94,6 +91,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     public void refreshCache() throws Exception {
         ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_ROLE_INFO);
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ROLE_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "*");
     }
 
     @Override
@@ -203,17 +204,6 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
                 getChildRoles(child, allZtRoleList, curUserAllRoleCodeSet);
             }
         }
-    }
-
-    /**
-     * 菜单权限：向前端返回的路由
-     * 1.getCurUserAllRoleCodes
-     * 2.过滤菜单角色与综合角色
-     * 3.查询组件角色关联表，排除特定组件
-     * 4.拼装路由
-     */
-    public void getCurUserMenuRoles() {
-
     }
 
     /**

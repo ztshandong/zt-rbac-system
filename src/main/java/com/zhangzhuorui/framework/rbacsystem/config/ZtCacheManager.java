@@ -10,7 +10,6 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,28 +51,43 @@ public class ZtCacheManager {
         return simpleCacheManager;
     }
 
+    /**
+     * 所有部门
+     *
+     * @return
+     */
     @Bean
     public KeyGenerator allDeptInfoKeyGenerator() {
-        return new KeyGenerator() {
-            @Override
-            public Object generate(Object target, Method method, Object... params) {
-                return ZtCacheUtil.ALL_DEPT_INFO;
-            }
-        };
+        return (target, method, params) -> ZtCacheUtil.ALL_DEPT_INFO;
     }
 
+    /**
+     * 所有职位
+     *
+     * @return
+     */
     @Bean
     public KeyGenerator allPostInfoKeyGenerator() {
-        return new KeyGenerator() {
-            @Override
-            public Object generate(Object target, Method method, Object... params) {
-                return ZtCacheUtil.ALL_POST_INFO;
-            }
-        };
+        return (target, method, params) -> ZtCacheUtil.ALL_POST_INFO;
     }
 
+    /**
+     * 所有角色
+     *
+     * @return
+     */
     @Bean
     public KeyGenerator allRoleInfoKeyGenerator() {
         return (target, method, params) -> ZtCacheUtil.ALL_ROLE_INFO;
+    }
+
+    /**
+     * 所有组件
+     *
+     * @return
+     */
+    @Bean
+    public KeyGenerator allComponentInfoKeyGenerator() {
+        return (target, method, params) -> ZtCacheUtil.ALL_COMPONENT_INFO;
     }
 }

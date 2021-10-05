@@ -29,6 +29,9 @@ public class ZtCacheUtil {
     //所有角色缓存key
     public final static String ALL_ROLE_INFO = "allRoleInfo";
 
+    //所有组件缓存key
+    public final static String ALL_COMPONENT_INFO = "allComponentInfo";
+
     public final static String KEY_GENERATOR = "KeyGenerator";
 
     //用户信息详情
@@ -42,6 +45,9 @@ public class ZtCacheUtil {
 
     //当前用户所属所有有效角色缓存前缀
     public final static String CUR_USER_ROLE_CODES = "'curUserRoleCodes:'";
+
+    //当前用户末级组件数据
+    public final static String CUR_USER_LEAF_COMPONENT_CODES = "'curUserLeafComponentCodes:'";
 
     //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
     public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "'curUserDataRoleAndDeptCodes:'";

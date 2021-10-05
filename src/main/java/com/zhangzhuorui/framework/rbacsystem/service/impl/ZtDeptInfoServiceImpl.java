@@ -45,9 +45,6 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
     }
 
     @Autowired
-    ZtCacheUtil ztCacheUtil;
-
-    @Autowired
     IZtExcludeInfoService iZtExcludeInfoService;
 
     @Autowired

@@ -44,9 +44,6 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
     }
 
     @Autowired
-    ZtCacheUtil ztCacheUtil;
-
-    @Autowired
     IZtExcludeInfoService iZtExcludeInfoService;
 
     @Autowired
