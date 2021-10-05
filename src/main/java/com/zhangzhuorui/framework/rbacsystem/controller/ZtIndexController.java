@@ -50,5 +50,11 @@ public class ZtIndexController {
         return curUserRouteAfterLogin;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getCurUserPermission", method = RequestMethod.POST)
+    public List<String> getCurUserPermission(@RequestBody ZtUserInfo userInfo) {
+        List<String> curUserPermission = iZtRoleInfoService.getCurUserPermission(userInfo);
+        return curUserPermission;
+    }
 }
 

@@ -29,7 +29,6 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRolePostInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleUserInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -102,6 +101,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "*");
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "*");
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ROUTER + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_PERMISSION + "*");
     }
 
     @Override
@@ -140,30 +140,27 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         curUserAllComponentListWithoutButton = JSON.parseArray(JSON.toJSONString(curUserAllComponentListWithoutButton), ZtComponentInfo.class);
         Collections.sort(curUserAllComponentListWithoutButton);
         for (ZtComponentInfo ztComponentInfo : curUserAllComponentListWithoutButton) {
-            findMenuChildren(ztComponentInfo, curUserAllComponentListWithoutButton);
+            buildComponentTree(ztComponentInfo, curUserAllComponentListWithoutButton);
         }
         curUserAllComponentListWithoutButton = curUserAllComponentListWithoutButton.stream().filter(t -> ZtComponentTypeEnum.MODEL.equals(t.getMenuType())).collect(Collectors.toList());
 
         return curUserAllComponentListWithoutButton;
     }
 
-    public ZtComponentInfo findMenuChildren(ZtComponentInfo parentNode, List<ZtComponentInfo> treeNodes) {
-
-        List<ZtComponentInfo> children = parentNode.getChildren();
-        // if (children == null) {
-        //     children = new LinkedList<>();
-        //     parentNode.setChildren(children);
-        // }
-        for (ZtComponentInfo ztComponentInfo : treeNodes) {
-            if (parentNode.getThisCode().equals(ztComponentInfo.getParentCode())) {
-                if (!children.contains(ztComponentInfo)) {
-                    ZtComponentInfo ztComponentInfo1 = new ZtComponentInfo();
-                    BeanUtils.copyProperties(ztComponentInfo, ztComponentInfo1);
-                    children.add(findMenuChildren(ztComponentInfo1, treeNodes));
-                }
-            }
-        }
-        return parentNode;
+    @Override
+    @SneakyThrows
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_PERMISSION + "+#userInfo.id")}
+    )
+    public List<String> getCurUserPermission(ZtUserInfo userInfo) {
+        ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = iZtComponentInfoService.ztSimpleSelectAll();
+        List<ZtComponentInfo> allComponent = iZtComponentInfoService.getList(ztComponentInfoZtParamEntity);
+        List<String> curUserLeafComponentCodes = iZtComponentInfoService.getCurUserLeafComponentCodes(userInfo);
+        List<ZtComponentInfo> curUserAllButtonComponent = allComponent.stream().filter(t -> ZtComponentTypeEnum.BUTTON.equals(t.getMenuType()) && curUserLeafComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
+        List<String> curUserPermission = curUserAllButtonComponent.stream().map(t -> {
+            return t.getParentCode() + ":" + t.getButtonCode();
+        }).collect(Collectors.toList());
+        return curUserPermission;
     }
 
     /**

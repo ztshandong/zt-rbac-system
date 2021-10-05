@@ -11,6 +11,7 @@ import com.zhangzhuorui.framework.mybatis.core.ZtQueryWrapper;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.ZtSimpleBaseServiceImpl;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
@@ -20,6 +21,7 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -59,6 +61,39 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
         ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
         return userInfoFromToken;
+    }
+
+    /**
+     * List组装成为树
+     *
+     * @param parentNode :
+     * @param treeNodes  :
+     * @return :  com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo
+     * @author :  zhangtao
+     * @createDate :  2021/10/5 下午7:49
+     * @description :
+     * @updateUser :
+     * @updateDate :
+     * @updateRemark :
+     */
+    @Override
+    public ZtComponentInfo buildComponentTree(ZtComponentInfo parentNode, List<ZtComponentInfo> treeNodes) {
+
+        List<ZtComponentInfo> children = parentNode.getChildren();
+        // if (children == null) {
+        //     children = new LinkedList<>();
+        //     parentNode.setChildren(children);
+        // }
+        for (ZtComponentInfo ztComponentInfo : treeNodes) {
+            if (parentNode.getThisCode().equals(ztComponentInfo.getParentCode())) {
+                if (!children.contains(ztComponentInfo)) {
+                    ZtComponentInfo ztComponentInfo1 = new ZtComponentInfo();
+                    BeanUtils.copyProperties(ztComponentInfo, ztComponentInfo1);
+                    children.add(buildComponentTree(ztComponentInfo1, treeNodes));
+                }
+            }
+        }
+        return parentNode;
     }
 
     /**

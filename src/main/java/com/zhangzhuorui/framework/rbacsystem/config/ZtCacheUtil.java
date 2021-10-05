@@ -55,6 +55,9 @@ public class ZtCacheUtil {
     //当前用户前端菜单路由
     public final static String CUR_USER_ROUTER = "'curUserRouter:'";
 
+    //当前用户所有按钮权限
+    public final static String CUR_USER_PERMISSION = "'curUserPermission:'";
+
     //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
     public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "'curUserDataRoleAndDeptCodes:'";
 
