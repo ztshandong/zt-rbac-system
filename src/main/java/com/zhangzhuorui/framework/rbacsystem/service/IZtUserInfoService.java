@@ -16,6 +16,8 @@ import com.zhangzhuorui.framework.rbacsystem.extenduse.IZtRbacSimpleBaseService;
  */
 public interface IZtUserInfoService extends IZtRbacSimpleBaseService<ZtUserInfo> {
 
+    ZtUserInfo getFullUserInfoFromToken(ZtUserInfo userInfoFromToken);
+
 }
 
 

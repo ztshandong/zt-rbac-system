@@ -17,8 +17,6 @@ public interface IZtRbacSimpleBaseService<T extends ZtRbacBasicEntity> extends I
 
     ZtUserInfo getSimpleUserInfoFromToken();
 
-    ZtUserInfo getFullUserInfoFromToken();
-
     /**
      * 部门编号字段名
      *

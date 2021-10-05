@@ -57,16 +57,6 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         return userInfoFromToken;
     }
 
-    @Override
-    @SneakyThrows
-    public ZtUserInfo getFullUserInfoFromToken() {
-        ZtUserInfo userInfoFromToken = getSimpleUserInfoFromToken();
-        ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = iZtUserInfoService.getInitZtParamEntity(userInfoFromToken);
-        ztUserInfoZtParamEntity = iZtUserInfoService.ztSimpleSelectByPrimaryKey(ztUserInfoZtParamEntity);
-        userInfoFromToken = iZtUserInfoService.getObj(ztUserInfoZtParamEntity);
-        return userInfoFromToken;
-    }
-
     /**
      * 数据权限 判断 ZtDataScopeTypeEnum 与 ZtQueryTypeEnum
      * <p>
@@ -88,166 +78,169 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     public ZtParamEntity<T> afterUseCommonZtQueryWrapper(ZtParamEntity<T> ztParamEntity, SqlCommandType sqlCommandType) {
         if (sqlCommandType.equals(SqlCommandType.SELECT)) {
             T entity = ztParamEntity.getEntity();
-            ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();
-            if (dataScopeDeptFlag() || dataScopeUserFlag()) {
-                ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
-                if (userInfo == null) {
-                    userInfo = getFullUserInfoFromToken();
-                }
-                List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
-                ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = iZtRoleInfoService.ztSimpleSelectAll();
-                List<ZtRoleInfo> curUserDataRoleInfoList = iZtRoleInfoService.getList(ztRoleInfoZtParamEntity);
-                curUserDataRoleInfoList = curUserDataRoleInfoList.stream().filter(t -> !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType()) && curUserAllRoleCodes.contains(t.getThisCode())).collect(Collectors.toList());
-                //1
-                Optional<ZtRoleInfo> onlySelfRole = curUserDataRoleInfoList.stream().filter(t -> {
-                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.SELF)
-                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
-                            ;
-                }).findAny();
-                if (onlySelfRole.isPresent()) {
-                    String userCodeFieldStr = ZtColumnUtil.getFieldName(getUserCodeField());
-                    Field userCodeField = ZtUtils.getField(entity, userCodeFieldStr);
-                    userCodeField.setAccessible(true);
-                    userCodeField.set(entity, userInfo.getUserCode());
-                    ztQueryWrapper.andEquals(getUserCodeField());
-                } else {
-                    //2
-                    Optional<ZtRoleInfo> allDataRole = curUserDataRoleInfoList.stream().filter(t -> {
-                        return t.getDataScopeType().equals(ZtDataScopeTypeEnum.ALL) || t.getAdminFlag();
+            if (entity.getDataScopeFlag() == null || entity.getDataScopeFlag()) {
+                ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();
+                if (dataScopeDeptFlag() || dataScopeUserFlag()) {
+                    ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+                    if (userInfo == null) {
+                        userInfo = getSimpleUserInfoFromToken();
+                        userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+                    }
+                    List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
+                    ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = iZtRoleInfoService.ztSimpleSelectAll();
+                    List<ZtRoleInfo> curUserDataRoleInfoList = iZtRoleInfoService.getList(ztRoleInfoZtParamEntity);
+                    curUserDataRoleInfoList = curUserDataRoleInfoList.stream().filter(t -> !ZtRoleTypeEnum.COMPONENT.equals(t.getRoleType()) && curUserAllRoleCodes.contains(t.getThisCode())).collect(Collectors.toList());
+                    //1
+                    Optional<ZtRoleInfo> onlySelfRole = curUserDataRoleInfoList.stream().filter(t -> {
+                        return t.getDataScopeType().equals(ZtDataScopeTypeEnum.SELF)
+                                && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                ;
                     }).findAny();
-                    if (allDataRole.isPresent()) {
-                        //这里不用处理，超级管理员可能会查询指定用户的数据，根据前端传的查询条件处理
-                        //修改ztBeforeSimpleSelectProvider，添加查询条件
+                    if (onlySelfRole.isPresent()) {
+                        String userCodeFieldStr = ZtColumnUtil.getFieldName(getUserCodeField());
+                        Field userCodeField = ZtUtils.getField(entity, userCodeFieldStr);
+                        userCodeField.setAccessible(true);
+                        userCodeField.set(entity, userInfo.getUserCode());
+                        ztQueryWrapper.andEquals(getUserCodeField());
                     } else {
-                        if (dataScopeDeptFlag()) {
-                            List<ZtRoleInfo> deptCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.DEPT_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
-                                        ;
-                            }).collect(Collectors.toList());
+                        //2
+                        Optional<ZtRoleInfo> allDataRole = curUserDataRoleInfoList.stream().filter(t -> {
+                            return t.getDataScopeType().equals(ZtDataScopeTypeEnum.ALL) || t.getAdminFlag();
+                        }).findAny();
+                        if (allDataRole.isPresent()) {
+                            //这里不用处理，超级管理员可能会查询指定用户的数据，根据前端传的查询条件处理
+                            //修改ztBeforeSimpleSelectProvider，添加查询条件
+                        } else {
+                            if (dataScopeDeptFlag()) {
+                                List<ZtRoleInfo> deptCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.DEPT_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                            ;
+                                }).collect(Collectors.toList());
 
-                            List<ZtRoleInfo> deptCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.DEPT_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
-                                        ;
-                            }).collect(Collectors.toList());
+                                List<ZtRoleInfo> deptCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.DEPT_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
+                                            ;
+                                }).collect(Collectors.toList());
 
-                            if (deptCustomAnd.size() > 0 && deptCustomOr.size() > 0) {
-                                //3
-                                List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
-                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
+                                if (deptCustomAnd.size() > 0 && deptCustomOr.size() > 0) {
+                                    //3
+                                    List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
+                                    ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
 
-                                List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
-                                LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
-                                //同一个字段，多个条件
-                                ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
-                                tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
+                                    List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
+                                    LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
+                                    //同一个字段，多个条件
+                                    ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
+                                    tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
 
-                                ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
-                                ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
+                                    ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
+                                    ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
 
-                                tmp.setList(ztQueryInHelper2);
-                                tmp.setQueryType(ZtQueryTypeEnum.OR);
-                                String fieldName = ZtColumnUtil.getFieldName(getDeptCodeField());
-                                tmp.setFieldName(fieldName);
-                                String columnName = getColumnName(fieldName);
-                                tmp.setColumnName(columnName);
-                                conditons.add(tmp);
+                                    tmp.setList(ztQueryInHelper2);
+                                    tmp.setQueryType(ZtQueryTypeEnum.OR);
+                                    String fieldName = ZtColumnUtil.getFieldName(getDeptCodeField());
+                                    tmp.setFieldName(fieldName);
+                                    String columnName = getColumnName(fieldName);
+                                    tmp.setColumnName(columnName);
+                                    conditons.add(tmp);
 
-                            } else if (deptCustomAnd.size() > 0) {
-                                //4
-                                List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
-                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
-                            } else if (deptCustomOr.size() > 0) {
-                                //4
-                                List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
-                                ztQueryWrapper.orIn(getDeptCodeField(), ztQueryInHelper);
-                            } else {
-                                //5
-                                List<String> curUserDeptCodes = iZtDeptInfoService.getCurUserDeptCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDeptCodes));
-                                ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
+                                } else if (deptCustomAnd.size() > 0) {
+                                    //4
+                                    List<String> curUserDataRoleAndDeptCodes = iZtRoleInfoService.getCurUserDataRoleAndDeptCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndDeptCodes));
+                                    ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
+                                } else if (deptCustomOr.size() > 0) {
+                                    //4
+                                    List<String> curUserDataRoleOrDeptCodes = iZtRoleInfoService.getCurUserDataRoleOrDeptCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrDeptCodes));
+                                    ztQueryWrapper.orIn(getDeptCodeField(), ztQueryInHelper);
+                                } else {
+                                    //5
+                                    List<String> curUserDeptCodes = iZtDeptInfoService.getCurUserDeptCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDeptCodes));
+                                    ztQueryWrapper.andIn(getDeptCodeField(), ztQueryInHelper);
+                                }
                             }
-                        }
-                        if (dataScopeUserFlag()) {
-                            Boolean and, or;
-                            Optional<ZtRoleInfo> postCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
-                                        ;
-                            }).findAny();
+                            if (dataScopeUserFlag()) {
+                                Boolean and, or;
+                                Optional<ZtRoleInfo> postCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                            ;
+                                }).findAny();
 
-                            Optional<ZtRoleInfo> userCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
-                                        ;
-                            }).findAny();
+                                Optional<ZtRoleInfo> userCustomAnd = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.AND)
+                                            ;
+                                }).findAny();
 
-                            and = postCustomAnd.isPresent() || userCustomAnd.isPresent();
+                                and = postCustomAnd.isPresent() || userCustomAnd.isPresent();
 
-                            Optional<ZtRoleInfo> postCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
-                                        ;
-                            }).findAny();
+                                Optional<ZtRoleInfo> postCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.POST_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
+                                            ;
+                                }).findAny();
 
-                            Optional<ZtRoleInfo> userCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
-                                return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
-                                        && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
-                                        ;
-                            }).findAny();
+                                Optional<ZtRoleInfo> userCustomOr = curUserDataRoleInfoList.stream().filter(t -> {
+                                    return t.getDataScopeType().equals(ZtDataScopeTypeEnum.USER_CUSTOM)
+                                            && t.getDataScopeOptType().equals(ZtQueryTypeEnum.OR)
+                                            ;
+                                }).findAny();
 
-                            or = postCustomOr.isPresent() || userCustomOr.isPresent();
+                                or = postCustomOr.isPresent() || userCustomOr.isPresent();
 
-                            if (and && or) {
-                                //6
-                                List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
-                                ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
+                                if (and && or) {
+                                    //6
+                                    List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
+                                    ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
 
-                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
-                                LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
-                                //同一个字段，多个条件
-                                ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
-                                tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
+                                    List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                    LinkedList<ZtQueryConditionEntity> conditons = ztQueryWrapper.getConditons();
+                                    //同一个字段，多个条件
+                                    ZtQueryConditionEntity tmp = new ZtQueryConditionEntity();
+                                    tmp.setQueryWrapper(ZtQueryWrapperEnum.IN);
 
-                                ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
-                                ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+                                    ZtQueryInHelper ztQueryInHelper2 = new ZtQueryInHelper();
+                                    ztQueryInHelper2.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
 
-                                tmp.setList(ztQueryInHelper2);
-                                tmp.setQueryType(ZtQueryTypeEnum.OR);
-                                String fieldName = ZtColumnUtil.getFieldName(getUserCodeField());
-                                tmp.setFieldName(fieldName);
-                                String columnName = getColumnName(fieldName);
-                                tmp.setColumnName(columnName);
-                                conditons.add(tmp);
+                                    tmp.setList(ztQueryInHelper2);
+                                    tmp.setQueryType(ZtQueryTypeEnum.OR);
+                                    String fieldName = ZtColumnUtil.getFieldName(getUserCodeField());
+                                    tmp.setFieldName(fieldName);
+                                    String columnName = getColumnName(fieldName);
+                                    tmp.setColumnName(columnName);
+                                    conditons.add(tmp);
 
-                            } else if (and) {
-                                //7
-                                List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
-                                ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
-                            } else if (or) {
-                                //7
-                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
-                                ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
-                            } else {
-                                //8
-                                List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
-                                ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
-                                ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
-                                ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
+                                } else if (and) {
+                                    //7
+                                    List<String> curUserDataRoleAndUserCodes = iZtRoleInfoService.getCurUserDataRoleAndUserCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleAndUserCodes));
+                                    ztQueryWrapper.andIn(getUserCodeField(), ztQueryInHelper);
+                                } else if (or) {
+                                    //7
+                                    List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+                                    ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
+                                } else {
+                                    //8
+                                    List<String> curUserDataRoleOrUserCodes = iZtRoleInfoService.getCurUserDataRoleOrUserCodes(userInfo);
+                                    ZtQueryInHelper ztQueryInHelper = new ZtQueryInHelper();
+                                    ztQueryInHelper.setInSqlStr(ZtUtils.getSqlInStr(curUserDataRoleOrUserCodes));
+                                    ztQueryWrapper.orIn(getUserCodeField(), ztQueryInHelper);
+                                }
                             }
                         }
                     }
@@ -256,5 +249,4 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         }
         return ztParamEntity;
     }
-
 }

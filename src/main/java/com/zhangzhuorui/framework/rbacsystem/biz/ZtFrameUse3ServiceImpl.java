@@ -100,9 +100,9 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
 
     /*
     SELECT DISTINCT
-        0b315_zt_frame_use2.`created_by` AS createdBy,
-        0b315_zt_frame_use2.`created_by_name` AS createdByName,
-        0b315_zt_frame_use2.`updated_by_name` AS otherParams,
+        asb74dd_zt_frame_use2.`created_by` AS createdBy,
+        asb74dd_zt_frame_use2.`created_by_name` AS createdByName,
+        asb74dd_zt_frame_use2.`updated_by_name` AS otherParams,
         t1.`created_by` AS createdBy,
         t1.`created_by_name` AS createdByName,
         t1.`del_flag` AS delFlag,
@@ -133,47 +133,45 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
     FROM
         zt_frame_use3
         LEFT JOIN zt_frame_use1 AS t1 ON t1.`udf_1` = zt_frame_use3.`udf_1`
-        INNER JOIN zt_frame_use2 AS 0b315_zt_frame_use2 ON 0b315_zt_frame_use2.`id` = t1.`udf_2`
+        INNER JOIN zt_frame_use2 AS asb74dd_zt_frame_use2 ON asb74dd_zt_frame_use2.`id` = t1.`udf_2`
     WHERE
         1 = 1
         AND ( zt_frame_use3.`delete_flag` = FALSE )
         AND ( zt_frame_use3.`udf_1` = 'string' )
-        AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
+        AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'beijingroot', 'shanghairoot', 'shanghaidevelop' ) )
         AND ( zt_frame_use3.`id` IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( 'zhangtao' ) ) ) )
         OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
         AND (
             1 = 1
             AND ( zt_frame_use3.`delete_flag` = FALSE )
-            AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
             AND ( zt_frame_use3.`created_by` IN ( '王五', '赵六' ) )
-            OR ( zt_frame_use3.`remark` LIKE '%%备注%%' )
-            OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
+            OR ( zt_frame_use3.`remark` LIKE '%备注%' )
             OR ( zt_frame_use3.`created_by` IN ( '张三', '李四' ) )
         )
         OR (
             1 = 1
             AND ( zt_frame_use3.`delete_flag` = FALSE )
-            AND ( zt_frame_use3.`remark` LIKE '%%备注%%' )
-            AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
-            AND ( zt_frame_use3.`created_by` IN ( '张三', '李四' ) )
+            AND ( zt_frame_use3.`remark` LIKE '%ggggg%' )
+            AND ( zt_frame_use3.`biz_dept_code` IN ( 'shanghaihr', 'beijingroot', 'shanghairoot', 'shanghaidevelop' ) )
+            AND ( zt_frame_use3.`created_by` IN ( '小明', '小红' ) )
             OR ( zt_frame_use3.`biz_user_code` IN ( 'zhangtao' ) )
         )
-        AND ( t1.`dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
+        AND ( t1.`dept_code` IN ( 'shanghaihr', 'beijingroot', 'shanghairoot', 'shanghaidevelop' ) )
         AND ( t1.`gmt_update` IS NOT NULL )
         OR ( t1.`remark` LIKE '%aaa%' )
         OR ( t1.`udf_1` IN ( 'bbb', 'ccc' ) )
         AND (
             1 = 1
-            AND ( t1.`dept_code` IN ( 'shanghaihr', 'shanghairoot', 'beijingroot', 'shanghaidevelop' ) )
+            AND ( t1.`dept_code` IN ( 'shanghaihr', 'beijingroot', 'shanghairoot', 'shanghaidevelop' ) )
             AND ( t1.`gmt_update` IS NOT NULL )
             OR ( t1.`remark` LIKE '%inneraaa%' )
             OR ( t1.`udf_1` IN ( 'innerbbb', 'innerccc' ) )
             OR ( t1.`id` NOT IN ( SELECT id FROM zt_frame_use2 WHERE 1 = 1 OR ( zt_frame_use2.`user_code` IN ( 'zhangtao' ) ) ) )
         )
-        AND ( 0b315_zt_frame_use2.`remark` IN ( 'fff', 'ggg' ) )
-        OR ( 0b315_zt_frame_use2.`udf_1` LIKE '%d%' )
-        OR ( 0b315_zt_frame_use2.`user_code` IN ( 'zhangtao' ) )
-        LIMIT 0,1000
+        AND ( asb74dd_zt_frame_use2.`remark` IN ( 'fff', 'ggg' ) )
+        OR ( asb74dd_zt_frame_use2.`udf_1` LIKE '%d%' )
+        OR ( asb74dd_zt_frame_use2.`user_code` IN ( 'zhangtao' ) )
+        LIMIT 0, 1000
      */
     @Override
     public ZtParamEntity<ZtFrameUse3> advancedInstructions(ZtFrameUse3 ztFrameUse3) throws Exception {
@@ -193,6 +191,7 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
         //复合查询
         ZtFrameUse3 ztFrameUse3And = new ZtFrameUse3();
         ztFrameUse3And.setRemark("备注");
+        ztFrameUse3And.setDataScopeFlag(false);
         ZtQueryWrapper<ZtFrameUse3> ztFrameUse3AndInnerQueryWrapper = getThisService().getInitZtQueryWrapper(ztFrameUse3And);
         ztFrameUse3AndInnerQueryWrapper
                 .orLike(ZtFrameUse3::getRemark)
@@ -221,12 +220,12 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
         //复合查询
         ZtFrameUse3 ztFrameUse3Or = new ZtFrameUse3();
         ztFrameUse3Or.setRemark("ggggg");
-        ZtQueryWrapper<ZtFrameUse3> ztFrameUse3OrInnerQueryWrapper = getThisService().getInitZtQueryWrapper(ztFrameUse3And);
+        ZtQueryWrapper<ZtFrameUse3> ztFrameUse3OrInnerQueryWrapper = getThisService().getInitZtQueryWrapper(ztFrameUse3Or);
         ztFrameUse3OrInnerQueryWrapper
                 .andLike(ZtFrameUse3::getRemark)
                 .andIn(ZtFrameUse3::getCreatedBy, new ArrayList() {{
-                    add("张三");
-                    add("李四");
+                    add("小明");
+                    add("小红");
                 }});
         //OR ( ( zt_frame_use3.remark LIKE '%%备注%%' ) AND ( zt_frame_use3.created_by IN ( '张三', '李四' ) )
         ztRootQueryWrapper.orInnerQueryWrapper(ztFrameUse3OrInnerQueryWrapper);

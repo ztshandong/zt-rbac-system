@@ -31,6 +31,9 @@ public class ZtCacheUtil {
 
     public final static String KEY_GENERATOR = "KeyGenerator";
 
+    //用户信息详情
+    public final static String USER_INFO_BY_ID = "'userInfoById:'";
+
     //当前用户所属所有有效部门缓存前缀
     public final static String CUR_USER_DEPT_CODES = "'curUserDeptCodes:'";
 
@@ -57,7 +60,7 @@ public class ZtCacheUtil {
 
     public void evictCaffeine(String cacheName) {
         if (cacheName.endsWith("*")) {
-            cacheName = cacheName.replace("*", "");
+            cacheName = cacheName.replace("*", "").replace("'", "");
             com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache = ((CaffeineCache) caffeineCache).getNativeCache();
             ConcurrentMap<Object, Object> cacheMap = nativeCache.asMap();
             Set<Object> cacheNames = cacheMap.keySet();
