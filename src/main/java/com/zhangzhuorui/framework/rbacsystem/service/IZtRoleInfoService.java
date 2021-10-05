@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.service;
 
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.IZtRbacSimpleBaseService;
@@ -29,6 +30,7 @@ public interface IZtRoleInfoService extends IZtRbacSimpleBaseService<ZtRoleInfo>
 
     List<String> getCurUserDataRoleOrUserCodes(ZtUserInfo userInfo);
 
+    List<ZtComponentInfo> getCurUserRouteAfterLogin(ZtUserInfo userInfo);
 }
 
 

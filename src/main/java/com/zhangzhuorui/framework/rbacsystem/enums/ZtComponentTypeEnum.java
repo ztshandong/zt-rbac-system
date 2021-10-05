@@ -12,26 +12,18 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("按钮功能")
-public enum ZtButtonCodeEnum implements IZtBaseEnum<ZtButtonCodeEnum> {
-    QUERY(1, "查询"),
-    ADD(2, "新增"),
-    EDIT(3, "编辑"),
-    DEL(4, "删除"),
-    APP(5, "审核"),
-    UNAPP(6, "反审核"),
-    UPLOAD(7, "上传"),
-    DOWNLOAD(8, "下载"),
-    IMPORT(9, "导入"),
-    EXPORT(10, "导出"),
-    PRINT(11, "打印"),
+@ModuleName("组件类型")
+public enum ZtComponentTypeEnum implements IZtBaseEnum<ZtComponentTypeEnum> {
+    MODEL(1, "模块"),
+    MENU(2, "菜单"),
+    BUTTON(3, "按钮"),
     ;
 
     private final Integer intValue;
 
     private final String strValue;
 
-    ZtButtonCodeEnum(Integer intValue, String strValue) {
+    ZtComponentTypeEnum(Integer intValue, String strValue) {
         this.intValue = intValue;
         this.strValue = strValue;
     }

@@ -19,7 +19,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +44,11 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
         return "zt_component_info";
     }
 
+    @Override
+    protected IZtComponentInfoService getThisService() {
+        return (IZtComponentInfoService) super.getThisService();
+    }
+
     @Autowired
     IZtExcludeInfoService iZtExcludeInfoService;
 
@@ -54,6 +62,7 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
     public void refreshCache() throws Exception {
         ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_COMPONENT_INFO);
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES + "*");
     }
 
     @Override
@@ -95,11 +104,37 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
         List<ZtExcludeInfo> ztExcludeRoleList = iZtExcludeInfoService.ztSimpleGetList(ztExcludeInfo);
         List<String> ztExcludeComponentCodes = ztExcludeRoleList.stream().map(ZtExcludeInfo::getExcludeCode).distinct().collect(Collectors.toList());
         curUserRoleComponentInfoCodes.removeAll(ztExcludeComponentCodes);
-
         return curUserRoleComponentInfoCodes;
-        // ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = getThisService().ztSimpleSelectAll();
-        // List<ZtComponentInfo> allComponentInfoList = getThisService().getList(ztComponentInfoZtParamEntity);
-        // List<ZtComponentInfo> curUserComponentInfoList = allComponentInfoList.stream().filter(t -> curUserRoleComponentInfoCodes.contains(t.getThisCode())).collect(Collectors.toList());
+    }
+
+    /**
+     * 查找当前用户所有的组件编号
+     * 因为只保存了末级组件编号，所以要查找父组件
+     *
+     * @param userInfo
+     */
+    @Override
+    @SneakyThrows
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES + "+#userInfo.id")}
+    )
+    public List<String> getCurUserAllComponentCodes(ZtUserInfo userInfo) {
+        List<String> curUserLeafComponentCodes = getThisService().getCurUserLeafComponentCodes(userInfo);
+        ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtComponentInfo> allComponentInfoList = getThisService().getList(ztComponentInfoZtParamEntity);
+        List<ZtComponentInfo> curUserLeafComponentInfoList = allComponentInfoList.stream().filter(t -> curUserLeafComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
+        Set<ZtComponentInfo> curUserAllComponentInfoSet = new HashSet<>(curUserLeafComponentInfoList);
+        for (ZtComponentInfo leafComponentInfo : curUserLeafComponentInfoList) {
+            //添加父级组件，直到顶级
+            Optional<ZtComponentInfo> parent = allComponentInfoList.stream().filter(t -> t.getThisCode().equals(leafComponentInfo.getParentCode())).findAny();
+            while (parent.isPresent()) {
+                ZtComponentInfo parentComponentInfo = parent.get();
+                curUserAllComponentInfoSet.add(parentComponentInfo);
+                parent = allComponentInfoList.stream().filter(t -> t.getThisCode().equals(parentComponentInfo.getParentCode())).findAny();
+            }
+        }
+        List<String> curUserAllComponentCodes = curUserAllComponentInfoSet.stream().map(ZtComponentInfo::getThisCode).collect(Collectors.toList());
+        return curUserAllComponentCodes;
     }
 
 }

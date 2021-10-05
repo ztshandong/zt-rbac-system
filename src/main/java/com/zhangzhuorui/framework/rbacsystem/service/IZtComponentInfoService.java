@@ -21,6 +21,8 @@ public interface IZtComponentInfoService extends IZtRbacSimpleBaseService<ZtComp
 
     List<String> getCurUserLeafComponentCodes(ZtUserInfo userInfo);
 
+    List<String> getCurUserAllComponentCodes(ZtUserInfo userInfo);
+
 }
 
 

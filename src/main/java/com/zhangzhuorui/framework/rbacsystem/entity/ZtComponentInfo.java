@@ -1,8 +1,13 @@
 package com.zhangzhuorui.framework.rbacsystem.entity;
 
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtButtonCodeEnum;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtComponentTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author :  张涛 zhangtao
@@ -18,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 组件信息表（模块，菜单，按钮）
  */
 @ApiModel(value = "ZtComponentInfo")
-public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
+public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparable<ZtComponentInfo> {
     /**
      * 菜单编号（唯一，不可修改）
      */
@@ -83,13 +88,13 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
      * 菜单类型 模块/菜单/按钮
      */
     @ApiModelProperty(value = "菜单类型 模块/菜单/按钮")
-    private String menuType;
+    private ZtComponentTypeEnum menuType;
 
     /**
      * 操作类型，对应button_info的this_code
      */
     @ApiModelProperty(value = "操作类型，对应button_info的this_code")
-    private String buttonCode;
+    private ZtButtonCodeEnum buttonCode;
 
     /**
      * 图标URL
@@ -102,6 +107,14 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
      */
     @ApiModelProperty(value = "资源URL")
     private String resourceUrl;
+
+    //---------------分割线以下的字段数据库不存在-----------------
+
+    /**
+     * 子组件
+     */
+    @ApiModelProperty(value = "子组件")
+    private List<ZtComponentInfo> children = new LinkedList<>();
 
     public String getThisCode() {
         return thisCode;
@@ -183,19 +196,19 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
         this.cacheFlag = cacheFlag;
     }
 
-    public String getMenuType() {
+    public ZtComponentTypeEnum getMenuType() {
         return menuType;
     }
 
-    public void setMenuType(String menuType) {
+    public void setMenuType(ZtComponentTypeEnum menuType) {
         this.menuType = menuType;
     }
 
-    public String getButtonCode() {
+    public ZtButtonCodeEnum getButtonCode() {
         return buttonCode;
     }
 
-    public void setButtonCode(String buttonCode) {
+    public void setButtonCode(ZtButtonCodeEnum buttonCode) {
         this.buttonCode = buttonCode;
     }
 
@@ -213,6 +226,14 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
 
     public void setResourceUrl(String resourceUrl) {
         this.resourceUrl = resourceUrl;
+    }
+
+    public List<ZtComponentInfo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ZtComponentInfo> children) {
+        this.children = children;
     }
 
     @Override
@@ -310,5 +331,14 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> {
         result = prime * result + ((getUpdatedByName() == null) ? 0 : getUpdatedByName().hashCode());
         result = prime * result + ((getRemark() == null) ? 0 : getRemark().hashCode());
         return result;
+    }
+
+    @Override
+    public int compareTo(ZtComponentInfo t2) {
+        if (!this.getMenuType().equals(t2.getMenuType())) {
+            return this.getMenuType().getIntValue().compareTo(t2.getMenuType().getIntValue());
+        } else {
+            return this.getComponentSort().compareTo(t2.getComponentSort());
+        }
     }
 }

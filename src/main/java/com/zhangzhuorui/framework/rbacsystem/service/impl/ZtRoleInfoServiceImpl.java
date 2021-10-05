@@ -1,9 +1,11 @@
 package com.zhangzhuorui.framework.rbacsystem.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.zhangzhuorui.framework.core.ZtQueryTypeEnum;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtExcludeInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
@@ -11,6 +13,7 @@ import com.zhangzhuorui.framework.rbacsystem.entity.ZtRolePostInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserPostInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtComponentTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleStatusEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleTypeEnum;
@@ -26,11 +29,14 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRolePostInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleUserInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,6 +101,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "*");
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "*");
         ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "*");
+        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ROUTER + "*");
     }
 
     @Override
@@ -106,6 +113,57 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         ZtParamEntity<ZtRoleInfo> ztRoleInfoParamEntity = getThisService().getInitZtParamEntityWithOutCount(ztRoleInfo);
         ztRoleInfoParamEntity = getThisService().ztSimpleSelectProviderWithoutCount(ztRoleInfoParamEntity);
         return ztRoleInfoParamEntity;
+    }
+
+    /**
+     * 获取前端页面路由
+     *
+     * @param userInfo :
+     * @return :  java.util.List<com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo>
+     * @author :  zhangtao
+     * @createDate :  2021/10/5 下午3:29
+     * @description :
+     * @updateUser :
+     * @updateDate :
+     * @updateRemark :
+     */
+    @Override
+    @SneakyThrows
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ROUTER + "+#userInfo.id")}
+    )
+    public List<ZtComponentInfo> getCurUserRouteAfterLogin(ZtUserInfo userInfo) {
+        ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = iZtComponentInfoService.ztSimpleSelectAll();
+        List<ZtComponentInfo> allComponent = iZtComponentInfoService.getList(ztComponentInfoZtParamEntity);
+        List<String> curUserAllComponentCodes = iZtComponentInfoService.getCurUserAllComponentCodes(userInfo);
+        List<ZtComponentInfo> curUserAllComponentListWithoutButton = allComponent.stream().filter(t -> !ZtComponentTypeEnum.BUTTON.equals(t.getMenuType()) && curUserAllComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
+        curUserAllComponentListWithoutButton = JSON.parseArray(JSON.toJSONString(curUserAllComponentListWithoutButton), ZtComponentInfo.class);
+        Collections.sort(curUserAllComponentListWithoutButton);
+        for (ZtComponentInfo ztComponentInfo : curUserAllComponentListWithoutButton) {
+            findMenuChildren(ztComponentInfo, curUserAllComponentListWithoutButton);
+        }
+        curUserAllComponentListWithoutButton = curUserAllComponentListWithoutButton.stream().filter(t -> ZtComponentTypeEnum.MODEL.equals(t.getMenuType())).collect(Collectors.toList());
+
+        return curUserAllComponentListWithoutButton;
+    }
+
+    public ZtComponentInfo findMenuChildren(ZtComponentInfo parentNode, List<ZtComponentInfo> treeNodes) {
+
+        List<ZtComponentInfo> children = parentNode.getChildren();
+        // if (children == null) {
+        //     children = new LinkedList<>();
+        //     parentNode.setChildren(children);
+        // }
+        for (ZtComponentInfo ztComponentInfo : treeNodes) {
+            if (parentNode.getThisCode().equals(ztComponentInfo.getParentCode())) {
+                if (!children.contains(ztComponentInfo)) {
+                    ZtComponentInfo ztComponentInfo1 = new ZtComponentInfo();
+                    BeanUtils.copyProperties(ztComponentInfo, ztComponentInfo1);
+                    children.add(findMenuChildren(ztComponentInfo1, treeNodes));
+                }
+            }
+        }
+        return parentNode;
     }
 
     /**

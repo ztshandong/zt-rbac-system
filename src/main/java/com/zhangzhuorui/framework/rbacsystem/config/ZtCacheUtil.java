@@ -46,8 +46,14 @@ public class ZtCacheUtil {
     //当前用户所属所有有效角色缓存前缀
     public final static String CUR_USER_ROLE_CODES = "'curUserRoleCodes:'";
 
-    //当前用户末级组件数据
+    //当前用户所有末级组件
     public final static String CUR_USER_LEAF_COMPONENT_CODES = "'curUserLeafComponentCodes:'";
+
+    //当前用户所有组件
+    public final static String CUR_USER_ALL_COMPONENT_CODES = "'curUserAllComponentCodes:'";
+
+    //当前用户前端菜单路由
+    public final static String CUR_USER_ROUTER = "'curUserRouter:'";
 
     //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
     public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "'curUserDataRoleAndDeptCodes:'";
