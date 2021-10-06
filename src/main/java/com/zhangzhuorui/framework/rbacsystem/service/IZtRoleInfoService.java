@@ -33,6 +33,9 @@ public interface IZtRoleInfoService extends IZtRbacSimpleBaseService<ZtRoleInfo>
     List<ZtComponentInfo> getCurUserRouteAfterLogin(ZtUserInfo userInfo);
 
     List<String> getCurUserPermission(ZtUserInfo userInfo);
+
+    Boolean getCurUserAdminFlag(ZtUserInfo userInfo);
+
 }
 
 

@@ -1,8 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.aspects;
 
-import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
-import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author :  zhangtao
@@ -53,15 +50,11 @@ public class ZtPreAuthorizeAspect {
         log.info("ZtPreAuthorize:" + key);
         ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
 
-        List<String> curUserPermission = iZtRoleInfoService.getCurUserPermission(userInfo);
-        List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
-        ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = iZtRoleInfoService.ztSimpleSelectAll();
-        List<ZtRoleInfo> list = iZtRoleInfoService.getList(ztRoleInfoZtParamEntity);
-
-        //管理员用户
-        if (userInfo.getAdminFlag()) {
+        Boolean curUserAdminFlag = iZtRoleInfoService.getCurUserAdminFlag(userInfo);
+        if (curUserAdminFlag) {
             return point.proceed();
         }
+
         return point.proceed();
     }
 

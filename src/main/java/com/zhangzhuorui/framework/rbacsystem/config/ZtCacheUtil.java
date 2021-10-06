@@ -49,6 +49,9 @@ public class ZtCacheUtil {
     //当前用户所属所有有效角色缓存前缀
     public final static String CUR_USER_ROLE_CODES = "curUserRoleCodes";
 
+    //当前用户是否是管理员或者有管理员的角色
+    public final static String CUR_USER_ADMIN_FLAG = "curUserAdminFlag";
+
     //当前用户所有末级组件
     public final static String CUR_USER_LEAF_COMPONENT_CODES = "curUserLeafComponentCodes";
 

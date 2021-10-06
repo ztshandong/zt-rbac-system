@@ -27,6 +27,7 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleDeptInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRolePostInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleUserInfoService;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,9 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
 
     @Autowired
     IZtExcludeInfoService iZtExcludeInfoService;
+
+    @Autowired
+    IZtUserInfoService iZtUserInfoService;
 
     @Autowired
     IZtDeptInfoService iZtDeptInfoService;
@@ -104,6 +109,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROUTER, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_PERMISSION, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ADMIN_FLAG, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
             }
     )
     public void refreshCache() throws Exception {
@@ -120,6 +126,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROUTER, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
                     , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_PERMISSION, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ADMIN_FLAG, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
             }
     )
     public void refreshCacheByCurUserId(Long userId) {
@@ -490,6 +497,23 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         curUserDataRoleUserCodeSet.add(userInfo.getUserCode());
         List<String> curUserDataRoleUserCodeList = new ArrayList<>(curUserDataRoleUserCodeSet);
         return curUserDataRoleUserCodeList;
+    }
+
+    @Override
+    @SneakyThrows
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_ADMIN_FLAG, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    public Boolean getCurUserAdminFlag(ZtUserInfo userInfo) {
+        userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+        if (userInfo.getAdminFlag()) {
+            return true;
+        }
+        List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
+        ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtRoleInfo> allRoleInfo = getThisService().getList(ztRoleInfoZtParamEntity);
+        Optional<ZtRoleInfo> adminRole = allRoleInfo.stream().filter(t -> curUserAllRoleCodes.contains(t.getThisCode()) && t.getAdminFlag()).findAny();
+        return adminRole.isPresent();
     }
 }
 
