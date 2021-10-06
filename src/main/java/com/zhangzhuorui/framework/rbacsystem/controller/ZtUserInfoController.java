@@ -22,5 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/ZtUserInfo")
 public class ZtUserInfoController extends ZtRbacSimpleBaseController<ZtUserInfo> {
 
+    // @Override
+    // @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.QUERY_CODE}, denyPermi = {"rolemanage:" + ZtButtonCodeEnum.QUERY_CODE})
+    // protected ZtParamEntity<ZtUserInfo> beforeSelect(ZtParamEntity<ZtUserInfo> ztParamEntity) {
+    //     return super.beforeSelect(ztParamEntity);
+    // }
 }
 

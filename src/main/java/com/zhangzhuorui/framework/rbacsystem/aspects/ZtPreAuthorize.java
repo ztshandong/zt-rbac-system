@@ -17,8 +17,25 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ZtPreAuthorize {
+
     /**
-     * 验证用户是否具备某权限
+     * 优先级最高，具备任意一个就会拒绝
+     * 拒绝某些权限的用户，与hasPermi逻辑相反
+     * 应用场景应该不多
      */
-    public String hasPermi() default "";
+    public String[] denyPermi() default {};
+
+    /**
+     * 具备所有要求的权限
+     * 优先级第二
+     */
+    public String[] hasAllPermi() default {};
+
+    /**
+     * 具备任意一个权限即可
+     * 这个用的最多，优先级最低
+     * 同时使用了hasAllPermi与hasAnyPermi会先判断hasAllPermi
+     */
+    public String[] hasAnyPermi() default {};
+
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @RestController
 @RequestMapping(value = "/ZtRoleInfo")
-// @ZtPreAuthorize(hasPermi = "rolemanage")
+// @ZtPreAuthorize(hasAnyPermi = {"rolemanage"})
 public class ZtRoleInfoController extends ZtRbacSimpleBaseController<ZtRoleInfo> {
 
 }

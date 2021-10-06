@@ -17,37 +17,37 @@ import com.zhangzhuorui.framework.rbacsystem.enums.ZtButtonCodeEnum;
 public abstract class ZtRbacSimpleBaseController<T extends ZtRbacBasicEntity> extends ZtSimpleBaseController<T> {
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.QUERY_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.QUERY_CODE})
     protected ZtParamEntity<T> beforeSelect(ZtParamEntity<T> ztParamEntity) {
         return super.beforeSelect(ztParamEntity);
     }
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.ADD_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.ADD_CODE})
     protected ZtParamEntity<T> beforeInsert(ZtParamEntity<T> ztParamEntity) {
         return super.beforeInsert(ztParamEntity);
     }
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.EDIT_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.EDIT_CODE})
     protected ZtParamEntity<T> beforeUpdate(ZtParamEntity<T> ztParamEntity) {
         return super.beforeUpdate(ztParamEntity);
     }
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.DEL_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.DEL_CODE})
     protected ZtParamEntity<T> beforeDelete(ZtParamEntity<T> ztParamEntity) {
         return super.beforeDelete(ztParamEntity);
     }
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.ADD_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.ADD_CODE})
     protected ZtParamEntity<T> beforeInsertBatch(ZtParamEntity<T> ztParamEntity) {
         return super.beforeInsertBatch(ztParamEntity);
     }
 
     @Override
-    @ZtPreAuthorize(hasPermi = ZtButtonCodeEnum.DEL_CODE)
+    @ZtPreAuthorize(hasAnyPermi = {ZtButtonCodeEnum.DEL_CODE})
     protected ZtParamEntity<T> beforeDeleteBatch(ZtParamEntity<T> ztParamEntity) {
         return super.beforeDeleteBatch(ztParamEntity);
     }
