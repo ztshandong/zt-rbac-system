@@ -1,8 +1,12 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -70,24 +74,32 @@ public class ZtCacheUtil {
     public final static String CUR_USER_DATA_ROLE_OR_USER_CODES = "curUserDataRoleOrUserCodes";
 
     @Autowired
-    CaffeineCacheManager caffeineCacheManager;
+    CacheManager cacheManager;
 
     public void refreshCacheByCurUserId(Long userId) {
-        Collection<String> cacheNames = caffeineCacheManager.getCacheNames();
+        Collection<String> cacheNames = cacheManager.getCacheNames();
         for (String name : cacheNames) {
             if (name.startsWith("curUser")) {
-                Cache cache = caffeineCacheManager.getCache(name);
+                Cache cache = cacheManager.getCache(name);
                 cache.evict(userId);
             }
         }
     }
 
     public void refreshAllCache() {
-        Collection<String> cacheNames = caffeineCacheManager.getCacheNames();
+        Collection<String> cacheNames = cacheManager.getCacheNames();
         for (String name : cacheNames) {
-            Cache cache = caffeineCacheManager.getCache(name);
+            Cache cache = cacheManager.getCache(name);
             cache.clear();
         }
+    }
+
+    @SneakyThrows
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userInfoFromToken.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    public ZtUserInfo getFullUserInfoFromCache(ZtUserInfo userInfoFromToken) {
+        return userInfoFromToken;
     }
 
 }

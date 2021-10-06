@@ -27,6 +27,18 @@ public enum ZtButtonCodeEnum implements IZtBaseEnum<ZtButtonCodeEnum> {
     PRINT(11, "打印"),
     ;
 
+    public static final String QUERY_CODE = "QUERY";
+    public static final String ADD_CODE = "ADD";
+    public static final String EDIT_CODE = "EDIT";
+    public static final String DEL_CODE = "DEL";
+    public static final String APP_CODE = "APP";
+    public static final String UNAPP_CODE = "UNAPP";
+    public static final String UPLOAD_CODE = "UPLOAD";
+    public static final String DOWNLOAD_CODE = "DOWNLOAD";
+    public static final String IMPORT_CODE = "IMPORT";
+    public static final String EXPORT_CODE = "EXPORT";
+    public static final String PRINT_CODE = "PRINT";
+
     private final Integer intValue;
 
     private final String strValue;

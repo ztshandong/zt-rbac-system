@@ -5,6 +5,7 @@ import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
+import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,10 +41,14 @@ public class ZtIndexController {
     @Autowired
     IZtRoleInfoService iZtRoleInfoService;
 
+    @Autowired
+    IZtUserInfoService iZtUserInfoService;
+
     @ResponseBody
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public String login(@RequestBody ZtUserInfo ztUserInfo) {
         String token = ztJwtTokenUtil.generateToken(ztUserInfo);
+        iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
         return token;
     }
 

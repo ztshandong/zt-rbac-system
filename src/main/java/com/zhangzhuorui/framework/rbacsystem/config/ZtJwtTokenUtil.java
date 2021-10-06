@@ -8,11 +8,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,6 +26,13 @@ import java.util.function.Function;
 
 @Component
 public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
+
+    @Autowired
+    protected HttpServletRequest request;
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 
     private final static String CLAIMS_USER_ID = "userId";
 
@@ -80,6 +89,12 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
         if (ignoreUrls != null) {
             ignoreUrlLists.addAll(Arrays.asList(ignoreUrls.split(",")));
         }
+    }
+
+    public ZtUserInfo getSimpleUserInfoFromToken() {
+        String token = getRequest().getHeader(getTokenHeader());
+        ZtUserInfo userInfoFromToken = getUserInfoFromToken(token);
+        return userInfoFromToken;
     }
 
     public String generateToken(ZtUserInfo ztUserInfo) {
