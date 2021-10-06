@@ -1,12 +1,11 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Collection;
 
 /**
  * @author :  张涛 zhangtao
@@ -35,57 +34,59 @@ public class ZtCacheUtil {
     public final static String KEY_GENERATOR = "KeyGenerator";
 
     //用户信息详情
-    public final static String USER_INFO_BY_ID = "'userInfoById:'";
+    public final static String CUR_USER_INFO_BY_ID = "curUserInfoById";
 
     //当前用户所属所有有效部门缓存前缀
-    public final static String CUR_USER_DEPT_CODES = "'curUserDeptCodes:'";
+    public final static String CUR_USER_DEPT_CODES = "curUserDeptCodes";
 
     //当前用户所属所有有效职位缓存前缀
-    public final static String CUR_USER_POST_CODES = "'curUserPostCodes:'";
+    public final static String CUR_USER_POST_CODES = "curUserPostCodes";
 
     //当前用户所属所有有效角色缓存前缀
-    public final static String CUR_USER_ROLE_CODES = "'curUserRoleCodes:'";
+    public final static String CUR_USER_ROLE_CODES = "curUserRoleCodes";
 
     //当前用户所有末级组件
-    public final static String CUR_USER_LEAF_COMPONENT_CODES = "'curUserLeafComponentCodes:'";
+    public final static String CUR_USER_LEAF_COMPONENT_CODES = "curUserLeafComponentCodes";
 
     //当前用户所有组件
-    public final static String CUR_USER_ALL_COMPONENT_CODES = "'curUserAllComponentCodes:'";
+    public final static String CUR_USER_ALL_COMPONENT_CODES = "curUserAllComponentCodes";
 
     //当前用户前端菜单路由
-    public final static String CUR_USER_ROUTER = "'curUserRouter:'";
+    public final static String CUR_USER_ROUTER = "curUserRouter";
 
     //当前用户所有按钮权限
-    public final static String CUR_USER_PERMISSION = "'curUserPermission:'";
+    public final static String CUR_USER_PERMISSION = "curUserPermission";
 
     //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 AND
-    public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "'curUserDataRoleAndDeptCodes:'";
+    public final static String CUR_USER_DATA_ROLE_AND_DEPT_CODES = "curUserDataRoleAndDeptCodes";
 
     //当前用户数据权限-可查看的部门编号缓存前缀 SQL 条件为 OR
-    public final static String CUR_USER_DATA_ROLE_OR_DEPT_CODES = "'curUserDataRoleOrDeptCodes:'";
+    public final static String CUR_USER_DATA_ROLE_OR_DEPT_CODES = "curUserDataRoleOrDeptCodes";
 
     //当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 AND
-    public final static String CUR_USER_DATA_ROLE_AND_USER_CODES = "'curUserDataRoleAndUserCodes:'";
+    public final static String CUR_USER_DATA_ROLE_AND_USER_CODES = "curUserDataRoleAndUserCodes";
 
     //当前用户数据权限-可查看的用户编号缓存前缀 SQL 条件为 OR
-    public final static String CUR_USER_DATA_ROLE_OR_USER_CODES = "'curUserDataRoleOrUserCodes:'";
+    public final static String CUR_USER_DATA_ROLE_OR_USER_CODES = "curUserDataRoleOrUserCodes";
 
-    @Resource(name = ZtCacheManager.CAFFEINE_CACHE)
-    Cache caffeineCache;
+    @Autowired
+    CaffeineCacheManager caffeineCacheManager;
 
-    public void evictCaffeine(String cacheName) {
-        if (cacheName.endsWith("*")) {
-            cacheName = cacheName.replace("*", "").replace("'", "");
-            com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache = ((CaffeineCache) caffeineCache).getNativeCache();
-            ConcurrentMap<Object, Object> cacheMap = nativeCache.asMap();
-            Set<Object> cacheNames = cacheMap.keySet();
-            for (Object cName : cacheNames) {
-                if (((String) cName).startsWith(cacheName)) {
-                    caffeineCache.evict(cName);
-                }
+    public void refreshCacheByCurUserId(Long userId) {
+        Collection<String> cacheNames = caffeineCacheManager.getCacheNames();
+        for (String name : cacheNames) {
+            if (name.startsWith("curUser")) {
+                Cache cache = caffeineCacheManager.getCache(name);
+                cache.evict(userId);
             }
-        } else {
-            caffeineCache.evict(cacheName);
+        }
+    }
+
+    public void refreshAllCache() {
+        Collection<String> cacheNames = caffeineCacheManager.getCacheNames();
+        for (String name : cacheNames) {
+            Cache cache = caffeineCacheManager.getCache(name);
+            cache.clear();
         }
     }
 

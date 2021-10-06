@@ -15,6 +15,7 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleComponentInfoService
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -59,14 +60,33 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
     IZtRoleInfoService iZtRoleInfoService;
 
     @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.ALL_COMPONENT_INFO, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
     public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_COMPONENT_INFO);
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES + "*");
+
     }
 
     @Override
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_COMPONENT_INFO + ZtCacheUtil.KEY_GENERATOR)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCacheByCurUserId(Long userId) {
+
+    }
+
+    @Override
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.ALL_COMPONENT_INFO, keyGenerator = ZtCacheUtil.ALL_COMPONENT_INFO + ZtCacheUtil.KEY_GENERATOR, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_COMPONENT_INFO + ZtCacheUtil.KEY_GENERATOR)
     public ZtParamEntity<ZtComponentInfo> ztSimpleSelectAll() throws Exception {
         ZtComponentInfo ztComponentInfo = new ZtComponentInfo();
         ztComponentInfo.setStart(0L);
@@ -82,7 +102,8 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
     @Override
     @SneakyThrows
     @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES + "+#userInfo.id")}
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_LEAF_COMPONENT_CODES + "+#userInfo.id")}
     )
     public List<String> getCurUserLeafComponentCodes(ZtUserInfo userInfo) {
         String userCode = userInfo.getUserCode();
@@ -116,7 +137,8 @@ public class ZtComponentInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtCo
     @Override
     @SneakyThrows
     @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES + "+#userInfo.id")}
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ALL_COMPONENT_CODES + "+#userInfo.id")}
     )
     public List<String> getCurUserAllComponentCodes(ZtUserInfo userInfo) {
         List<String> curUserLeafComponentCodes = getThisService().getCurUserLeafComponentCodes(userInfo);

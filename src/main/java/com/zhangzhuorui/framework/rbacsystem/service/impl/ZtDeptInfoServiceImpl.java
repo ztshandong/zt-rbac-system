@@ -14,7 +14,9 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtExcludeInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserDeptInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -51,13 +53,31 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
     IZtUserDeptInfoService iZtUserDeptInfoService;
 
     @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.ALL_DEPT_INFO, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DEPT_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
     public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_DEPT_INFO);
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DEPT_CODES + "*");
+
     }
 
     @Override
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_DEPT_INFO + ZtCacheUtil.KEY_GENERATOR)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DEPT_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCacheByCurUserId(Long userId) {
+
+    }
+
+    @Override
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.ALL_DEPT_INFO, keyGenerator = ZtCacheUtil.ALL_DEPT_INFO + ZtCacheUtil.KEY_GENERATOR, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_DEPT_INFO + ZtCacheUtil.KEY_GENERATOR)
     public ZtParamEntity<ZtDeptInfo> ztSimpleSelectAll() throws Exception {
         ZtDeptInfo ztDeptInfo = new ZtDeptInfo();
         ztDeptInfo.setStart(0L);
@@ -74,7 +94,9 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DEPT_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_DEPT_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
     public List<String> getCurUserDeptCodes(ZtUserInfo userInfo) {
         // ZtUserInfo userInfo = getUserInfoFromToken();
         String userCode = userInfo.getUserCode();

@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
@@ -34,13 +35,30 @@ public class ZtIndexController {
     ZtJwtTokenUtil ztJwtTokenUtil;
 
     @Autowired
+    ZtCacheUtil ztCacheUtil;
+
+    @Autowired
     IZtRoleInfoService iZtRoleInfoService;
 
     @ResponseBody
-    @RequestMapping(value = "getToken", method = RequestMethod.POST)
-    public String getToken(@RequestBody ZtUserInfo ztUserInfo) {
+    @RequestMapping(value = "login", method = RequestMethod.POST)
+    public String login(@RequestBody ZtUserInfo ztUserInfo) {
         String token = ztJwtTokenUtil.generateToken(ztUserInfo);
         return token;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    public String logout(@RequestBody ZtUserInfo ztUserInfo) {
+        ztCacheUtil.refreshCacheByCurUserId(ztUserInfo.getId());
+        return "ok";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "refreshAllCache", method = RequestMethod.POST)
+    public String refreshAllCache() {
+        ztCacheUtil.refreshAllCache();
+        return "refreshAllCache";
     }
 
     @ResponseBody

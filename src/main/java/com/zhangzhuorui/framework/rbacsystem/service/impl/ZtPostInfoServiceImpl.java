@@ -14,7 +14,9 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtPostInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -50,13 +52,31 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
     IZtUserPostInfoService iZtUserPostInfoService;
 
     @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.ALL_POST_INFO, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_POST_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
     public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_POST_INFO);
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_POST_CODES + "*");
+
     }
 
     @Override
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_POST_INFO + ZtCacheUtil.KEY_GENERATOR)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_POST_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCacheByCurUserId(Long userId) {
+
+    }
+
+    @Override
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.ALL_POST_INFO, keyGenerator = ZtCacheUtil.ALL_POST_INFO + ZtCacheUtil.KEY_GENERATOR, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_POST_INFO + ZtCacheUtil.KEY_GENERATOR)
     public ZtParamEntity<ZtPostInfo> ztSimpleSelectAll() throws Exception {
         ZtPostInfo ztPostInfo = new ZtPostInfo();
         ztPostInfo.setStart(0L);
@@ -73,7 +93,10 @@ public class ZtPostInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtPostInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_POST_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_POST_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_POST_CODES + "+#userInfo.id")
     public List<String> getCurUserPostCodes(ZtUserInfo userInfo) {
         String userCode = userInfo.getUserCode();
 

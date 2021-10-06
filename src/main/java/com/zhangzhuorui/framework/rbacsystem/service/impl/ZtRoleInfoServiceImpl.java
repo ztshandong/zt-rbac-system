@@ -30,6 +30,7 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleUserInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserPostInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -93,19 +94,43 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     IZtRoleComponentInfoService iZtRoleComponentInfoService;
 
     @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.ALL_ROLE_INFO, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROLE_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROUTER, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_PERMISSION, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
     public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.ALL_ROLE_INFO);
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ROLE_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_ROUTER + "*");
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.CUR_USER_PERMISSION + "*");
+
     }
 
     @Override
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_ROLE_INFO + ZtCacheUtil.KEY_GENERATOR)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROLE_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_ROUTER, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_PERMISSION, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCacheByCurUserId(Long userId) {
+
+    }
+
+    @Override
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.ALL_ROLE_INFO, keyGenerator = ZtCacheUtil.ALL_ROLE_INFO + ZtCacheUtil.KEY_GENERATOR, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, keyGenerator = ZtCacheUtil.ALL_ROLE_INFO + ZtCacheUtil.KEY_GENERATOR)
     public ZtParamEntity<ZtRoleInfo> ztSimpleSelectAll() throws Exception {
         ZtRoleInfo ztRoleInfo = new ZtRoleInfo();
         ztRoleInfo.setStart(0L);
@@ -130,7 +155,8 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     @Override
     @SneakyThrows
     @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ROUTER + "+#userInfo.id")}
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_ROUTER, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ROUTER + "+#userInfo.id")}
     )
     public List<ZtComponentInfo> getCurUserRouteAfterLogin(ZtUserInfo userInfo) {
         ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = iZtComponentInfoService.ztSimpleSelectAll();
@@ -150,7 +176,8 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     @Override
     @SneakyThrows
     @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_PERMISSION + "+#userInfo.id")}
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_PERMISSION, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_PERMISSION + "+#userInfo.id")}
     )
     public List<String> getCurUserPermission(ZtUserInfo userInfo) {
         ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = iZtComponentInfoService.ztSimpleSelectAll();
@@ -178,7 +205,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ROLE_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_ROLE_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_ROLE_CODES + "+#userInfo.id")
     public List<String> getCurUserAllRoleCodes(ZtUserInfo userInfo) {
         String userCode = userInfo.getUserCode();
 
@@ -270,7 +300,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_DEPT_CODES + "+#userInfo.id")
     public List<String> getCurUserDataRoleAndDeptCodes(ZtUserInfo userInfo) {
         //1
         List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
@@ -306,7 +339,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_DEPT_CODES + "+#userInfo.id")
     public List<String> getCurUserDataRoleOrDeptCodes(ZtUserInfo userInfo) {
         //1
         List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
@@ -344,7 +380,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_AND_USER_CODES + "+#userInfo.id")
     public List<String> getCurUserDataRoleAndUserCodes(ZtUserInfo userInfo) {
 
         List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);
@@ -403,7 +442,10 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
      */
     @Override
     @SneakyThrows
-    @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "+#userInfo.userCode")
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES, key = "#userInfo.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    // @Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.CUR_USER_DATA_ROLE_OR_USER_CODES + "+#userInfo.id")
     public List<String> getCurUserDataRoleOrUserCodes(ZtUserInfo userInfo) {
 
         List<String> curUserAllRoleCodes = getThisService().getCurUserAllRoleCodes(userInfo);

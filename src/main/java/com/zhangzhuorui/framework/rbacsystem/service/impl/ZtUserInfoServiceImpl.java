@@ -36,14 +36,30 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
     ZtCacheUtil ztCacheUtil;
 
     @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
     public void refreshCache() throws Exception {
-        ztCacheUtil.evictCaffeine(ZtCacheUtil.USER_INFO_BY_ID + "*");
+
+    }
+
+    @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userId", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCacheByCurUserId(Long userId) {
+
     }
 
     @Override
     @SneakyThrows
     @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#userInfoFromToken.id")}
+            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userInfoFromToken.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#userInfoFromToken.id")}
     )
     public ZtUserInfo getFullUserInfoFromToken(ZtUserInfo userInfoFromToken) {
         ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = getThisService().getInitZtParamEntity(userInfoFromToken);
@@ -54,8 +70,12 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
 
     @Override
     @Caching(evict =
-            {@CacheEvict(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#ztParamEntity.entity.id", beforeInvocation = true)
-                    , @CacheEvict(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#ztParamEntity.entity.id", beforeInvocation = false)
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#ztParamEntity.entity.id", beforeInvocation = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+                    , @CacheEvict(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#ztParamEntity.entity.id", beforeInvocation = false, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+
+                    // @CacheEvict(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#ztParamEntity.entity.id", beforeInvocation = true)
+                    // , @CacheEvict(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#ztParamEntity.entity.id", beforeInvocation = false)
             }
     )
     public ZtParamEntity<ZtUserInfo> ztAfterSimpleUpdateByPrimaryKey(ZtParamEntity<ZtUserInfo> ztParamEntity) throws Exception {

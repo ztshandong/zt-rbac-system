@@ -1,4 +1,6 @@
 spring:
+  #  cache:
+  #    type: simple
   application:
     name: zt-framework-rbac-system
   datasource:
