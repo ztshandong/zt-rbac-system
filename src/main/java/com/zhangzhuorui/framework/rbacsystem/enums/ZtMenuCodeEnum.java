@@ -19,15 +19,16 @@ public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
     DEPT(3, "部门管理"),
     POST(4, "职位管理"),
     USER(5, "用户管理"),
-    ROLE_COMPONENT(6, "角色组件关联"),
-    ROLE_DEPT(7, "角色部门关联"),
-    ROLE_POST(8, "角色职位关联"),
-    ROLE_USER(9, "角色用户关联"),
-    USER_DEPT(10, "用户部门关联"),
-    USER_POST(11, "用户职位关联"),
-    EXCLUDE(12, "排除的信息"),
-    SPEC_HIDE(13, "特殊隐藏"),
-    SPEC_SHOW(14, "特殊显示"),
+    ROLE(6, "角色管理"),
+    ROLE_COMPONENT(7, "角色组件关联"),
+    ROLE_DEPT(8, "角色部门关联"),
+    ROLE_POST(9, "角色职位关联"),
+    ROLE_USER(10, "角色用户关联"),
+    USER_DEPT(11, "用户部门关联"),
+    USER_POST(12, "用户职位关联"),
+    EXCLUDE(13, "排除的信息"),
+    SPEC_HIDE(14, "特殊隐藏"),
+    SPEC_SHOW(15, "特殊显示"),
     ;
 
     public static final String BUTTON_CODE = "BUTTON";
@@ -35,6 +36,7 @@ public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
     public static final String DEPT_CODE = "DEPT";
     public static final String POST_CODE = "POST";
     public static final String USER_CODE = "USER";
+    public static final String ROLE_CODE = "ROLE";
     public static final String ROLE_COMPONENT_CODE = "ROLE_COMPONENT";
     public static final String ROLE_DEPT_CODE = "ROLE_DEPT";
     public static final String ROLE_POST_CODE = "ROLE_POST";

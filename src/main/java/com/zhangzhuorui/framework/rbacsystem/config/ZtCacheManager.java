@@ -71,6 +71,20 @@ public class ZtCacheManager {
                 .build();
         caffeineCacheManager.registerCustomCache(ZtCacheUtil.ALL_COMPONENT_INFO, ALL_COMPONENT_INFO);
 
+        com.github.benmanes.caffeine.cache.Cache<Object, Object> ALL_SPEC_HIDE = Caffeine.newBuilder()
+                .expireAfterWrite(60 * 60 * 12, TimeUnit.SECONDS)
+                .initialCapacity(100)
+                .maximumSize(1000)
+                .build();
+        caffeineCacheManager.registerCustomCache(ZtCacheUtil.ALL_SPEC_HIDE, ALL_SPEC_HIDE);
+
+        com.github.benmanes.caffeine.cache.Cache<Object, Object> ALL_SPEC_SHOW = Caffeine.newBuilder()
+                .expireAfterWrite(60 * 60 * 12, TimeUnit.SECONDS)
+                .initialCapacity(100)
+                .maximumSize(1000)
+                .build();
+        caffeineCacheManager.registerCustomCache(ZtCacheUtil.ALL_SPEC_SHOW, ALL_SPEC_SHOW);
+
         com.github.benmanes.caffeine.cache.Cache<Object, Object> CUR_USER_INFO_BY_ID = Caffeine.newBuilder()
                 .expireAfterWrite(60 * 60 * 12, TimeUnit.SECONDS)
                 .initialCapacity(100)
@@ -219,4 +233,25 @@ public class ZtCacheManager {
     public KeyGenerator allComponentInfoKeyGenerator() {
         return (target, method, params) -> ZtCacheUtil.ALL_COMPONENT_INFO;
     }
+
+    /**
+     * 所有特殊隐藏字段
+     *
+     * @return
+     */
+    @Bean
+    public KeyGenerator allSpecHideKeyGenerator() {
+        return (target, method, params) -> ZtCacheUtil.ALL_SPEC_HIDE;
+    }
+
+    /**
+     * 所有特殊显示字段
+     *
+     * @return
+     */
+    @Bean
+    public KeyGenerator allSpecShowKeyGenerator() {
+        return (target, method, params) -> ZtCacheUtil.ALL_SPEC_SHOW;
+    }
+
 }

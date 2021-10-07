@@ -290,7 +290,6 @@ public class ZtFrameUse3ServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtFrameU
         ztRootQueryWrapper.addAllColumn(null);
         ztRootQueryWrapper.addAllColumn(ztFrameUse1JoinWrapper);
 
-        //select去除不需要的列
         ztRootQueryWrapper.removeSelectColumn(null, ZtFrameUse3::getGmtCreate);
         ztRootQueryWrapper.removeSelectColumn(ztFrameUse1JoinWrapper, ZtFrameUse1::getGmtUpdate);
 

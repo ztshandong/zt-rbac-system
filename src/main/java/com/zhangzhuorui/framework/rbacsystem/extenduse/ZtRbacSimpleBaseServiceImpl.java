@@ -288,4 +288,5 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         }
         return ztParamEntity;
     }
+
 }

@@ -1,8 +1,14 @@
 package com.zhangzhuorui.framework.rbacsystem.service.impl;
 
+import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
+import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
+import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtSpecHide;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseServiceImpl;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtSpecHideService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +28,29 @@ public class ZtSpecHideServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtSpecHid
     @Override
     public String getTableName() {
         return "zt_spec_hide";
+    }
+
+    @Override
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = ZtCacheUtil.ALL_SPEC_HIDE, allEntries = true, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)
+            }
+    )
+    public void refreshCache() throws Exception {
+
+    }
+
+    @Override
+    @Caching(cacheable =
+            {@Cacheable(cacheNames = ZtCacheUtil.ALL_SPEC_HIDE, keyGenerator = ZtCacheUtil.ALL_SPEC_HIDE + ZtCacheUtil.KEY_GENERATOR, cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
+    )
+    public ZtParamEntity<ZtSpecHide> ztSimpleSelectAll() throws Exception {
+        ZtSpecHide ztSpecHide = new ZtSpecHide();
+        ztSpecHide.setStart(0L);
+        ztSpecHide.setLimit(99999L);
+        ZtParamEntity<ZtSpecHide> ztSpecHideZtParamEntity = getThisService().getInitZtParamEntityWithOutCount(ztSpecHide);
+        ztSpecHideZtParamEntity = getThisService().ztSimpleSelectProviderWithoutCount(ztSpecHideZtParamEntity);
+        return ztSpecHideZtParamEntity;
     }
 
 }

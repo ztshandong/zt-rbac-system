@@ -35,6 +35,12 @@ public class ZtCacheUtil {
     //所有组件缓存key
     public final static String ALL_COMPONENT_INFO = "allComponentInfo";
 
+    //所有特殊隐藏字段缓存key
+    public final static String ALL_SPEC_HIDE = "allSpecHide";
+
+    //所有特殊显示字段缓存key
+    public final static String ALL_SPEC_SHOW = "allSpecShow";
+
     public final static String KEY_GENERATOR = "KeyGenerator";
 
     //用户信息详情
