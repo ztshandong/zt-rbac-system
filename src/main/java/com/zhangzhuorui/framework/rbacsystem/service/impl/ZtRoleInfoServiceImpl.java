@@ -192,7 +192,7 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
         List<String> curUserLeafComponentCodes = iZtComponentInfoService.getCurUserLeafComponentCodes(userInfo);
         List<ZtComponentInfo> curUserAllButtonComponent = allComponent.stream().filter(t -> ZtComponentTypeEnum.BUTTON.equals(t.getMenuType()) && curUserLeafComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
         List<String> curUserPermission = curUserAllButtonComponent.stream().map(t -> {
-            return t.getParentCode() + ":" + t.getButtonCode();
+            return t.getThisCode();
         }).collect(Collectors.toList());
         return curUserPermission;
     }

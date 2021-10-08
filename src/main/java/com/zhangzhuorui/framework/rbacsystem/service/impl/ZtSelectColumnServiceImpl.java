@@ -19,6 +19,7 @@ import org.apache.ibatis.mapping.ResultMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
+
+    @Autowired
+    HttpServletRequest request;
 
     @Autowired
     ZtJwtTokenUtil ztJwtTokenUtil;
@@ -52,9 +56,21 @@ public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
     @Autowired
     IZtRoleInfoService iZtRoleInfoService;
 
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
     @Override
     @SneakyThrows
     public ZtSelectColumnHelper calCanSelect(ZtSelectColumnHelper ztSelectColumnHelper) {
+        if (ZtJwtTokenUtil.IGNOR_URLS.contains(this.getRequest().getRequestURI())) {
+            ztSelectColumnHelper.setCanSelect(true);
+            return ztSelectColumnHelper;
+        }
         ResultMapping resultMapping = ztSelectColumnHelper.getResultMapping();
         ZtQueryWrapper qw = ztSelectColumnHelper.getQw();
         String fieldName = resultMapping.getProperty();

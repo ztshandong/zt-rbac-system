@@ -26,12 +26,16 @@ import java.util.List;
 public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparable<ZtComponentInfo> {
     /**
      * 菜单编号（唯一，不可修改）
+     * 如果是模块或者菜单就用ZtMenuCodeEnum
+     * 如果是按钮就是ZtMenuCodeEnum+ZtButtonCodeEnum，也就是权限
      */
     @ApiModelProperty(value = "菜单编号（唯一，不可修改）")
     private String thisCode;
 
     /**
      * 上级菜单编号
+     * 如果是模块或者菜单就用ZtMenuCodeEnum
+     * 如果是按钮就是ZtMenuCodeEnum+ZtButtonCodeEnum，也就是权限
      */
     @ApiModelProperty(value = "上级菜单编号")
     private String parentCode;
@@ -55,10 +59,28 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparab
     private String componentRoute;
 
     /**
+     * 配合前端使用
+     *
+     * @return
+     */
+    public String getPath() {
+        return componentRoute;
+    }
+
+    /**
      * 组件地址，和路由拼接使用
      */
     @ApiModelProperty(value = "组件地址，和路由拼接使用")
     private String componentPath;
+
+    /**
+     * 配合前端使用
+     * MODEL要填ParentView
+     * Layout不清楚
+     */
+    public String getComponent() {
+        return componentPath;
+    }
 
     /**
      * 是否为外链（false否，true是）
@@ -115,6 +137,54 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparab
      */
     @ApiModelProperty(value = "子组件")
     private List<ZtComponentInfo> children = new LinkedList<>();
+
+    private ZtMetaVo meta;
+
+    /**
+     * 重定向地址，当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
+     */
+    private String redirect;
+
+    /**
+     * 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+     */
+    private Boolean alwaysShow;
+
+    public String getRedirect() {
+        if (children.size() > 0) {
+            return "noRedirect";
+        }
+        return redirect;
+    }
+
+    public void setRedirect(String redirect) {
+        this.redirect = redirect;
+    }
+
+    public Boolean getAlwaysShow() {
+        return alwaysShow;
+    }
+
+    public void setAlwaysShow(Boolean alwaysShow) {
+        this.alwaysShow = alwaysShow;
+    }
+
+    public void setMeta(ZtMetaVo meta) {
+        this.meta = meta;
+    }
+
+    /**
+     * 配合前端使用
+     *
+     * @return
+     */
+    public ZtMetaVo getMeta() {
+        ZtMetaVo ztMetaVo = new ZtMetaVo();
+        ztMetaVo.setTitle(getThisName());
+        ztMetaVo.setIcon(getIconUrl());
+        ztMetaVo.setCacheFlag(getCacheFlag());
+        return ztMetaVo;
+    }
 
     public String getThisCode() {
         return thisCode;

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +33,13 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
 
     public HttpServletRequest getRequest() {
         return request;
+    }
+
+    public final static List<String> IGNOR_URLS = new ArrayList<>();
+
+    static {
+        IGNOR_URLS.add("/ZtIndex/login");
+        IGNOR_URLS.add("/ZtIndex/getUserInfoAfterLogin");
     }
 
     private final static String CLAIMS_USER_ID = "userId";
