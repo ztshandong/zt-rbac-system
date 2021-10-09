@@ -68,6 +68,8 @@ function filterAsyncRouter(asyncRouterMap, isRewrite = false) {
       } else if (route.component === 'ParentView') {
         route.component = ParentView
       } else {
+        // route.hidden = true
+        // route.affix = true
         route.component = loadView(route.component)
       }
     }

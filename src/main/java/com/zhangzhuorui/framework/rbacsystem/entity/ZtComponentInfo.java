@@ -47,6 +47,14 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparab
     private String thisName;
 
     /**
+     * 配合前端使用
+     * 路由组件必须有name属性，否则排版会乱
+     */
+    public String getName() {
+        return thisName;
+    }
+
+    /**
      * 排序
      */
     @ApiModelProperty(value = "排序")

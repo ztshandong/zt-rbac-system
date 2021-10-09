@@ -480,7 +480,7 @@
       hasPermi(per) {
         // console.log('per:' + per)
         const permissions = store.getters && store.getters.permissions
-        console.log('permissions:' + permissions)
+        // console.log('permissions:' + permissions)
         return permissions.includes(per)
       },
       removeButtonEvent(row) {

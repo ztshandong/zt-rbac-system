@@ -24,18 +24,15 @@ Vue.use(Router)
  */
 
 // 公共路由
-export const constantRoutes = [
-  {
-    path: '/redirect',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '/redirect/:path(.*)',
-        component: (resolve) => require(['@/views/redirect'], resolve)
-      }
-    ]
-  },
+export const constantRoutes = [{
+  path: '/redirect',
+  component: Layout,
+  hidden: true,
+  children: [{
+    path: '/redirect/:path(.*)',
+    component: (resolve) => require(['@/views/redirect'], resolve)
+  }]
+},
   {
     path: '/login',
     component: (resolve) => require(['@/views/login'], resolve),
@@ -55,43 +52,60 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
-    children: [
-      {
-        path: 'index',
-        component: (resolve) => require(['@/views/index'], resolve),
-        name: '首页',
-        meta: {title: '首页', icon: 'dashboard', cacheFlag: false, affix: true}
-      },
-      {
-        path: 'role',
-        hidden: true,
-        component: (resolve) => require(['@/views/system/role/index'], resolve),
-        name: 'Role',
-        meta: {title: '角色管理', icon: 'user'}
-      },
-      {
-        path: 'user',
-        hidden: true,
-        component: (resolve) => require(['@/views/system/user/profile/index'], resolve),
-        name: 'User',
-        meta: {title: '个人中心', icon: 'user'}
-      },
-      {
-        path: 'dept',
-        hidden: true,
-        component: (resolve) => require(['@/views/system/dept/index'], resolve),
-        name: 'Dept',
-        meta: {title: '部门管理', icon: 'user'}
-      },
-      {
-        path: 'post',
-        hidden: true,
-        component: (resolve) => require(['@/views/system/post/index'], resolve),
-        name: 'Post',
-        meta: {title: '职位管理', icon: 'user'}
-      },
+    children: [{
+      path: 'index',
+      component: (resolve) => require(['@/views/index'], resolve),
+      name: '首页',
+      meta: {
+        title: '首页',
+        icon: 'dashboard',
+        cacheFlag: false,
+        affix: true
+      }
+    },
+      // {
+      //   path: 'role',
+      //   hidden: true,
+      //   component: (resolve) => require(['@/views/system/role/index'], resolve),
+      //   name: 'Role',
+      //   meta: {
+      //     title: '角色管理',
+      //     icon: 'user'
+      //   }
+      // },
+      // {
+      //   path: 'user',
+      //   hidden: true,
+      //   component: (resolve) => require(['@/views/system/user/profile/index'], resolve),
+      //   name: 'User',
+      //   meta: {
+      //     title: '个人中心',
+      //     icon: 'user'
+      //   }
+      // },
+      // {
+      //   path: 'dept',
+      //   hidden: true,
+      //   component: (resolve) => require(['@/views/system/dept/index'], resolve),
+      //   name: 'Dept',
+      //   meta: {
+      //     title: '部门管理',
+      //     icon: 'user'
+      //   }
+      // },
+      // {
+      //   path: 'post',
+      //   hidden: true,
+      //   component: (resolve) => require(['@/views/system/post/index'], resolve),
+      //   name: 'Post',
+      //   meta: {
+      //     title: '职位管理',
+      //     icon: 'user'
+      //   }
+      // }
     ]
   },
+
   // {
   //   path: '/user',
   //   component: Layout,
@@ -106,37 +120,26 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  // {
-  //   path: '/role',
-  //   component: Layout,
-  //   hidden: false,
-  //   redirect: 'noredirect',
-  //   children: [
-  //     {
-  //       path: 'role',
-  //       component: (resolve) => require(['@/views/system/role/index'], resolve),
-  //       name: 'Role',
-  //       meta: {title: '角色管理', icon: 'user'}
-  //     }
-  //   ]
-  // },
   {
     path: '/dict',
     component: Layout,
     hidden: true,
-    children: [
-      {
-        path: 'type/data/:dictId(\\d+)',
-        component: (resolve) => require(['@/views/system/dict/data'], resolve),
-        name: 'Data',
-        meta: {title: '字典数据', icon: ''}
+    children: [{
+      path: 'type/data/:dictId(\\d+)',
+      component: (resolve) => require(['@/views/system/dict/data'], resolve),
+      name: 'Data',
+      meta: {
+        title: '字典数据',
+        icon: ''
       }
-    ]
+    }]
   }
 ]
 
 export default new Router({
   mode: 'history', // 去掉url中的#
-  scrollBehavior: () => ({y: 0}),
+  scrollBehavior: () => ({
+    y: 0
+  }),
   routes: constantRoutes
 })

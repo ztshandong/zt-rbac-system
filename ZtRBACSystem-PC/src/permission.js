@@ -35,6 +35,40 @@ router.beforeEach((to, from, next) => {
             // console.log('获取accessRoutes:'+JSON.stringify(accessRoutes))
             // console.log('根据roles权限生成可访问的路由表:'+JSON.stringify(accessRoutes))
             // 根据roles权限生成可访问的路由表
+            // var routesChildren = [{
+            //   path: 'index',
+            //   component: (resolve) => require(['@/views/index'], resolve),
+            //   name: '首页',
+            //   meta: {
+            //     title: '首页',
+            //     icon: 'dashboard',
+            //     cacheFlag: false,
+            //     affix: true
+            //   }
+            // }]
+            // routesChildren.push(accessRoutes)
+
+            // var routeIndex = {
+            //   path: '',
+            //   component: Layout,
+            //   redirect: 'index',
+            //   children: routesChildren
+            // }
+
+            // var dyRoutes = [routeIndex]
+
+            // console.log('获取dyRoutes:' + JSON.stringify(dyRoutes))
+
+            // router.addRoutes(dyRoutes)
+
+            // console.log('现有路由')
+            // console.log(router.options.routes[4].children)
+            // accessRoutes.forEach((el,index)=>{
+            //   el.hidden = true
+            //   router.options.routes[4].children.push(el)
+            // })
+            // router.addRoutes(router.options.routes[4].children)
+
             router.addRoutes(accessRoutes) // 动态添加可访问路由表
             next({
               ...to,
