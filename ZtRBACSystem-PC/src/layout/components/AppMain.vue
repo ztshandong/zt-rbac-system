@@ -1,10 +1,22 @@
 <template>
   <section class="app-main">
+    <!-- <keep-alive>
+      <router-view v-if="this.$route.meta.$keepAlive" />
+    </keep-alive>
+    <router-view v-if="!this.$route.meta.$keepAlive" /> -->
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
+      <!-- <keep-alive :include="cachedViews" :exclude="noCache">
         <router-view :key="key" />
+      </keep-alive> -->
+      <keep-alive>
+        <router-view :key="key" v-if="this.$route.meta.keepAlive" />
       </keep-alive>
     </transition>
+
+    <transition name="fade-transform" mode="out-in">
+      <router-view :key="key" v-if="!this.$route.meta.keepAlive" />
+    </transition>
+
   </section>
 </template>
 
@@ -14,12 +26,12 @@
     computed: {
       cachedViews() {
         // 页面缓存
-        console.log('页面缓存:'+this.$store.state.tagsView.cachedViews)
+        // console.log('页面缓存:' + this.$store.state.tagsView.cachedViews)
         return this.$store.state.tagsView.cachedViews
       },
       key() {
-        console.log('页面缓存key:')
-		console.log(this.$route)
+        // console.log('页面key:')
+        // console.log(this.$route)
         return this.$route.path
       }
     }

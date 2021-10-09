@@ -21,6 +21,11 @@ public class ZtMetaVo {
      */
     private Boolean breadcrumb = true;
 
+    /**
+     * 设置为false，则不会被 <keep-alive>缓存
+     */
+    private Boolean keepAlive = true;
+
     public String getTitle() {
         return title;
     }
@@ -51,5 +56,13 @@ public class ZtMetaVo {
 
     public void setBreadcrumb(Boolean breadcrumb) {
         this.breadcrumb = breadcrumb;
+    }
+
+    public Boolean getKeepAlive() {
+        return keepAlive;
+    }
+
+    public void setKeepAlive(Boolean keepAlive) {
+        this.keepAlive = keepAlive;
     }
 }

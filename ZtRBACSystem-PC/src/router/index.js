@@ -60,7 +60,8 @@ export const constantRoutes = [{
         title: '首页',
         icon: 'dashboard',
         cacheFlag: false,
-        affix: true
+        affix: true,
+        keepAlive: false
       }
     },
       // {

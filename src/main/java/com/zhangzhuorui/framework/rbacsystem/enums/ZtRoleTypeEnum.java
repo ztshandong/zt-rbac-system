@@ -14,9 +14,9 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  */
 @ModuleName("角色权限类型")
 public enum ZtRoleTypeEnum implements IZtBaseEnum<ZtRoleTypeEnum> {
-    COMPONENT(1, "菜单角色-读取zt_role_component_info表，控制页面"),
-    DATA(2, "数据角色-读取data_scope_type字段，配合ZtDataScopeTypeEnum，控制数据"),
-    MULTIPLE(3, "综合上面两种"),
+    COMPONENT(1, "菜单角色"),//-读取zt_role_component_info表，控制页面
+    DATA(2, "数据角色"),//-读取data_scope_type字段，配合ZtDataScopeTypeEnum，控制数据
+    MULTIPLE(3, "综合角色"),
     ;
 
     private final Integer intValue;

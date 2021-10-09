@@ -9,8 +9,8 @@ export default {
     })
   },
   post: function (url, params) {
-    console.log('url:' + JSON.stringify(url))
-    console.log('params:' + JSON.stringify(params))
+    // console.log('url:' + JSON.stringify(url))
+    // console.log('params:' + JSON.stringify(params))
     return request({
       url: url,
       method: 'post',

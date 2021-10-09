@@ -16,6 +16,7 @@ import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtRoleTypeEnum;
+import com.zhangzhuorui.framework.rbacsystem.exception.ZtPreAuthorizeException;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
@@ -28,6 +29,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -117,6 +119,12 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     public ZtParamEntity<T> afterUseCommonZtQueryWrapper(ZtParamEntity<T> ztParamEntity, SqlCommandType sqlCommandType) {
         if (sqlCommandType.equals(SqlCommandType.SELECT) && !ZtJwtTokenUtil.IGNORE_URLS.contains(this.getRequest().getRequestURI())) {
             T entity = ztParamEntity.getEntity();
+            AtomicInteger atomicInteger = getSafeLock().get();
+            int andIncrement = atomicInteger.getAndIncrement();
+            if (andIncrement > 8) {
+                //服务器重启导致缓存失效，防止死循环
+                throw new ZtPreAuthorizeException("当前登录信息已失效，请重新登录");
+            }
             if (entity.getDataScopeFlag() == null || entity.getDataScopeFlag()) {
                 ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();
                 if (dataScopeDeptFlag() || dataScopeUserFlag()) {

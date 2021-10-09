@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :saveFormItemsBakProps="saveFormItemsBak"
+    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :saveFormItemsBakProps="saveFormItemsBak" :apiPre="apiPre"
       :thisPermissionPre="thisPermissionPre" :saveFormDataProps="saveFormData" @resetSaveFormData="resetSaveFormData"
-      @setSaveFormItemsBak="setSaveFormItemsBak"></ZtVxeGrid>
+      :tableColumnProps="tableColumn" @setSaveFormItemsBak="setSaveFormItemsBak"></ZtVxeGrid>
   </div>
 </template>
 
@@ -10,19 +10,52 @@
   import ZtVxeGrid from '@/components/ZtVxeGrid';
   var _this;
   export default {
-    name: 'TestZtVxeGrid',
+    name: 'ROLE_MANAGE',
     components: {
       ZtVxeGrid
     },
     data() {
       return {
+        apiPre: "",
         thisName: "ZtRoleInfo",
         thisPermissionPre: 'ROLE_MANAGE',
+        ztRoleTypeEnum: [],
+        ztDataScopeTypeEnum: [],
         saveFormItemsBak: [],
         saveFormData: {
           "ztEnum2": null
         },
-        ztEnum2Render: []
+        ztEnum2Render: [],
+        tableColumn: [{
+            field: 'id',
+            title: 'id',
+            visible: false
+          },
+          {
+            field: 'thisName',
+            title: '角色名称'
+          },
+          {
+            field: 'roleType',
+            title: '角色类型',
+            showHeaderOverflow: true,
+            filters: this.ztRoleTypeEnum,
+            filterMultiple: false,
+            formatter: this.formatterRoleTypeEnum
+          },
+          {
+            field: 'dataScopeType',
+            title: '数据权限范围',
+            showOverflow: true,
+            filters: this.ztDataScopeTypeEnum,
+            filterMultiple: false,
+            formatter: this.formatterDataScopeTypeEnum
+          },
+          {
+            field: 'remark',
+            title: '备注'
+          },
+        ]
       }
     },
     methods: {
@@ -36,7 +69,7 @@
         }
       },
       getZtEnum2RenderSource() {
-        this.$api.get(this.apiPre + '/ztButtonInfo/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
+        this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
           this.ztEnum2Render = r.data
         })
       },
@@ -49,6 +82,18 @@
         }
         this.saveFormItemsBak = this.deepClone(saveFormItems)
         callback(this.saveFormItemsBak)
+      },
+      formatterRoleTypeEnum({
+        cellValue
+      }) {
+        let item = this.ztRoleTypeEnum.find(item => item.value === cellValue)
+        return item ? item.label : null
+      },
+      formatterDataScopeTypeEnum({
+        cellValue
+      }) {
+        let item = this.ztDataScopeTypeEnum.find(item => item.value === cellValue)
+        return item ? item.label : null
       },
       deepClone(target) {
         // console.log(target)
@@ -87,10 +132,23 @@
     },
     created() {
       _this = this
-      // this.getZtEnum2RenderSource()
     },
     mounted() {
-      this.$refs.ztVxeGrid.queryFormEvent();
+      var param = {
+        id: 1
+      }
+      this.$refs.ztVxeGrid.queryEvent(param);
+
+      this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtRoleTypeEnum', null)
+        .then(r => {
+          _this.ztRoleTypeEnum = r.data
+        })
+
+      this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtDataScopeTypeEnum', null)
+        .then(r => {
+          _this.ztDataScopeTypeEnum = r.data
+        })
+
     }
   }
 </script>

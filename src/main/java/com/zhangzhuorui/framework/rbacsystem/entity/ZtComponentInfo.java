@@ -51,7 +51,7 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparab
      * 路由组件必须有name属性，否则排版会乱
      */
     public String getName() {
-        return thisName;
+        return thisCode;
     }
 
     /**
@@ -84,7 +84,9 @@ public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparab
     /**
      * 配合前端使用
      * MODEL要填ParentView
-     * Layout不清楚
+     * MENU要填Layout
+     * 只有Layout下的才会附加到导航条上
+     * 如果有多级菜单，倒数第二级要设置为Layout
      */
     public String getComponent() {
         return componentPath;

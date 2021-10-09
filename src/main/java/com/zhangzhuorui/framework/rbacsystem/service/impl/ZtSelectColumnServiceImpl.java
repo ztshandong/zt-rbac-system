@@ -39,8 +39,20 @@ public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
     private static final List<String> IGNORE_TABLE = new LinkedList<>();
 
     static {
+        IGNORE_TABLE.add("zt_button_info");
+        IGNORE_TABLE.add("zt_component_info");
+        IGNORE_TABLE.add("zt_dept_info");
+        IGNORE_TABLE.add("zt_exclude_info");
+        IGNORE_TABLE.add("zt_post_info");
+        IGNORE_TABLE.add("zt_role_component_info");
+        IGNORE_TABLE.add("zt_role_dept_info");
+        IGNORE_TABLE.add("zt_role_info");
+        IGNORE_TABLE.add("zt_role_post_info");
+        IGNORE_TABLE.add("zt_role_user_info");
         IGNORE_TABLE.add("zt_spec_hide");
         IGNORE_TABLE.add("zt_spec_show");
+        IGNORE_TABLE.add("zt_user_dept_info");
+        IGNORE_TABLE.add("zt_user_post_info");
     }
 
     @Autowired

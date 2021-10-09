@@ -52,7 +52,9 @@ public class ZtIndexController {
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ZtResBeanEx<String> login(@RequestBody ZtUserInfo ztUserInfo) {
         List<ZtUserInfo> ztUserInfos = iZtUserInfoService.ztSimpleGetList(ztUserInfo);
-        String token = ztJwtTokenUtil.generateToken(ztUserInfos.get(0));
+        ZtUserInfo ztUserInfo1 = ztUserInfos.get(0);
+        String token = ztJwtTokenUtil.generateToken(ztUserInfo1);
+        ztCacheUtil.refreshCacheByCurUserId(ztUserInfo1.getId());
         // iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
         ZtResBeanEx<String> ok = ZtResBeanEx.ok();
         ok.setData(token);

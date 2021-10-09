@@ -188,7 +188,48 @@
       }
     },
     methods: {
+      queryEvent(queryData) {
+        console.log('queryData:' + JSON.stringify(queryData))
+        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
+          .then(r => {
+            var res = r.data.results;
+            // console.log('r:' + JSON.stringify(r.data.results))
+            // console.log('res:' + JSON.stringify(res))
+            // 使用函数式加载，阻断 vue 对大数据的监听
+            const xTable = this.$refs.ZtVxeGrid
+            // console.log('res:')
+            // console.log(res)
+            const startTime = Date.now()
+            if (xTable) {
+              this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+                _this.$XModal.message({
+                  message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
+                  status: 'info'
+                })
+              })
+            }
 
+            this.tableData = r.data.results
+            // console.log('tableData:' + JSON.stringify(this.tableData))
+          });
+        // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
+        //   console.log('r:'+JSON.stringify(r))
+        //   // 使用函数式加载，阻断 vue 对大数据的监听
+        //   const xTable = this.$refs.ZtVxeGrid
+        //   const startTime = Date.now()
+        //   if (xTable) {
+        //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
+        //       _this.$XModal.message({
+        //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
+        //         status: 'info'
+        //       })
+        //     })
+        //   }
+
+        //   this.tableData = r.data
+        //   console.log('tableData:'+this.tableData)
+        // })
+      },
       // findColumn() {
       //   var column = {}
       //   column.table = this.thisName
@@ -537,7 +578,7 @@
     created() {
       console.log('created')
       _this = this
-      console.log(PermissionDefine)
+      // console.log(PermissionDefine)
 
     }
   }
