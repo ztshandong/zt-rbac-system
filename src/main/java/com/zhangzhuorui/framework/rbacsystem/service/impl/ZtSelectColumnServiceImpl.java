@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,13 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
+
+    private static final List<String> IGNORE_TABLE = new LinkedList<>();
+
+    static {
+        IGNORE_TABLE.add("zt_spec_hide");
+        IGNORE_TABLE.add("zt_spec_show");
+    }
 
     @Autowired
     HttpServletRequest request;
@@ -67,7 +75,7 @@ public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
     @Override
     @SneakyThrows
     public ZtSelectColumnHelper calCanSelect(ZtSelectColumnHelper ztSelectColumnHelper) {
-        if (ZtJwtTokenUtil.IGNOR_URLS.contains(this.getRequest().getRequestURI())) {
+        if (ZtJwtTokenUtil.IGNORE_URLS.contains(this.getRequest().getRequestURI())) {
             ztSelectColumnHelper.setCanSelect(true);
             return ztSelectColumnHelper;
         }
@@ -75,6 +83,12 @@ public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
         ZtQueryWrapper qw = ztSelectColumnHelper.getQw();
         String fieldName = resultMapping.getProperty();
         String tableName = qw.getTableName();
+
+        if (IGNORE_TABLE.contains(tableName)) {
+            ztSelectColumnHelper.setCanSelect(true);
+            return ztSelectColumnHelper;
+        }
+
         ZtSpecHide ztSpecHide = new ZtSpecHide();
         ztSpecHide.setVxeTableName(tableName);
         ztSpecHide.setVxeFieldName(fieldName);

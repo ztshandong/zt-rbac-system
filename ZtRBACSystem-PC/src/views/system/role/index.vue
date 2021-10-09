@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
-    <ZtVxeGrid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :saveFormItemsBakProps="saveFormItemsBak"
-      :saveFormDataProps="saveFormData" @resetSaveFormData="resetSaveFormData" @setSaveFormItemsBak="setSaveFormItemsBak"></ZtVxeGrid>
+    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :saveFormItemsBakProps="saveFormItemsBak"
+      :thisPermissionPre="thisPermissionPre" :saveFormDataProps="saveFormData" @resetSaveFormData="resetSaveFormData"
+      @setSaveFormItemsBak="setSaveFormItemsBak"></ZtVxeGrid>
   </div>
 </template>
 
@@ -15,8 +16,8 @@
     },
     data() {
       return {
-        apiPre: "/usercenter",
-        thisName: "ztTest",
+        thisName: "ZtRoleInfo",
+        thisPermissionPre: 'ROLE_MANAGE',
         saveFormItemsBak: [],
         saveFormData: {
           "ztEnum2": null
@@ -88,7 +89,9 @@
       _this = this
       // this.getZtEnum2RenderSource()
     },
-    mounted() {}
+    mounted() {
+      this.$refs.ztVxeGrid.queryFormEvent();
+    }
   }
 </script>
 

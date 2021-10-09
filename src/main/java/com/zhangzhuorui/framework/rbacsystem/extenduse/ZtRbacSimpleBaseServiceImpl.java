@@ -115,7 +115,7 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     @SneakyThrows
     @Override
     public ZtParamEntity<T> afterUseCommonZtQueryWrapper(ZtParamEntity<T> ztParamEntity, SqlCommandType sqlCommandType) {
-        if (sqlCommandType.equals(SqlCommandType.SELECT) && !ZtJwtTokenUtil.IGNOR_URLS.contains(this.getRequest().getRequestURI())) {
+        if (sqlCommandType.equals(SqlCommandType.SELECT) && !ZtJwtTokenUtil.IGNORE_URLS.contains(this.getRequest().getRequestURI())) {
             T entity = ztParamEntity.getEntity();
             if (entity.getDataScopeFlag() == null || entity.getDataScopeFlag()) {
                 ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();

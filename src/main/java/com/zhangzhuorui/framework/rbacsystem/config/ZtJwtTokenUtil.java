@@ -35,11 +35,11 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
         return request;
     }
 
-    public final static List<String> IGNOR_URLS = new ArrayList<>();
+    public final static List<String> IGNORE_URLS = new ArrayList<>();
 
     static {
-        IGNOR_URLS.add("/ZtIndex/login");
-        IGNOR_URLS.add("/ZtIndex/getUserInfoAfterLogin");
+        IGNORE_URLS.add("/ZtIndex/login");
+        IGNORE_URLS.add("/ZtIndex/getUserInfoAfterLogin");
     }
 
     private final static String CLAIMS_USER_ID = "userId";

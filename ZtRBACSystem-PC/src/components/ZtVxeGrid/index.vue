@@ -25,16 +25,27 @@
 <script>
   var _this;
   import store from '@/store'
+  import {
+    PermissionDefine
+  } from "@/utils/permissiondefine"
+
   export default {
     name: 'ZtVxeGrid',
     props: {
       apiPre: {
-        // api请求前缀，对应不同微服务的统一前缀
+        // api请求前缀，对应不同微服务的统一前缀。如果没有微服务或不需要就留个空白
         type: String,
         default: "",
       },
       thisName: {
-        // 当前界面请求路径
+        // 当前界面请求的api路径 就是后台controller的@RequestMapping。例如 /ZtDeptInfo
+        type: String,
+        default: "",
+      },
+      thisPermissionPre: {
+        //应该用数组，因为后台是数组。暂时先用单个的
+        // 当前界面权限前缀，对应后台controller的@ZtPreAuthorize。例如ZtMenuCodeEnum.ROLE_DEPT
+        // 也就是zt_component_info中menu_type = BUTTON 的 parent_code。与button_code共同拼接权限
         type: String,
         default: "",
       },
@@ -102,10 +113,10 @@
         type: Object,
         default: () => ({
           buttons: [{
-              visible: false,
+              visible: true,
               // disabled: !this.showAdd,
-              code: 'add',
-              name: 'app.body.button.add',
+              code: PermissionDefine.BUTTON_ADD,
+              name: '新增',
               status: 'primary'
             }, {
               code: 'myInsert',
@@ -173,7 +184,7 @@
         printConfig: this.printConfigProps,
         importConfig: this.importConfigProps,
         exportConfig: this.exportConfigProps,
-        toolbarConfig: this.toolbarConfigProps
+        toolbarConfig: this.toolbarConfigProps,
       }
     },
     methods: {
@@ -358,7 +369,7 @@
       },
       queryFormEvent() {
         console.log(this.queryFormConfig.data)
-        this.$api.post(this.apiPre + '/' + this.thisName + '/select', this.queryFormConfig.data, r => {
+        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryFormConfig.data, r => {
           // 使用函数式加载，阻断 vue 对大数据的监听
           const xTable = this.$refs.ZtVxeGrid
           const startTime = Date.now()
@@ -382,10 +393,10 @@
           this.showSaveForm = false
           if (this.saveFormData.id) {
             console.log('编辑')
-            this.$api.post(this.apiPre + '/' + this.thisName + '/update', this.saveFormData, r => {})
+            this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', this.saveFormData, r => {})
           } else {
             console.log('新增')
-            this.$api.post(this.apiPre + '/' + this.thisName + '/insert', this.saveFormData, r => {})
+            this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData, r => {})
           }
           console.log(this.saveFormData)
           _this.$emit('resetSaveFormData', this.saveFormData)
@@ -419,7 +430,7 @@
               status: 'success'
             })
             break
-          case 'add':
+          case 'ADD':
             this.editButtonEvent({})
             break
           case 'saveImport':
@@ -484,30 +495,30 @@
         return permissions.includes(per)
       },
       removeButtonEvent(row) {
-        this.$api.post(this.apiPre + '/' + this.thisName + '/delete', row, r => {})
+        this.$api.post(this.apiPre + '/' + this.thisName + '/deleteSimple', row, r => {})
       }
     },
     mounted() {
       // this.$store.dispatch("SetPermi")
       console.log('mounted')
-      _this.showAdd = this.hasPermi('add')
-      this.showQuery = this.hasPermi('query')
-      this.showEdit = this.hasPermi('edit')
-      this.showRemove = this.hasPermi('remove')
-      this.showApp = this.hasPermi('app')
-      this.showPrint = this.hasPermi('print')
-      this.showImport = this.hasPermi('import')
-      this.showExport = this.hasPermi('export')
+      this.showAdd = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_ADD)
+      this.showQuery = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_QUERY)
+      this.showEdit = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EDIT)
+      this.showRemove = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_DEL)
+      this.showApp = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_APP)
+      this.showPrint = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_PRINT)
+      this.showImport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_IMPORT)
+      this.showExport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EXPORT)
 
       // this.findColumn()
       this.$nextTick(() => {
-        // var buttons = _this.$refs.ZtVxeGrid.toolbarConfig.buttons;
-        // let add = buttons.filter(function(cur, index, arr) {
-        //   return cur.code == 'add';
-        // })
-        // add[0].visible = this.hasPermi('add')
-        // add[0].disabled = !this.hasPermi('add')
-        // add[0].status = 'primary'
+        var buttons = _this.$refs.ZtVxeGrid.toolbarConfig.buttons;
+        let add = buttons.filter(function(cur, index, arr) {
+          return cur.code == PermissionDefine.BUTTON_ADD;
+        })
+        add[0].visible = this.showAdd
+        add[0].disabled = !this.showAdd
+        add[0].status = 'primary'
 
         // let saveImport = buttons.filter(function(cur, index, arr) {
         //   return cur.code == 'saveImport';
@@ -521,10 +532,13 @@
       })
 
       // this.$forceUpdate();
+      // this.queryFormEvent()
     },
     created() {
       console.log('created')
       _this = this
+      console.log(PermissionDefine)
+
     }
   }
 </script>

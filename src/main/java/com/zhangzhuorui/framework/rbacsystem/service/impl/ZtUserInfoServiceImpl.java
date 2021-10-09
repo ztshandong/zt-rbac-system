@@ -59,7 +59,6 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
     @SneakyThrows
     @Caching(cacheable =
             {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userInfoFromToken.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
-            // {@Cacheable(cacheNames = ZtCacheManager.CAFFEINE_CACHE, key = ZtCacheUtil.USER_INFO_BY_ID + "+#userInfoFromToken.id")}
     )
     public ZtUserInfo getFullUserInfoFromToken(ZtUserInfo userInfoFromToken) {
         ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = getThisService().getInitZtParamEntity(userInfoFromToken);
