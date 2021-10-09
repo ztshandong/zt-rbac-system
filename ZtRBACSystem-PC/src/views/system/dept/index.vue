@@ -144,7 +144,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  name: "ROLE_MANAGE",
+  name: "DEPT_MANAGE",
   components: { Treeselect },
   data() {
     return {
