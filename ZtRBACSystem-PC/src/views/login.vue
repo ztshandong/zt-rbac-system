@@ -2,7 +2,7 @@
   <div class="login" id="loginDiv" ref="loginDiv"
     :class="{background1: random==1, background2: random==2, background3:random==3 }">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h1 class="title">卓睿后台管理系统</h1>
+      <h1 class="title">卓睿管理系统</h1>
       <el-form-item prop="userName">
         <el-input v-model="loginForm.userName" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />

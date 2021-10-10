@@ -1,16 +1,50 @@
 <template>
   <div :style="{height: scrollerHeight}">
+    <!-- <div height="800"> -->
 
+    <!--
+    第一种方式子类自行实现，此时@submit调用的是this.$refs.ztVxeGrid.queryEvent(this.queryData);传入的是对象
+    <vxe-form :data="queryData" @submit="doQuery" @reset="resetEvent">
+      <vxe-form-item title="角色" field="thisName" :item-render="{}">
+          <template #default="{ data }">
+          <vxe-input v-model="data.thisName" placeholder="请输入名称"></vxe-input>
+        </template>
+      </vxe-form-item>
+      <vxe-form-item title="角色" field="thisName" :item-render="{}">
+        <template #default>
+          <vxe-input v-model="queryData.thisName" placeholder="请输入名称"></vxe-input>
+        </template>
+      </vxe-form-item>
+      <vxe-form-item>
+        <template #default>
+          <vxe-button type="submit" status="primary">查询</vxe-button>
+          <vxe-button type="reset">重置</vxe-button>
+        </template>
+      </vxe-form-item>
+    </vxe-form>
+ -->
+
+    <!--
     <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles" title-align="right"
-      title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
+      title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="resetEvent"></vxe-form>
+       -->
 
+    <!-- queryFormConfig要传全部的配置，否则有问题。通用组件里面添加查询与重制按钮，这样查询触发的就是@form-submit的queryFormEvent，入参是个事件 -->
     <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
-      height="100%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
+      height="130%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
       :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
+      :form-config="queryFormConfig" @form-submit="queryFormEvent"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
-      @toolbar-button-click="toolbarButtonClickEvent" @form-submit="queryFormEvent"
-      @form-toggle-collapse="queryFormToggleEvent">
+      @toolbar-button-click="toolbarButtonClickEvent" @form-toggle-collapse="queryFormToggleEvent">
 
+      <!--
+      这样会把toolbar的按钮挤乱，配合修改toolbarConfigProps
+      <template #toolbar_buttons>
+        <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles"
+          title-align="right" title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent"
+          @reset="resetEvent"></vxe-form>
+      </template>
+ -->
       <template v-slot:operate="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
         </vxe-button>
@@ -26,6 +60,7 @@
       </template>
 
     </vxe-grid>
+
     <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData ? '编辑&保存' : '新增&保存'" width="100%"
       min-width="600" min-height="300" resize destroy-on-close>
       <template v-slot>
@@ -73,7 +108,16 @@
         type: Array,
         default: () => [],
       },
-
+      queryFormConfigProps: {
+        // 查询条件配置
+        type: Object,
+        default: () => ({
+          data: {},
+          titleWidth: 100,
+          titleAlign: 'right',
+          items: []
+        }),
+      },
       queryFormItemsProps: {
         // 查询表单各个字段
         type: Array,
@@ -119,16 +163,6 @@
         type: Array,
         default: () => [],
       },
-      // queryFormConfigProps: {
-      //   // 查询条件配置
-      //   type: Object,
-      //   default: () => ({
-      //     data: {},
-      //     titleWidth: 100,
-      //     titleAlign: 'right',
-      //     items: []
-      //   }),
-      // },
 
       printConfigProps: {
         // 打印配置
@@ -201,6 +235,9 @@
           print: false,
           zoom: true,
           custom: true,
+          // slots: {
+          //   buttons: 'toolbar_buttons'
+          // }
         }),
       },
     },
@@ -221,15 +258,16 @@
         tableColumn: this.tableColumnProps,
         tablePage: this.tablePageProps,
 
+        queryFormConfig: this.queryFormConfigProps,
         queryFormItems: this.queryFormItemsProps,
         queryFormRoles: this.queryFormRolesProps,
         queryData: this.queryDataProps,
+        queryDataBak: {},
 
         saveFormData: this.saveFormDataProps,
         saveFormRules: this.saveFormRolesProps,
         saveFormItems: this.saveFormItemsProps,
         saveFormItemsBak: this.saveFormItemsBakProps,
-        // queryFormConfig: this.queryFormConfigProps,
         printConfig: this.printConfigProps,
         importConfig: this.importConfigProps,
         exportConfig: this.exportConfigProps,
@@ -239,6 +277,7 @@
     methods: {
       queryFormEvent(e) {
         // console.log(e)
+        this.queryData = this.queryFormConfig.data
         console.log(this.queryData)
         // console.log(this.queryFormConfig)
         this.loading = true
@@ -275,10 +314,13 @@
             this.loading = false
           });
       },
-      // resetEvent() {
-      //   const $grid = this.$refs.ZtVxeGrid
-      //   $grid.commitProxy('reload')
-      // },
+      resetEvent() {
+        // this.queryData={}
+        // this.queryData=this.deepClone(this.queryDataBak)
+        // const $grid = this.$refs.ZtVxeGrid
+        // $grid.reloadData(this.tableData)
+        // console.log(this.$refs.ZtVxeQueryForm.data)
+      },
       queryFormToggleEvent(collapse, data, $event) {},
       handlePageChange({
         currentPage,
@@ -291,60 +333,60 @@
         this.queryFormEvent()
       },
 
-      // queryEvent(queryData) {
-      //   this.loading = true
-      //   this.queryData = queryData
-      //   if (!this.queryData.start) {
-      //     this.queryData.start = this.tablePage.currentPage
-      //   }
-      //   if (!this.queryData.limit) {
-      //     this.queryData.limit = this.tablePage.pageSize
-      //   }
-      //   console.log('queryEvent:' + JSON.stringify(this.queryData))
-      //   this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
-      //     .then(r => {
-      //       var res = r.data.results;
-      //       // console.log('r:' + JSON.stringify(r))
-      //       this.tablePage.total = r.data.total
-      //       // console.log('res:' + JSON.stringify(res))
-      //       // 使用函数式加载，阻断 vue 对大数据的监听
-      //       const xTable = this.$refs.ZtVxeGrid
-      //       // console.log('res:')
-      //       // console.log(res)
-      //       const startTime = Date.now()
-      //       if (xTable) {
-      //         this.$refs.ZtVxeGrid.reloadData(res).then(() => {
-      //           _this.$XModal.message({
-      //             message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
-      //             status: 'info'
-      //           })
-      //         })
-      //       }
+      queryEvent(queryData) {
+        this.loading = true
+        this.queryData = queryData
+        if (!this.queryData.start) {
+          this.queryData.start = this.tablePage.currentPage
+        }
+        if (!this.queryData.limit) {
+          this.queryData.limit = this.tablePage.pageSize
+        }
+        console.log('queryEvent:' + JSON.stringify(this.queryData))
+        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
+          .then(r => {
+            var res = r.data.results;
+            // console.log('r:' + JSON.stringify(r))
+            this.tablePage.total = r.data.total
+            // console.log('res:' + JSON.stringify(res))
+            // 使用函数式加载，阻断 vue 对大数据的监听
+            const xTable = this.$refs.ZtVxeGrid
+            // console.log('res:')
+            // console.log(res)
+            const startTime = Date.now()
+            if (xTable) {
+              this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+                _this.$XModal.message({
+                  message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
+                  status: 'info'
+                })
+              })
+            }
 
-      //       this.tableData = r.data.results
-      //       // console.log('tableData:' + JSON.stringify(this.tableData))
-      //     })
-      //     .finally(r => {
-      //       this.loading = false
-      //     });
-      //   // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
-      //   //   console.log('r:'+JSON.stringify(r))
-      //   //   // 使用函数式加载，阻断 vue 对大数据的监听
-      //   //   const xTable = this.$refs.ZtVxeGrid
-      //   //   const startTime = Date.now()
-      //   //   if (xTable) {
-      //   //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
-      //   //       _this.$XModal.message({
-      //   //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
-      //   //         status: 'info'
-      //   //       })
-      //   //     })
-      //   //   }
+            this.tableData = r.data.results
+            // console.log('tableData:' + JSON.stringify(this.tableData))
+          })
+          .finally(r => {
+            this.loading = false
+          });
+        // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
+        //   console.log('r:'+JSON.stringify(r))
+        //   // 使用函数式加载，阻断 vue 对大数据的监听
+        //   const xTable = this.$refs.ZtVxeGrid
+        //   const startTime = Date.now()
+        //   if (xTable) {
+        //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
+        //       _this.$XModal.message({
+        //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
+        //         status: 'info'
+        //       })
+        //     })
+        //   }
 
-      //   //   this.tableData = r.data
-      //   //   console.log('tableData:'+this.tableData)
-      //   // })
-      // },
+        //   this.tableData = r.data
+        //   console.log('tableData:'+this.tableData)
+        // })
+      },
 
       // findColumn() {
       //   var column = {}
@@ -679,7 +721,32 @@
       // console.log(this.queryData)
       // _this.$refs.ZtVxeGrid.height = document.body.clientHeight
 
-      var item = [{
+      // var item = [{
+      //   span: 24,
+      //   align: 'center',
+      //   collapseNode: true,
+      //   itemRender: {
+      //     name: '$buttons',
+      //     children: [{
+      //       props: {
+      //         type: 'submit',
+      //         content: '查询',
+      //         status: 'primary'
+      //       }
+      //     }, {
+      //       props: {
+      //         type: 'reset',
+      //         content: '重置'
+      //       }
+      //     }]
+      //   }
+      // }]
+
+      // item.forEach(t => {
+      //   this.queryFormItems.push(t)
+      // })
+
+      var commonButton = {
         span: 24,
         align: 'center',
         collapseNode: true,
@@ -698,11 +765,11 @@
             }
           }]
         }
-      }]
+      }
 
-      item.forEach(t => {
-        this.queryFormItems.push(t)
-      })
+      this.queryFormConfig.items.push(commonButton)
+
+      // this.queryDataBak = this.deepClone(this.queryData)
     },
     created() {
       console.log('created')

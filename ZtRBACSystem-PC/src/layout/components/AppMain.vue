@@ -2,10 +2,10 @@
   <section class="app-main">
     <!-- <keep-alive>
       <router-view v-if="this.$route.meta.$keepAlive" />
-    </keep-alive>
+    </keep-alive>  :exclude="noCache"
     <router-view v-if="!this.$route.meta.$keepAlive" /> -->
     <transition name="fade-transform" mode="out-in">
-      <!-- <keep-alive :include="cachedViews" :exclude="noCache">
+      <!-- <keep-alive :include="cachedViews" >
         <router-view :key="key" />
       </keep-alive> -->
       <keep-alive :include="cachedViews">

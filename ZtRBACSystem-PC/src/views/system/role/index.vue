@@ -1,26 +1,16 @@
 <template>
   <div class="app-container">
-    <!--
-    <vxe-form :data="queryData" @submit="doQuery">
-      <vxe-form-item title="角色" field="thisName" :item-render="{}">
-        <template #default="{ data }">
-          <vxe-input v-model="data.thisName" placeholder="请输入名称"></vxe-input>
-        </template>
-      </vxe-form-item>
-      <vxe-form-item>
-        <template #default>
-          <vxe-button type="submit" status="primary">查询</vxe-button>
-          <vxe-button type="reset">重置</vxe-button>
-        </template>
-      </vxe-form-item>
-    </vxe-form>
- -->
+
+    <!-- <vxe-grid :formConfig="queryFormConfig"></vxe-grid> -->
+
     <!-- <i class="fa fa-camera-retro fa-lg" style="color:green"></i> fa-lg -->
     <!-- <i class='zhangtao icon-word2' style="color:red"></i>icon-word2 -->
     <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
-    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormItemsProps="queryFormItems" :apiPre="apiPre" :thisPermissionPre="thisPermissionPre"
-      :saveFormDataProps="saveFormData" :saveFormItemsBakProps="saveFormItemsBak" @resetSaveFormData="resetSaveFormData"
+
+    <!-- :queryFormItemsProps="queryFormItems"  -->
+    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :tableColumnProps="tableColumn" :apiPre="apiPre"
+      :queryFormConfigProps="queryFormConfig" :thisPermissionPre="thisPermissionPre" :saveFormDataProps="saveFormData"
+      :saveFormItemsBakProps="saveFormItemsBak" @resetSaveFormData="resetSaveFormData"
       @setSaveFormItemsBak="setSaveFormItemsBak">
     </ZtVxeGrid>
   </div>
@@ -36,19 +26,38 @@
     },
     data() {
       return {
-        queryFormItems: [{
-          field: 'thisName',
-          title: '角色',
-          span: 8,
-          folding: false,
-          itemRender: {
-            name: '$input',
-            props: {
-              placeholder: '请输入角色'
+        //要直接传入config
+        queryFormConfig: {
+          data: {
+            thisName: null
+          },
+          items: [{
+            field: 'thisName',
+            resetValue: null,
+            title: '角色',
+            span: 8,
+            folding: false,
+            itemRender: {
+              name: '$input',
+              props: {
+                placeholder: '请输入角色'
+              }
             }
-          }
+          }, ]
         },
-      ],
+        // queryFormItems: [{
+        //   field: 'thisName',
+        //   resetValue: null,
+        //   title: '角色',
+        //   span: 8,
+        //   folding: false,
+        //   itemRender: {
+        //     name: '$input',
+        //     props: {
+        //       placeholder: '请输入角色'
+        //     }
+        //   }
+        // }, ],
         saveFormRoles: {
           thisName: [{
               required: true,
@@ -103,7 +112,9 @@
         apiPre: "",
         thisName: "ZtRoleInfo",
         thisPermissionPre: 'ROLE_MANAGE',
-
+        queryData: {
+          thisName: null
+        },
         ztRoleTypeEnum: [],
         ztDataScopeTypeEnum: [],
         saveFormItemsBak: [],
@@ -157,9 +168,12 @@
           "ztEnum2": null
         }
       },
-      doQuery() {
-        this.$refs.ztVxeGrid.queryEvent(this.queryData);
-      },
+      // doQuery() {
+      //   this.$refs.ztVxeGrid.queryEvent(this.queryData);
+      // },
+      // resetEvent() {
+      //   console.log(this.queryData)
+      // },
       getZtEnum2RenderSource() {
         this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
           this.ztEnum2Render = r.data
@@ -243,7 +257,7 @@
 </script>
 
 <style>
-/*  .ali{
+  /*  .ali{
     font-size: 36px;
   } */
 </style>
