@@ -1,8 +1,25 @@
 <template>
   <div class="app-container">
-    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :saveFormItemsBakProps="saveFormItemsBak" :apiPre="apiPre"
-      :thisPermissionPre="thisPermissionPre" :saveFormDataProps="saveFormData" @resetSaveFormData="resetSaveFormData"
-      :tableColumnProps="tableColumn" @setSaveFormItemsBak="setSaveFormItemsBak"></ZtVxeGrid>
+    <!--
+    <vxe-form :data="queryData" @submit="doQuery">
+      <vxe-form-item title="角色" field="thisName" :item-render="{}">
+        <template #default="{ data }">
+          <vxe-input v-model="data.thisName" placeholder="请输入名称"></vxe-input>
+        </template>
+      </vxe-form-item>
+      <vxe-form-item>
+        <template #default>
+          <vxe-button type="submit" status="primary">查询</vxe-button>
+          <vxe-button type="reset">重置</vxe-button>
+        </template>
+      </vxe-form-item>
+    </vxe-form>
+ -->
+    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :tableColumnProps="tableColumn"
+      :queryFormItemsProps="queryFormItems" :apiPre="apiPre" :thisPermissionPre="thisPermissionPre"
+      :saveFormDataProps="saveFormData" :saveFormItemsBakProps="saveFormItemsBak" @resetSaveFormData="resetSaveFormData"
+      @setSaveFormItemsBak="setSaveFormItemsBak">
+    </ZtVxeGrid>
   </div>
 </template>
 
@@ -16,9 +33,73 @@
     },
     data() {
       return {
+        queryFormItems: [{
+          field: 'thisName',
+          title: '角色',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入角色'
+            }
+          }
+        }],
+        saveFormRoles: {
+          thisName: [{
+              required: true,
+              message: '请输入角色名称'
+            },
+            {
+              min: 3,
+              max: 5,
+              message: '长度在 3 到 5 个字符'
+            }
+          ]
+        },
+        //:queryFormConfigProps="formConfig" :queryDataProps="queryData"
+        // formConfig: {
+        //   data: this.queryData,
+        //   titleWidth: 100,
+        //   titleAlign: 'right',
+        //   items: [{
+        //       field: 'thisName',
+        //       title: '角色',
+        //       span: 8,
+        //       folding: false,
+        //       itemRender: {
+        //         name: '$input',
+        //         props: {
+        //           placeholder: '请输入角色'
+        //         }
+        //       }
+        //     },
+        //     {
+        //       span: 24,
+        //       align: 'center',
+        //       collapseNode: true,
+        //       itemRender: {
+        //         name: '$buttons',
+        //         children: [{
+        //           props: {
+        //             type: 'submit',
+        //             content: '查询',
+        //             status: 'primary'
+        //           }
+        //         }, {
+        //           props: {
+        //             type: 'reset',
+        //             content: '重置'
+        //           }
+        //         }]
+        //       }
+        //     }
+        //   ]
+        // },
         apiPre: "",
         thisName: "ZtRoleInfo",
         thisPermissionPre: 'ROLE_MANAGE',
+
         ztRoleTypeEnum: [],
         ztDataScopeTypeEnum: [],
         saveFormItemsBak: [],
@@ -71,6 +152,9 @@
         _this.saveFormData = {
           "ztEnum2": null
         }
+      },
+      doQuery() {
+        this.$refs.ztVxeGrid.queryEvent(this.queryData);
       },
       getZtEnum2RenderSource() {
         this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
@@ -138,10 +222,6 @@
       _this = this
     },
     mounted() {
-      var param = {
-      }
-      this.$refs.ztVxeGrid.queryEvent(param);
-
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtRoleTypeEnum', null)
         .then(r => {
           _this.ztRoleTypeEnum = r.data
@@ -151,6 +231,8 @@
         .then(r => {
           _this.ztDataScopeTypeEnum = r.data
         })
+
+      // this.$refs.ztVxeGrid.queryEvent(this.queryData);
 
     }
   }

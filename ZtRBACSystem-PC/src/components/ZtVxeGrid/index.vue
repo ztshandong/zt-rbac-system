@@ -1,10 +1,14 @@
 <template>
   <div :style="{height: scrollerHeight}">
+
+    <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles" title-align="right"
+      title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
+
     <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
       height="100%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
-      :toolbar-config="toolbarConfig" :form-config="queryFormConfig" :import-config="importConfig"
-      :export-config="exportConfig" :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}"
-      :print-config="printConfig" @toolbar-button-click="toolbarButtonClickEvent" @form-submit="queryFormEvent"
+      :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
+      :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
+      @toolbar-button-click="toolbarButtonClickEvent" @form-submit="queryFormEvent"
       @form-toggle-collapse="queryFormToggleEvent">
 
       <template v-slot:operate="{ row }">
@@ -69,6 +73,32 @@
         type: Array,
         default: () => [],
       },
+
+      queryFormItemsProps: {
+        // 查询表单各个字段
+        type: Array,
+        default: () => [],
+      },
+      queryFormRolesProps: {
+        // 校验规则
+        type: Object,
+        default: () => ({}),
+      },
+      queryDataProps: {
+        // 查询条件具体数据
+        type: Object,
+        default: () => ({}),
+      },
+      tablePageProps: {
+        //默认分页大小
+        type: Object,
+        default: () => ({
+          total: 0,
+          currentPage: 1,
+          pageSize: 10
+        }),
+      },
+
       saveFormDataProps: {
         // 保存的实体类
         type: Object,
@@ -89,16 +119,17 @@
         type: Array,
         default: () => [],
       },
-      queryFormConfigProps: {
-        // 查询条件配置
-        type: Object,
-        default: () => ({
-          data: {},
-          titleWidth: 100,
-          titleAlign: 'right',
-          items: []
-        }),
-      },
+      // queryFormConfigProps: {
+      //   // 查询条件配置
+      //   type: Object,
+      //   default: () => ({
+      //     data: {},
+      //     titleWidth: 100,
+      //     titleAlign: 'right',
+      //     items: []
+      //   }),
+      // },
+
       printConfigProps: {
         // 打印配置
         type: Object,
@@ -176,13 +207,7 @@
     data() {
       return {
         loading: false,
-        tablePage: {
-          total: 0,
-          currentPage: 1,
-          pageSize: 10
-        },
-        tableHeight: 600,
-        queryData: {},
+        // tableHeight: 600,
         showAdd: false,
         showQuery: false,
         showEdit: false,
@@ -194,11 +219,17 @@
         showSaveForm: false,
         tableData: this.tableDataProps,
         tableColumn: this.tableColumnProps,
+        tablePage: this.tablePageProps,
+
+        queryFormItems: this.queryFormItemsProps,
+        queryFormRoles: this.queryFormRolesProps,
+        queryData: this.queryDataProps,
+
         saveFormData: this.saveFormDataProps,
         saveFormRules: this.saveFormRolesProps,
         saveFormItems: this.saveFormItemsProps,
         saveFormItemsBak: this.saveFormItemsBakProps,
-        queryFormConfig: this.queryFormConfigProps,
+        // queryFormConfig: this.queryFormConfigProps,
         printConfig: this.printConfigProps,
         importConfig: this.importConfigProps,
         exportConfig: this.exportConfigProps,
@@ -206,27 +237,18 @@
       }
     },
     methods: {
-      handlePageChange({
-        currentPage,
-        pageSize
-      }) {
-        this.tablePage.currentPage = currentPage
-        this.tablePage.pageSize = pageSize
-        this.queryData.start = this.tablePage.currentPage
-        this.queryData.limit = this.tablePage.pageSize
-        this.queryEvent(this.queryData)
-      },
-      queryEvent(queryData) {
+      queryFormEvent(e) {
+        // console.log(e)
+        console.log(this.queryData)
+        // console.log(this.queryFormConfig)
         this.loading = true
-        if (!queryData.start) {
-          queryData.start = this.tablePage.currentPage
+        if (!this.queryData.start) {
+          this.queryData.start = this.tablePage.currentPage
         }
-        if (!queryData.limit) {
-          queryData.limit = this.tablePage.pageSize
+        if (!this.queryData.limit) {
+          this.queryData.limit = this.tablePage.pageSize
         }
-        this.queryData = queryData
-        console.log('queryData:' + JSON.stringify(this.queryData))
-        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
+        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
           .then(r => {
             var res = r.data.results;
             // console.log('r:' + JSON.stringify(r))
@@ -252,24 +274,74 @@
           .finally(r => {
             this.loading = false
           });
-        // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
-        //   console.log('r:'+JSON.stringify(r))
-        //   // 使用函数式加载，阻断 vue 对大数据的监听
-        //   const xTable = this.$refs.ZtVxeGrid
-        //   const startTime = Date.now()
-        //   if (xTable) {
-        //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
-        //       _this.$XModal.message({
-        //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
-        //         status: 'info'
-        //       })
-        //     })
-        //   }
-
-        //   this.tableData = r.data
-        //   console.log('tableData:'+this.tableData)
-        // })
       },
+      queryFormToggleEvent(collapse, data, $event) {},
+      handlePageChange({
+        currentPage,
+        pageSize
+      }) {
+        this.tablePage.currentPage = currentPage
+        this.tablePage.pageSize = pageSize
+        this.queryData.start = this.tablePage.currentPage
+        this.queryData.limit = this.tablePage.pageSize
+        this.queryFormEvent()
+      },
+
+      // queryEvent(queryData) {
+      //   this.loading = true
+      //   this.queryData = queryData
+      //   if (!this.queryData.start) {
+      //     this.queryData.start = this.tablePage.currentPage
+      //   }
+      //   if (!this.queryData.limit) {
+      //     this.queryData.limit = this.tablePage.pageSize
+      //   }
+      //   console.log('queryEvent:' + JSON.stringify(this.queryData))
+      //   this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
+      //     .then(r => {
+      //       var res = r.data.results;
+      //       // console.log('r:' + JSON.stringify(r))
+      //       this.tablePage.total = r.data.total
+      //       // console.log('res:' + JSON.stringify(res))
+      //       // 使用函数式加载，阻断 vue 对大数据的监听
+      //       const xTable = this.$refs.ZtVxeGrid
+      //       // console.log('res:')
+      //       // console.log(res)
+      //       const startTime = Date.now()
+      //       if (xTable) {
+      //         this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+      //           _this.$XModal.message({
+      //             message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
+      //             status: 'info'
+      //           })
+      //         })
+      //       }
+
+      //       this.tableData = r.data.results
+      //       // console.log('tableData:' + JSON.stringify(this.tableData))
+      //     })
+      //     .finally(r => {
+      //       this.loading = false
+      //     });
+      //   // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
+      //   //   console.log('r:'+JSON.stringify(r))
+      //   //   // 使用函数式加载，阻断 vue 对大数据的监听
+      //   //   const xTable = this.$refs.ZtVxeGrid
+      //   //   const startTime = Date.now()
+      //   //   if (xTable) {
+      //   //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
+      //   //       _this.$XModal.message({
+      //   //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
+      //   //         status: 'info'
+      //   //       })
+      //   //     })
+      //   //   }
+
+      //   //   this.tableData = r.data
+      //   //   console.log('tableData:'+this.tableData)
+      //   // })
+      // },
+
       // findColumn() {
       //   var column = {}
       //   column.table = this.thisName
@@ -448,25 +520,7 @@
         }
         this.showSaveForm = true
       },
-      queryFormEvent() {
-        console.log(this.queryFormConfig.data)
-        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryFormConfig.data, r => {
-          // 使用函数式加载，阻断 vue 对大数据的监听
-          const xTable = this.$refs.ZtVxeGrid
-          const startTime = Date.now()
-          if (xTable) {
-            this.$refs.ZtVxeGrid.reloadData(r.data.records).then(() => {
-              _this.$XModal.message({
-                message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
-                status: 'info'
-              })
-            })
-          }
 
-          this.tableData = r.data.records
-        })
-      },
-      queryFormToggleEvent(collapse, data, $event) {},
       saveButtonEvent() {
         this.submitLoading = true
         setTimeout(() => {
@@ -614,16 +668,45 @@
 
       // this.$forceUpdate();
       // this.queryFormEvent()
-      _this.tableHeight = document.body.clientHeight
+      // _this.tableHeight = document.body.clientHeight
       // console.log(document.body.clientWidth)
-      console.log(document.body.clientHeight)
-      console.log(_this.$refs.ZtVxeGrid.height)
+      // console.log(document.body.clientHeight)
+      // console.log(_this.$refs.ZtVxeGrid.height)
+      // console.log(this.queryData)
       // _this.$refs.ZtVxeGrid.height = document.body.clientHeight
+
+      var item = [{
+        span: 24,
+        align: 'center',
+        collapseNode: true,
+        itemRender: {
+          name: '$buttons',
+          children: [{
+            props: {
+              type: 'submit',
+              content: '查询',
+              status: 'primary'
+            }
+          }, {
+            props: {
+              type: 'reset',
+              content: '重置'
+            }
+          }]
+        }
+      }]
+
+      item.forEach(t => {
+        this.queryFormItems.push(t)
+      })
+      // console.log(_this.$refs.ZtVxeQueryForm)
+
     },
     created() {
       console.log('created')
       _this = this
       // console.log(PermissionDefine)
+
     },
     computed: {
       scrollerHeight: function() {
