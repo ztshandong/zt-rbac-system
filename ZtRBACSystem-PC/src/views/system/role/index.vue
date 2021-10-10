@@ -32,6 +32,10 @@
             visible: false
           },
           {
+            field: 'thisCode',
+            title: '角色编号'
+          },
+          {
             field: 'thisName',
             title: '角色名称'
           },
@@ -135,7 +139,6 @@
     },
     mounted() {
       var param = {
-        id: 1
       }
       this.$refs.ztVxeGrid.queryEvent(param);
 

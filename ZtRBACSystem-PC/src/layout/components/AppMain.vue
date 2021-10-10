@@ -8,7 +8,7 @@
       <!-- <keep-alive :include="cachedViews" :exclude="noCache">
         <router-view :key="key" />
       </keep-alive> -->
-      <keep-alive>
+      <keep-alive :include="cachedViews">
         <router-view :key="key" v-if="this.$route.meta.keepAlive" />
       </keep-alive>
     </transition>

@@ -101,7 +101,7 @@ service.interceptors.response.use(res => {
     Message({
       message: message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 1 * 1000
     })
     return Promise.reject(error)
   }

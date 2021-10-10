@@ -1,18 +1,28 @@
 <template>
-  <div>
-    <vxe-grid border resizable show-overflow showHeaderOverflow highlightHoverRow keep-source height="800"
-      ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn" :toolbar-config="toolbarConfig"
-      :form-config="queryFormConfig" :import-config="importConfig" :export-config="exportConfig"
+  <div :style="{height: scrollerHeight}">
+    <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
+      height="100%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
+      :toolbar-config="toolbarConfig" :form-config="queryFormConfig" :import-config="importConfig"
+      :export-config="exportConfig" :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}"
       :print-config="printConfig" @toolbar-button-click="toolbarButtonClickEvent" @form-submit="queryFormEvent"
       @form-toggle-collapse="queryFormToggleEvent">
+
       <template v-slot:operate="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
         </vxe-button>
         <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
           @click="removeButtonEvent(row)">删除</vxe-button>
       </template>
+
+      <template #pager>
+        <vxe-pager :layouts="['Sizes', 'PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump', 'FullJump', 'Total']"
+          :current-page.sync="tablePage.currentPage" :page-size.sync="tablePage.pageSize" :total="tablePage.total"
+          :page-sizes="[1, 3, 5, 10, 15, 20, 50, 100, 200, 500, 1000]" @page-change="handlePageChange">
+        </vxe-pager>
+      </template>
+
     </vxe-grid>
-    <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData ? '编辑&保存' : '新增&保存'" width="800"
+    <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData ? '编辑&保存' : '新增&保存'" width="100%"
       min-width="600" min-height="300" resize destroy-on-close>
       <template v-slot>
         <vxe-form ref="ZtVxeForm" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
@@ -165,6 +175,14 @@
     },
     data() {
       return {
+        loading: false,
+        tablePage: {
+          total: 0,
+          currentPage: 1,
+          pageSize: 10
+        },
+        tableHeight: 600,
+        queryData: {},
         showAdd: false,
         showQuery: false,
         showEdit: false,
@@ -188,12 +206,31 @@
       }
     },
     methods: {
+      handlePageChange({
+        currentPage,
+        pageSize
+      }) {
+        this.tablePage.currentPage = currentPage
+        this.tablePage.pageSize = pageSize
+        this.queryData.start = this.tablePage.currentPage
+        this.queryData.limit = this.tablePage.pageSize
+        this.queryEvent(this.queryData)
+      },
       queryEvent(queryData) {
-        console.log('queryData:' + JSON.stringify(queryData))
+        this.loading = true
+        if (!queryData.start) {
+          queryData.start = this.tablePage.currentPage
+        }
+        if (!queryData.limit) {
+          queryData.limit = this.tablePage.pageSize
+        }
+        this.queryData = queryData
+        console.log('queryData:' + JSON.stringify(this.queryData))
         this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
           .then(r => {
             var res = r.data.results;
-            // console.log('r:' + JSON.stringify(r.data.results))
+            // console.log('r:' + JSON.stringify(r))
+            this.tablePage.total = r.data.total
             // console.log('res:' + JSON.stringify(res))
             // 使用函数式加载，阻断 vue 对大数据的监听
             const xTable = this.$refs.ZtVxeGrid
@@ -211,6 +248,9 @@
 
             this.tableData = r.data.results
             // console.log('tableData:' + JSON.stringify(this.tableData))
+          })
+          .finally(r => {
+            this.loading = false
           });
         // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
         //   console.log('r:'+JSON.stringify(r))
@@ -574,12 +614,21 @@
 
       // this.$forceUpdate();
       // this.queryFormEvent()
+      _this.tableHeight = document.body.clientHeight
+      // console.log(document.body.clientWidth)
+      console.log(document.body.clientHeight)
+      console.log(_this.$refs.ZtVxeGrid.height)
+      // _this.$refs.ZtVxeGrid.height = document.body.clientHeight
     },
     created() {
       console.log('created')
       _this = this
       // console.log(PermissionDefine)
-
+    },
+    computed: {
+      scrollerHeight: function() {
+        return (document.body.clientHeight - 150) + 'px';
+      }
     }
   }
 </script>
