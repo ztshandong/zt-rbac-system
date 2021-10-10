@@ -275,6 +275,10 @@
             this.loading = false
           });
       },
+      // resetEvent() {
+      //   const $grid = this.$refs.ZtVxeGrid
+      //   $grid.commitProxy('reload')
+      // },
       queryFormToggleEvent(collapse, data, $event) {},
       handlePageChange({
         currentPage,
@@ -699,8 +703,6 @@
       item.forEach(t => {
         this.queryFormItems.push(t)
       })
-      // console.log(_this.$refs.ZtVxeQueryForm)
-
     },
     created() {
       console.log('created')

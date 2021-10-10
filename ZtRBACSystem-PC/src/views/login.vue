@@ -1,21 +1,24 @@
 <template>
-  <div class="login">
+  <div class="login" id="loginDiv" ref="loginDiv"
+    :class="{background1: random==1, background2: random==2, background3:random==3 }">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">卓睿后台管理系统</h3>
+      <h1 class="title">卓睿后台管理系统</h1>
       <el-form-item prop="userName">
         <el-input v-model="loginForm.userName" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="userPwd">
-        <el-input v-model="loginForm.userPwd" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleLogin">
+        <el-input v-model="loginForm.userPwd" type="password" auto-complete="off" placeholder="密码"
+          @keyup.enter.native="handleLogin">
           <svg-icon slot="prefix" icon-class="userPwd" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
 
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       <el-form-item style="width:100%;">
-        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+        <el-button :loading="loading" size="medium" type="primary" style="width:100%;"
+          @click.native.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
@@ -60,7 +63,8 @@
           }]
         },
         loading: false,
-        redirect: undefined
+        redirect: undefined,
+        random: 1
       };
     },
     watch: {
@@ -76,6 +80,12 @@
     created() {
       // this.getCode();
       this.getCookie();
+    },
+    mounted() {
+      this.random = Math.ceil(Math.random() * 3)
+      if (this.random == 0) {
+        this.random = 1
+      }
     },
     methods: {
       getCode() {
@@ -119,7 +129,7 @@
               this.$router.push({
                 path: this.redirect || "/"
               }).catch((err2) => {
-                 console.log('LoginResErr2:' + err2)
+                console.log('LoginResErr2:' + err2)
               });
             }).catch((err) => {
               console.log('LoginResErr:' + JSON.stringify(err))
@@ -139,19 +149,35 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    background-image: url("../assets/images/login-background.jpg");
+    // background-image: url("../assets/images/login-background.jpg");
     background-size: cover;
   }
 
+  .background1 {
+    background-image: url("../assets/images/login-background.jpg");
+  }
+
+  .background2 {
+    background-image: url("../assets/images/login-background2.jpg");
+  }
+
+  .background3 {
+    background-image: url("../assets/images/login-background3.jpg");
+  }
+
   .title {
+    // margin: 0px 0px 0px 0px;
     margin: 0px auto 30px auto;
     text-align: center;
-    color: #707070;
+    color: black;
+    // color: #707070;
   }
 
   .login-form {
+    background-color: transparent;
     border-radius: 6px;
-    background: #ffffff;
+    color: white;
+    // background: #ffffff;
     width: 400px;
     padding: 25px 25px 5px 25px;
 
@@ -202,5 +228,10 @@
 
   .login-code-img {
     height: 38px;
+  }
+
+  .el-input__inner {
+    // height: 47px;
+    background-color: rgba(255, 255, 255, 0.247);
   }
 </style>

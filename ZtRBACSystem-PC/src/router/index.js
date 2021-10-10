@@ -58,13 +58,13 @@ export const constantRoutes = [{
       name: '首页',
       meta: {
         title: '首页',
-        icon: 'dashboard',
+        icon: 'shouye',
         cacheFlag: false,
         affix: true,
         keepAlive: false
       }
     },
-      // {
+      // {dashboard
       //   path: 'role',
       //   hidden: true,
       //   component: (resolve) => require(['@/views/system/role/index'], resolve),

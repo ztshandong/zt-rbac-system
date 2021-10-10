@@ -15,6 +15,9 @@
       </vxe-form-item>
     </vxe-form>
  -->
+    <!-- <i class="fa fa-camera-retro fa-lg" style="color:green"></i> fa-lg -->
+    <!-- <i class='zhangtao icon-word2' style="color:red"></i>icon-word2 -->
+    <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
     <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :tableColumnProps="tableColumn"
       :queryFormItemsProps="queryFormItems" :apiPre="apiPre" :thisPermissionPre="thisPermissionPre"
       :saveFormDataProps="saveFormData" :saveFormItemsBakProps="saveFormItemsBak" @resetSaveFormData="resetSaveFormData"
@@ -44,7 +47,8 @@
               placeholder: '请输入角色'
             }
           }
-        }],
+        },
+      ],
         saveFormRoles: {
           thisName: [{
               required: true,
@@ -239,4 +243,7 @@
 </script>
 
 <style>
+/*  .ali{
+    font-size: 36px;
+  } */
 </style>

@@ -43,6 +43,7 @@
     "echarts": "4.9.0",
     "element-ui": "2.14.1",
     "file-saver": "2.0.4",
+    "font-awesome": "^4.7.0",
     "fuse.js": "6.4.3",
     "highlight.js": "9.18.5",
     "js-beautify": "1.13.0",
