@@ -78,14 +78,24 @@
               placeholder: '请输入角色名称'
             }
           }
-        }, ],
+        }, {
+          field: 'roleType',
+          resetValue: null,
+          title: '角色类型',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$select',
+            options: []
+          }
+        }],
         //查询表单专用form元素
         thisQueryItem: [{
           field: 'remark',
           resetValue: null,
           title: '备注',
           span: 8,
-          folding: false,
+          folding: true,
           itemRender: {
             name: '$input',
             props: {
@@ -268,47 +278,63 @@
 
       this.saveFormData = this.deepClone(this.thisData)
 
+      this.queryFormConfig.data = this.deepClone(this.thisData)
+      this.thisCommonItem.forEach(t => {
+        this.queryFormConfig.items.push(this.deepClone(t))
+      })
+      this.thisQueryItem.forEach(t => {
+        this.queryFormConfig.items.push(this.deepClone(t))
+      })
+      this.queryFormConfig.rules = this.queryFormRoles
+
+      this.thisCommonItem.forEach(t => {
+        this.saveFormItems.push(this.deepClone(t))
+      })
+      this.thisSaveItem.forEach(t => {
+        this.saveFormItems.push(this.deepClone(t))
+      })
+
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtRoleTypeEnum', null)
         .then(r => {
           _this.ztRoleTypeEnum = r.data
 
-          let roleType = {
-            field: 'roleType',
-            resetValue: null,
-            title: '角色类型',
-            span: 8,
-            folding: true,
-            itemRender: {
-              name: '$select',
-              options: _this.ztRoleTypeEnum
+          // let roleType = {
+          //   field: 'roleType',
+          //   resetValue: null,
+          //   title: '角色类型',
+          //   span: 8,
+          //   folding: true,
+          //   itemRender: {
+          //     name: '$select',
+          //     options: _this.ztRoleTypeEnum
+          //   }
+          // }
+          // this.thisCommonItem.push(roleType)
+
+          this.queryFormConfig.items.forEach(t => {
+            if (t.field == 'roleType') {
+              t.itemRender.options = _this.ztRoleTypeEnum
+              return
             }
-          }
-          this.thisCommonItem.push(roleType)
-          this.queryFormConfig.data = this.deepClone(this.thisData)
-          this.thisCommonItem.forEach(t => {
-            this.queryFormConfig.items.unshift(this.deepClone(t))
-          })
-          this.thisQueryItem.forEach(t => {
-            this.queryFormConfig.items.unshift(this.deepClone(t))
-          })
-          this.queryFormConfig.rules = this.queryFormRoles
-
-          this.thisCommonItem.forEach(t => {
-            this.saveFormItems.unshift(this.deepClone(t))
-          })
-          this.thisSaveItem.forEach(t => {
-            this.saveFormItems.unshift(this.deepClone(t))
           })
 
-          // const $grid = this.$refs.ztVxeGrid.$refs.ZtVxeGrid
-          // const roleTypeColumn = $grid.getColumnByField('roleType')
-          // roleTypeColumn.editRender.options = _this.ztRoleTypeEnum
+          this.saveFormItems.forEach(t => {
+            if (t.field == 'roleType') {
+              t.itemRender.options = _this.ztRoleTypeEnum
+              return
+            }
+          })
 
           this.tableColumn.forEach(t => {
             if (t.field == 'roleType') {
               t.editRender.options = _this.ztRoleTypeEnum
+              return
             }
           })
+          // const $grid = this.$refs.ztVxeGrid.$refs.ZtVxeGrid
+          // const roleTypeColumn = $grid.getColumnByField('roleType')
+          // roleTypeColumn.editRender.options = _this.ztRoleTypeEnum
+
           // for (var i = 0; i < 20; i++) {
           //   let roleTypeItem = $grid.getFormItems(i)
           //   if (roleTypeItem.field == 'roleType') {
