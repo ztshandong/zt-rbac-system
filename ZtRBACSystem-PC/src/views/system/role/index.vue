@@ -1,17 +1,31 @@
 <template>
   <div class="app-container">
+    <!--
+    <vxe-grid :formConfig="queryFormConfig">
 
-    <!-- <vxe-grid :formConfig="queryFormConfig"></vxe-grid> -->
-
+    </vxe-grid>
+ -->
+    <!--
+    <vxe-grid border resizable show-overflow keep-source ref="xTable" height="500" :data="tmpTableData"
+      :columns="tmpTableColumn">
+      <template #operate_default="{ row }">
+        <span>
+          <vxe-button status="primary" size="mini">自定义</vxe-button>
+        </span>
+        <vxe-button icon="fa fa-edit" title="编辑" @click="editButtonEvent(row)">编辑
+        </vxe-button>
+        <vxe-button icon="fa fa-edit" title="删除" status="danger" @click="removeButtonEvent(row)">删除</vxe-button>
+      </template>
+    </vxe-grid>
+   -->
     <!-- <i class="fa fa-camera-retro fa-lg" style="color:green"></i> fa-lg -->
     <!-- <i class='zhangtao icon-word2' style="color:red"></i>icon-word2 -->
     <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
 
-    <!-- :queryFormItemsProps="queryFormItems"  -->
-    <ZtVxeGrid ref="ztVxeGrid" :thisName="thisName" :tableColumnProps="tableColumn" :apiPre="apiPre"
-      :queryFormConfigProps="queryFormConfig" :thisPermissionPre="thisPermissionPre" :saveFormDataProps="saveFormData"
-      :saveFormItemsBakProps="saveFormItemsBak" @resetSaveFormData="resetSaveFormData"
-      @setSaveFormItemsBak="setSaveFormItemsBak">
+    <!-- :queryFormItemsProps="queryFormItems"  @setSaveFormItemsBak="setSaveFormItemsBak" @resetSaveFormData="resetSaveFormData"-->
+    <ZtVxeGrid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
+      :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData"
+      :saveFormItemsProps="saveFormItems" :saveFormRolesProps="saveFormRoles">
     </ZtVxeGrid>
   </div>
 </template>
@@ -26,38 +40,88 @@
     },
     data() {
       return {
-        //要直接传入config
-        queryFormConfig: {
-          data: {
-            thisName: null
-          },
-          items: [{
-            field: 'thisName',
-            resetValue: null,
-            title: '角色',
-            span: 8,
-            folding: false,
-            itemRender: {
-              name: '$input',
-              props: {
-                placeholder: '请输入角色'
-              }
-            }
-          }, ]
-        },
-        // queryFormItems: [{
-        //   field: 'thisName',
-        //   resetValue: null,
-        //   title: '角色',
-        //   span: 8,
-        //   folding: false,
-        //   itemRender: {
-        //     name: '$input',
-        //     props: {
-        //       placeholder: '请输入角色'
-        //     }
+        // tmpTableColumn: [{
+        //   field: 'name',
+        //   title: 'Name'
+        // }, {
+        //   field: 'operate',
+        //   title: '操作',
+        //   slots: {
+        //     default: 'operate_default'
         //   }
-        // }, ],
+        // }],
+        // tmpTableData: [],
+        //数据结构
+        thisData: {
+          id: null,
+          thisCode: null,
+          parentCode: null,
+          thisName: null,
+          roleType: null,
+          enableFlag: null,
+          adminFlag: null,
+          dataScopeType: null,
+          dataScopeOpt: null,
+          roleCustom: null,
+          remark: null
+        },
+        //通用form表单元素。查询、新增、编辑都用
+        thisCommonItem: [{
+          field: 'thisName',
+          resetValue: null,
+          title: '角色名称',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入角色名称'
+            }
+          }
+        }, ],
+        //查询表单专用form元素
+        thisQueryItem: [{
+          field: 'remark',
+          resetValue: null,
+          title: '备注',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入备注'
+            }
+          }
+        }, ],
+        //新增、编辑专用form元素
+        thisSaveItem: [{
+          field: 'thisCode',
+          resetValue: null,
+          title: '角色编号',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入角色编号'
+            }
+          }
+        }, ],
+        //查询表单校验规则，有就添加
+        queryFormRoles: {
+
+        },
+        //created()里面赋值，查询表单直接传入config，在通用组件的vxe-grid里面
+        queryFormConfig: {
+          data: {},
+          items: [],
+          rules: {}
+        },
+        //新增编辑界面数据 created()里面赋值
+        saveFormData: {},
+        //新增编辑界面表单元素 created()里面赋值
+        saveFormItems: [],
+        //新增编辑表单校验规则
         saveFormRoles: {
           thisName: [{
               required: true,
@@ -70,58 +134,11 @@
             }
           ]
         },
-        //:queryFormConfigProps="formConfig" :queryDataProps="queryData"
-        // formConfig: {
-        //   data: this.queryData,
-        //   titleWidth: 100,
-        //   titleAlign: 'right',
-        //   items: [{
-        //       field: 'thisName',
-        //       title: '角色',
-        //       span: 8,
-        //       folding: false,
-        //       itemRender: {
-        //         name: '$input',
-        //         props: {
-        //           placeholder: '请输入角色'
-        //         }
-        //       }
-        //     },
-        //     {
-        //       span: 24,
-        //       align: 'center',
-        //       collapseNode: true,
-        //       itemRender: {
-        //         name: '$buttons',
-        //         children: [{
-        //           props: {
-        //             type: 'submit',
-        //             content: '查询',
-        //             status: 'primary'
-        //           }
-        //         }, {
-        //           props: {
-        //             type: 'reset',
-        //             content: '重置'
-        //           }
-        //         }]
-        //       }
-        //     }
-        //   ]
-        // },
         apiPre: "",
         thisName: "ZtRoleInfo",
         thisPermissionPre: 'ROLE_MANAGE',
-        queryData: {
-          thisName: null
-        },
-        ztRoleTypeEnum: [],
-        ztDataScopeTypeEnum: [],
-        saveFormItemsBak: [],
-        saveFormData: {
-          "ztEnum2": null
-        },
-        ztEnum2Render: [],
+        // saveFormItemsBak: [],
+        // ztEnum2Render: [],
         tableColumn: [{
             field: 'id',
             title: 'id',
@@ -141,7 +158,15 @@
             showHeaderOverflow: true,
             filters: this.ztRoleTypeEnum,
             filterMultiple: false,
-            formatter: this.formatterRoleTypeEnum
+            // formatter: this.formatterRoleTypeEnum,
+            sortable: true,
+            editRender: {
+              name: '$select',
+              options: [],
+              props: {
+                placeholder: '请选择角色类型'
+              }
+            }
           },
           {
             field: 'dataScopeType',
@@ -155,46 +180,48 @@
             field: 'remark',
             title: '备注'
           },
-        ]
+        ],
+        ztRoleTypeEnum: [],
+        ztDataScopeTypeEnum: [],
       }
     },
     methods: {
-      resetSaveFormData(saveFormData) {
-        // console.log(saveFormData)
-        saveFormData = {
-          "ztEnum2": null
-        }
-        _this.saveFormData = {
-          "ztEnum2": null
-        }
-      },
+      // resetSaveFormData(saveFormData) {
+      // console.log(saveFormData)
+      // saveFormData = {
+      //   "ztEnum2": null
+      // }
+      // _this.saveFormData = {
+      //   "ztEnum2": null
+      // }
+      // },
       // doQuery() {
       //   this.$refs.ztVxeGrid.queryEvent(this.queryData);
       // },
       // resetEvent() {
       //   console.log(this.queryData)
       // },
-      getZtEnum2RenderSource() {
-        this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
-          this.ztEnum2Render = r.data
-        })
-      },
-      setSaveFormItemsBak(saveFormItems, callback) {
-        let ztEnum = saveFormItems.filter(function(cur, index, arr) {
-          return cur.field == 'ztEnum2';
-        })
-        if (ztEnum[0]) {
-          ztEnum[0].itemRender.options = this.ztEnum2Render
-        }
-        this.saveFormItemsBak = this.deepClone(saveFormItems)
-        callback(this.saveFormItemsBak)
-      },
-      formatterRoleTypeEnum({
-        cellValue
-      }) {
-        let item = this.ztRoleTypeEnum.find(item => item.value === cellValue)
-        return item ? item.label : null
-      },
+      // getZtEnum2RenderSource() {
+      //   this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
+      //     this.ztEnum2Render = r.data
+      //   })
+      // },
+      // setSaveFormItemsBak(saveFormItems, callback) {
+      //   let ztEnum = saveFormItems.filter(function(cur, index, arr) {
+      //     return cur.field == 'ztEnum2';
+      //   })
+      //   if (ztEnum[0]) {
+      //     ztEnum[0].itemRender.options = this.ztEnum2Render
+      //   }
+      //   this.saveFormItemsBak = this.deepClone(saveFormItems)
+      //   callback(this.saveFormItemsBak)
+      // },
+      // formatterRoleTypeEnum({
+      //   cellValue
+      // }) {
+      //   let item = this.ztRoleTypeEnum.find(item => item.value === cellValue)
+      //   return item ? item.label : null
+      // },
       formatterDataScopeTypeEnum({
         cellValue
       }) {
@@ -238,20 +265,76 @@
     },
     created() {
       _this = this
-    },
-    mounted() {
+
+      this.saveFormData = this.deepClone(this.thisData)
+
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtRoleTypeEnum', null)
         .then(r => {
           _this.ztRoleTypeEnum = r.data
+
+          let roleType = {
+            field: 'roleType',
+            resetValue: null,
+            title: '角色类型',
+            span: 8,
+            folding: true,
+            itemRender: {
+              name: '$select',
+              options: _this.ztRoleTypeEnum
+            }
+          }
+          this.thisCommonItem.push(roleType)
+          this.queryFormConfig.data = this.deepClone(this.thisData)
+          this.thisCommonItem.forEach(t => {
+            this.queryFormConfig.items.unshift(this.deepClone(t))
+          })
+          this.thisQueryItem.forEach(t => {
+            this.queryFormConfig.items.unshift(this.deepClone(t))
+          })
+          this.queryFormConfig.rules = this.queryFormRoles
+
+          this.thisCommonItem.forEach(t => {
+            this.saveFormItems.unshift(this.deepClone(t))
+          })
+          this.thisSaveItem.forEach(t => {
+            this.saveFormItems.unshift(this.deepClone(t))
+          })
+
+          // const $grid = this.$refs.ztVxeGrid.$refs.ZtVxeGrid
+          // const roleTypeColumn = $grid.getColumnByField('roleType')
+          // roleTypeColumn.editRender.options = _this.ztRoleTypeEnum
+
+          this.tableColumn.forEach(t => {
+            if (t.field == 'roleType') {
+              t.editRender.options = _this.ztRoleTypeEnum
+            }
+          })
+          // for (var i = 0; i < 20; i++) {
+          //   let roleTypeItem = $grid.getFormItems(i)
+          //   if (roleTypeItem.field == 'roleType') {
+          //     roleTypeItem.itemRender.options = _this.ztRoleTypeEnum
+          //     break;
+          //   }
+          // }
+
+          // console.log($grid.getFormItems(0))
+          // console.log($grid.getFormItems(2))
+          // console.log($grid.getFormItems(3))
+          // roleTypeItem.itemRender.options = _this.ztRoleTypeEnum
+
         })
 
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtDataScopeTypeEnum', null)
         .then(r => {
           _this.ztDataScopeTypeEnum = r.data
         })
+    },
+    mounted() {
+
+      // const $form = this.$refs.ztVxeGrid.$refs.ZtVxeModal
+      // console.log($form)
 
       // this.$refs.ztVxeGrid.queryEvent(this.queryData);
-
     }
   }
 </script>

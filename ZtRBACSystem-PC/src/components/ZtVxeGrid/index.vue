@@ -29,7 +29,7 @@
       title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="resetEvent"></vxe-form>
        -->
 
-    <!-- queryFormConfig要传全部的配置，否则有问题。通用组件里面添加查询与重制按钮，这样查询触发的就是@form-submit的queryFormEvent，入参是个事件 -->
+    <!-- queryFormConfig传全部的配置。通用组件里面添加查询与重制按钮，这样查询触发的就是@form-submit的queryFormEvent，入参是个事件，分页也要用这个 -->
     <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
       height="130%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
       :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
@@ -37,36 +37,62 @@
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
       @toolbar-button-click="toolbarButtonClickEvent" @form-toggle-collapse="queryFormToggleEvent">
 
-      <!--
-      这样会把toolbar的按钮挤乱，配合修改toolbarConfigProps
-      <template #toolbar_buttons>
-        <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles"
-          title-align="right" title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent"
-          @reset="resetEvent"></vxe-form>
-      </template>
- -->
-      <template v-slot:operate="{ row }">
+      <template #operate_default="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
         </vxe-button>
         <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
           @click="removeButtonEvent(row)">删除</vxe-button>
       </template>
 
+      <!--
+      这样会把toolbar的按钮挤乱，还要配合修改toolbarConfigProps
+      <template #toolbar_buttons>
+        <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles"
+          title-align="right" title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent"
+          @reset="resetEvent"></vxe-form>
+      </template>
+ -->
+      <!--
+      <template v-slot:operate="{ row }">
+        <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
+        </vxe-button>
+        <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
+          @click="removeButtonEvent(row)">删除</vxe-button>
+      </template>
+      -->
+      <!--
+      <vxe-column title="操作" width="240">
+        <template #default="{ row }">
+          <vxe-button status="warning" content="临时删除" @click="removeRowEvent(row)"></vxe-button>
+          <vxe-button status="danger" content="直接删除" @click="deleteRowEvent(row)"></vxe-button>
+        </template>
+      </vxe-column>
+      -->
+      <!--
+      <template #edit="{ row }">
+        <vxe-input type="text" v-model="row.role"></vxe-input>
+      </template>
+      -->
+      <!--
+      <template #default="{ row }">
+        <vxe-button status="warning" content="临时删除" @click="removeRowEvent(row)"></vxe-button>
+        <vxe-button status="danger" content="直接删除" @click="deleteRowEvent(row)"></vxe-button>
+      </template>
+ -->
       <template #pager>
         <vxe-pager :layouts="['Sizes', 'PrevJump', 'PrevPage', 'Number', 'NextPage', 'NextJump', 'FullJump', 'Total']"
           :current-page.sync="tablePage.currentPage" :page-size.sync="tablePage.pageSize" :total="tablePage.total"
           :page-sizes="[1, 3, 5, 10, 15, 20, 50, 100, 200, 500, 1000]" @page-change="handlePageChange">
         </vxe-pager>
       </template>
-
     </vxe-grid>
 
-    <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData ? '编辑&保存' : '新增&保存'" width="100%"
+    <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData.id ? '编辑' : '新增'" width="100%"
       min-width="600" min-height="300" resize destroy-on-close>
-      <template v-slot>
-        <vxe-form ref="ZtVxeForm" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
-          title-width="100" @submit="saveButtonEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
-      </template>
+      <!-- <template v-slot> -->
+      <vxe-form ref="ZtVxeForm" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
+        title-width="100" @submit="saveButtonEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
+      <!-- </template> -->
     </vxe-modal>
   </div>
 </template>
@@ -118,21 +144,21 @@
           items: []
         }),
       },
-      queryFormItemsProps: {
-        // 查询表单各个字段
-        type: Array,
-        default: () => [],
-      },
-      queryFormRolesProps: {
-        // 校验规则
-        type: Object,
-        default: () => ({}),
-      },
-      queryDataProps: {
-        // 查询条件具体数据
-        type: Object,
-        default: () => ({}),
-      },
+      // queryFormItemsProps: {
+      //   // 查询表单各个字段
+      //   type: Array,
+      //   default: () => [],
+      // },
+      // queryFormRolesProps: {
+      //   // 校验规则
+      //   type: Object,
+      //   default: () => ({}),
+      // },
+      // queryDataProps: {
+      //   // 查询条件具体数据
+      //   type: Object,
+      //   default: () => ({}),
+      // },
       tablePageProps: {
         //默认分页大小
         type: Object,
@@ -244,7 +270,6 @@
     data() {
       return {
         loading: false,
-        // tableHeight: 600,
         showAdd: false,
         showQuery: false,
         showEdit: false,
@@ -254,20 +279,25 @@
         showImport: false,
         showExport: false,
         showSaveForm: false,
+
         tableData: this.tableDataProps,
         tableColumn: this.tableColumnProps,
         tablePage: this.tablePageProps,
 
         queryFormConfig: this.queryFormConfigProps,
-        queryFormItems: this.queryFormItemsProps,
-        queryFormRoles: this.queryFormRolesProps,
-        queryData: this.queryDataProps,
+        // queryFormItems: this.queryFormItemsProps,
+        // queryFormRoles: this.queryFormRolesProps,
+        queryData: {},
         queryDataBak: {},
 
+        //对比，只传修改过的字段
+        saveFormDataBak: {},
         saveFormData: this.saveFormDataProps,
+        addFormDataBak: {},
         saveFormRules: this.saveFormRolesProps,
         saveFormItems: this.saveFormItemsProps,
         saveFormItemsBak: this.saveFormItemsBakProps,
+
         printConfig: this.printConfigProps,
         importConfig: this.importConfigProps,
         exportConfig: this.exportConfigProps,
@@ -275,11 +305,10 @@
       }
     },
     methods: {
+      //表单提交
       queryFormEvent(e) {
-        // console.log(e)
         this.queryData = this.queryFormConfig.data
-        console.log(this.queryData)
-        // console.log(this.queryFormConfig)
+        // console.log(this.queryData)
         this.loading = true
         if (!this.queryData.start) {
           this.queryData.start = this.tablePage.currentPage
@@ -287,7 +316,23 @@
         if (!this.queryData.limit) {
           this.queryData.limit = this.tablePage.pageSize
         }
-        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
+        this.doQuery(this.queryData);
+      },
+      //其他组件传入查询参数
+      queryEvent(queryData) {
+        this.loading = true
+        this.queryData = queryData
+        if (!this.queryData.start) {
+          this.queryData.start = this.tablePage.currentPage
+        }
+        if (!this.queryData.limit) {
+          this.queryData.limit = this.tablePage.pageSize
+        }
+        // console.log('queryEvent:' + JSON.stringify(this.queryData))
+        this.doQuery(this.queryData);
+      },
+      doQuery(queryData) {
+        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
           .then(r => {
             var res = r.data.results;
             // console.log('r:' + JSON.stringify(r))
@@ -306,7 +351,6 @@
                 })
               })
             }
-
             this.tableData = r.data.results
             // console.log('tableData:' + JSON.stringify(this.tableData))
           })
@@ -314,14 +358,8 @@
             this.loading = false
           });
       },
-      resetEvent() {
-        // this.queryData={}
-        // this.queryData=this.deepClone(this.queryDataBak)
-        // const $grid = this.$refs.ZtVxeGrid
-        // $grid.reloadData(this.tableData)
-        // console.log(this.$refs.ZtVxeQueryForm.data)
-      },
-      queryFormToggleEvent(collapse, data, $event) {},
+      // resetEvent() {
+      // },
       handlePageChange({
         currentPage,
         pageSize
@@ -332,60 +370,10 @@
         this.queryData.limit = this.tablePage.pageSize
         this.queryFormEvent()
       },
-
-      queryEvent(queryData) {
-        this.loading = true
-        this.queryData = queryData
-        if (!this.queryData.start) {
-          this.queryData.start = this.tablePage.currentPage
-        }
-        if (!this.queryData.limit) {
-          this.queryData.limit = this.tablePage.pageSize
-        }
-        console.log('queryEvent:' + JSON.stringify(this.queryData))
-        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', this.queryData)
-          .then(r => {
-            var res = r.data.results;
-            // console.log('r:' + JSON.stringify(r))
-            this.tablePage.total = r.data.total
-            // console.log('res:' + JSON.stringify(res))
-            // 使用函数式加载，阻断 vue 对大数据的监听
-            const xTable = this.$refs.ZtVxeGrid
-            // console.log('res:')
-            // console.log(res)
-            const startTime = Date.now()
-            if (xTable) {
-              this.$refs.ZtVxeGrid.reloadData(res).then(() => {
-                _this.$XModal.message({
-                  message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
-                  status: 'info'
-                })
-              })
-            }
-
-            this.tableData = r.data.results
-            // console.log('tableData:' + JSON.stringify(this.tableData))
-          })
-          .finally(r => {
-            this.loading = false
-          });
-        // this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData, r => {
-        //   console.log('r:'+JSON.stringify(r))
-        //   // 使用函数式加载，阻断 vue 对大数据的监听
-        //   const xTable = this.$refs.ZtVxeGrid
-        //   const startTime = Date.now()
-        //   if (xTable) {
-        //     this.$refs.ZtVxeGrid.reloadData(r.data).then(() => {
-        //       _this.$XModal.message({
-        //         message: `渲染 ${r.data.records.length} 行，用时 ${Date.now() - startTime}毫秒`,
-        //         status: 'info'
-        //       })
-        //     })
-        //   }
-
-        //   this.tableData = r.data
-        //   console.log('tableData:'+this.tableData)
-        // })
+      queryFormToggleEvent(collapse, data, $event) {
+        // console.log(collapse)
+        // console.log(data)
+        // console.log($event)
       },
 
       // findColumn() {
@@ -497,93 +485,6 @@
       //   })
 
       // },
-
-      editButtonEvent(row) {
-        this.editEvent(row)
-      },
-      editEvent(row) {
-        this.saveFormItems = this.deepClone(this.saveFormItemsBak)
-        // console.log(this.saveFormItems)
-        this.saveFormItems.forEach(t => {
-          t.folding = false
-        })
-
-        if (row.id) {
-          this.saveFormData = row
-          let editDisabled = this.saveFormItems.filter(function(cur, index, arr) {
-            return cur.editDisabled == true;
-          })
-          editDisabled.forEach(t => {
-            if (!t.itemRender) {
-              t.itemRender = {}
-            }
-            if (!t.itemRender.props) {
-              t.itemRender.props = {}
-            }
-            t.itemRender.props.disabled = true
-          })
-
-          let editReadonly = this.saveFormItems.filter(function(cur, index, arr) {
-            return cur.editReadonly == true;
-          })
-          editReadonly.forEach(t => {
-            if (!t.itemRender) {
-              t.itemRender = {}
-            }
-            if (!t.itemRender.props) {
-              t.itemRender.props = {}
-            }
-            t.itemRender.props.readonly = true
-          })
-        } else {
-          _this.$emit('resetSaveFormData', this.saveFormData)
-          this.saveFormData = this.saveFormDataProps
-          let addDisabled = this.saveFormItems.filter(function(cur, index, arr) {
-            return cur.addDisabled == true;
-          })
-          addDisabled.forEach(t => {
-            if (!t.itemRender) {
-              t.itemRender = {}
-            }
-            if (!t.itemRender.props) {
-              t.itemRender.props = {}
-            }
-            t.itemRender.props.disabled = true
-          })
-
-          let addReadonly = this.saveFormItems.filter(function(cur, index, arr) {
-            return cur.addReadonly == true;
-          })
-          addReadonly.forEach(t => {
-            if (!t.itemRender) {
-              t.itemRender = {}
-            }
-            if (!t.itemRender.props) {
-              t.itemRender.props = {}
-            }
-            t.itemRender.props.readonly = true
-          })
-        }
-        this.showSaveForm = true
-      },
-
-      saveButtonEvent() {
-        this.submitLoading = true
-        setTimeout(() => {
-          this.submitLoading = false
-          this.showSaveForm = false
-          if (this.saveFormData.id) {
-            console.log('编辑')
-            this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', this.saveFormData, r => {})
-          } else {
-            console.log('新增')
-            this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData, r => {})
-          }
-          console.log(this.saveFormData)
-          _this.$emit('resetSaveFormData', this.saveFormData)
-          this.saveFormData = this.saveFormDataProps
-        }, 500)
-      },
       toolbarButtonClickEvent({
         code
       }) {
@@ -611,8 +512,8 @@
               status: 'success'
             })
             break
-          case 'ADD':
-            this.editButtonEvent({})
+          case PermissionDefine.BUTTON_ADD:
+            this.editButtonEvent(this.deepClone(this.addFormDataBak))
             break
           case 'saveImport':
             setTimeout(() => {
@@ -635,6 +536,55 @@
             break
         }
       },
+      editButtonEvent(row) {
+        this.editEvent(row)
+      },
+      async removeButtonEvent(row) {
+        const type = await this.$XModal.confirm('您确定要删除选中的数据?')
+        if (type !== 'confirm') {
+          return
+        }
+        console.log(row)
+        // this.$api.post(this.apiPre + '/' + this.thisName + '/deleteSimple', row, r => {})
+      },
+      editEvent(row) {
+
+        console.log(this.addFormDataBak)
+        console.log(row)
+        this.saveFormDataBak = this.deepClone(row)
+        this.saveFormData = row
+        this.showSaveForm = true
+      },
+      saveButtonEvent(e) {
+        // this.submitLoading = true
+        // setTimeout(() => {}, 2000)
+        if (this.saveFormData.id) {
+          console.log('编辑')
+          let saveData = {}
+          let keys = Object.keys(this.saveFormData);
+          keys.forEach(key => {
+            let oriData = this.saveFormDataBak[`${key}`]
+            let curData = this.saveFormData[`${key}`]
+            if (JSON.stringify(curData) != JSON.stringify(oriData)) {
+              saveData[`${key}`] = curData
+            }
+          })
+          saveData.id = this.saveFormData.id
+          console.log(saveData)
+          this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).finally(r => {
+            // _this.submitLoading = false
+          });
+        } else {
+          console.log('新增')
+          this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData).finally(r => {
+            // _this.submitLoading = false
+          });
+        }
+        this.showSaveForm = false
+        // _this.$emit('resetSaveFormData', this.saveFormData)
+        // this.saveFormData = this.saveFormDataProps
+      },
+
       deepClone(target) {
         // console.log(target)
         // 定义一个变量
@@ -675,21 +625,28 @@
         // console.log('permissions:' + permissions)
         return permissions.includes(per)
       },
-      removeButtonEvent(row) {
-        this.$api.post(this.apiPre + '/' + this.thisName + '/deleteSimple', row, r => {})
-      }
     },
     mounted() {
       // this.$store.dispatch("SetPermi")
-      console.log('mounted')
-      this.showAdd = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_ADD)
-      this.showQuery = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_QUERY)
-      this.showEdit = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EDIT)
-      this.showRemove = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_DEL)
-      this.showApp = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_APP)
-      this.showPrint = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_PRINT)
-      this.showImport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_IMPORT)
-      this.showExport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EXPORT)
+      console.log('common mounted')
+      // console.log(this.queryFormConfig)
+      this.showAdd = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_ADD) || this
+        .thisPermissionPre == ""
+      this.showQuery = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_QUERY) || this
+        .thisPermissionPre == ""
+      this.showEdit = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EDIT) || this
+        .thisPermissionPre == ""
+      // console.log('this.showEdit' + this.showEdit)
+      this.showRemove = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_DEL) || this
+        .thisPermissionPre == ""
+      this.showApp = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_APP) || this
+        .thisPermissionPre == ""
+      this.showPrint = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_PRINT) || this
+        .thisPermissionPre == ""
+      this.showImport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_IMPORT) || this
+        .thisPermissionPre == ""
+      this.showExport = this.hasPermi(this.thisPermissionPre + ':' + PermissionDefine.BUTTON_EXPORT) || this
+        .thisPermissionPre == ""
 
       // this.findColumn()
       this.$nextTick(() => {
@@ -707,9 +664,67 @@
         // saveImport[0].visible = this.showImport
         // saveImport[0].disabled = !this.showImport
 
-        // _this.$refs.ZtVxeGrid.toolbarConfig.import = this.showImport
-        // _this.$refs.ZtVxeGrid.toolbarConfig.export = this.showExport
-        // _this.$refs.ZtVxeGrid.toolbarConfig.print = this.showPrint
+        _this.$refs.ZtVxeGrid.toolbarConfig.import = this.showImport
+        _this.$refs.ZtVxeGrid.toolbarConfig.export = this.showExport
+        _this.$refs.ZtVxeGrid.toolbarConfig.print = this.showPrint
+
+
+        var commonButton = {
+          // span: 24,
+          // align: 'center',
+          collapseNode: true,
+          itemRender: {
+            name: '$buttons',
+            children: [{
+              props: {
+                type: 'submit',
+                content: '查询',
+                status: 'primary'
+              }
+            }, {
+              props: {
+                type: 'reset',
+                content: '重置'
+              }
+            }]
+          }
+        }
+
+        this.queryFormConfig.items.push(commonButton)
+        // console.log(this.saveFormItems)
+        this.saveFormItems.push({
+          align: 'center',
+          span: 24,
+          titleAlign: 'left',
+          collapseNode: true,
+          itemRender: {
+            name: '$buttons',
+            children: [{
+              props: {
+                type: 'submit',
+                content: '保存',
+                status: 'primary'
+              }
+            }, {
+              props: {
+                disabled: true,
+                type: 'reset',
+                content: '重置'
+              }
+            }]
+          }
+        })
+
+        // this.queryDataBak = this.deepClone(this.queryData)
+        this.tableColumn.push({
+          field: 'operate',
+          title: '操作',
+          minWidth: 120,
+          slots: {
+            default: 'operate_default'
+          }
+        })
+
       })
 
       // this.$forceUpdate();
@@ -746,40 +761,18 @@
       //   this.queryFormItems.push(t)
       // })
 
-      var commonButton = {
-        span: 24,
-        align: 'center',
-        collapseNode: true,
-        itemRender: {
-          name: '$buttons',
-          children: [{
-            props: {
-              type: 'submit',
-              content: '查询',
-              status: 'primary'
-            }
-          }, {
-            props: {
-              type: 'reset',
-              content: '重置'
-            }
-          }]
-        }
-      }
-
-      this.queryFormConfig.items.push(commonButton)
-
-      // this.queryDataBak = this.deepClone(this.queryData)
+      this.addFormDataBak = this.deepClone(this.saveFormData)
     },
     created() {
-      console.log('created')
+      console.log('common created')
       _this = this
+      // console.log(this.queryFormConfig)
       // console.log(PermissionDefine)
 
     },
     computed: {
       scrollerHeight: function() {
-        return (document.body.clientHeight - 150) + 'px';
+        return (document.body.clientHeight - 170) + 'px';
       }
     }
   }
