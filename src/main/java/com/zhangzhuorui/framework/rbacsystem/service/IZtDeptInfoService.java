@@ -19,6 +19,8 @@ import java.util.List;
  */
 public interface IZtDeptInfoService extends IZtRbacSimpleBaseService<ZtDeptInfo> {
 
+    List<ZtDeptInfo> getAllDeptTree();
+
     List<String> getCurUserDeptCodes(ZtUserInfo userInfo);
 
 }

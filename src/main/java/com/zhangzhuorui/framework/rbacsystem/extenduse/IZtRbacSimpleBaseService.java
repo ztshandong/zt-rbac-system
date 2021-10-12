@@ -3,6 +3,7 @@ package com.zhangzhuorui.framework.rbacsystem.extenduse;
 import com.zhangzhuorui.framework.core.ZtPropertyFunc;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.IZtSimpleBaseService;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface IZtRbacSimpleBaseService<T extends ZtRbacBasicEntity> extends I
     ZtUserInfo getSimpleUserInfoFromToken();
 
     ZtComponentInfo buildComponentTree(ZtComponentInfo parentNode, List<ZtComponentInfo> treeNodes);
+
+    ZtDeptInfo buildDeptTree(ZtDeptInfo parentNode, List<ZtDeptInfo> treeNodes);
 
     /**
      * 部门编号字段名

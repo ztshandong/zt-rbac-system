@@ -1,8 +1,11 @@
 package com.zhangzhuorui.framework.rbacsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
 
 /**
  * @author :  张涛 zhangtao
@@ -18,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 部门信息表
  */
 @ApiModel(value = "ZtDeptInfo")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ZtDeptInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 部门编号（唯一，不可修改）
@@ -60,6 +64,32 @@ public class ZtDeptInfo extends ZtRbacBasicEntity<Long> {
      */
     @ApiModelProperty(value = "部门负责人编号")
     private String deptLeaderCode;
+
+    //---------------分割线以下的字段数据库不存在-----------------
+
+    /**
+     * 子组件
+     */
+    @ApiModelProperty(value = "子组件")
+    private List<ZtDeptInfo> children;
+
+    public String getLabel() {
+        return thisName;
+    }
+
+    /**
+     * 上级部门名称
+     */
+    @ApiModelProperty(value = "上级部门名称")
+    private String parentName;
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
 
     public String getThisCode() {
         return thisCode;
@@ -115,6 +145,14 @@ public class ZtDeptInfo extends ZtRbacBasicEntity<Long> {
 
     public void setDeptLeaderCode(String deptLeaderCode) {
         this.deptLeaderCode = deptLeaderCode;
+    }
+
+    public List<ZtDeptInfo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ZtDeptInfo> children) {
+        this.children = children;
     }
 
     @Override

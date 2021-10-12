@@ -12,6 +12,7 @@ import com.zhangzhuorui.framework.mybatis.simplebaseservice.ZtSimpleBaseServiceI
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
+import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtRoleInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtDataScopeTypeEnum;
@@ -92,6 +93,39 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                     ZtComponentInfo ztComponentInfo1 = new ZtComponentInfo();
                     BeanUtils.copyProperties(ztComponentInfo, ztComponentInfo1);
                     children.add(buildComponentTree(ztComponentInfo1, treeNodes));
+                }
+            }
+        }
+        return parentNode;
+    }
+
+    /**
+     * 组装部门树
+     *
+     * @param parentNode :
+     * @param treeNodes  :
+     * @return :  com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo
+     * @author :  zhangtao
+     * @createDate :  2021/10/5 下午7:49
+     * @description :
+     * @updateUser :
+     * @updateDate :
+     * @updateRemark :
+     */
+    @Override
+    public ZtDeptInfo buildDeptTree(ZtDeptInfo parentNode, List<ZtDeptInfo> treeNodes) {
+        List<ZtDeptInfo> children = parentNode.getChildren();
+        for (ZtDeptInfo treeNode : treeNodes) {
+            if (parentNode.getThisCode().equals(treeNode.getParentCode()) || parentNode.getThisCode().equals(treeNode.getRootCode())) {
+                if (children == null) {
+                    children = new LinkedList<>();
+                    parentNode.setChildren(children);
+                }
+                if (!children.contains(treeNode)) {
+                    ZtDeptInfo child = new ZtDeptInfo();
+                    BeanUtils.copyProperties(treeNode, child);
+                    child.setParentName(parentNode.getThisName());
+                    children.add(buildDeptTree(child, treeNodes));
                 }
             }
         }

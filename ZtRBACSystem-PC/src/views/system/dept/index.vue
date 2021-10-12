@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+    <!-- https://www.vue-treeselect.cn/ -->
+    <treeselect :multiple="true" :options="deptOptions" placeholder="xx" v-model="thisData.thisCode" />
+
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
       <el-form-item label="部门名称" prop="deptName">
         <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable size="small"
@@ -19,13 +22,12 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-          v-hasPermi="['system:dept:add']">新增</el-button>
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="deptList" row-key="deptId" default-expand-all
+    <el-table v-loading="false" :data="deptList" row-key="deptId" default-expand-all
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
       <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
@@ -37,12 +39,10 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:dept:edit']">修改</el-button>
-          <el-button size="mini" type="text" icon="el-icon-plus" @click="handleAdd(scope.row)"
-            v-hasPermi="['system:dept:add']">新增</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+          <el-button size="mini" type="text" icon="el-icon-plus" @click="handleAdd(scope.row)">新增</el-button>
           <el-button v-if="scope.row.parentId != 0" size="mini" type="text" icon="el-icon-delete"
-            @click="handleDelete(scope.row)" v-hasPermi="['system:dept:remove']">删除</el-button>
+            @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+  var _this;
   import {
     listDept,
     getDept,
@@ -119,6 +120,31 @@
     },
     data() {
       return {
+        apiPre: "",
+        thisName: "ZtDeptInfo",
+        thisData: {
+          id: null,
+          thisCode: null,
+          thisName: null,
+          parentCode: null,
+          rootCode: null,
+          enableFlag: null,
+          deptLeaderCode: null,
+        },
+        thisCommonItem: [{
+          field: 'thisName',
+          resetValue: null,
+          title: '部门名称',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入部门名称',
+              clearable: true,
+            },
+          }
+        }],
         // 遮罩层
         loading: true,
         // 显示搜索条件
@@ -171,7 +197,8 @@
       };
     },
     created() {
-      // this.getList();
+      _this = this
+      this.getList();
       // this.getDicts("sys_normal_disable").then(response => {
       //   this.statusOptions = response.data;
       // });
@@ -180,10 +207,15 @@
       /** 查询部门列表 */
       getList() {
         this.loading = true;
-        listDept(this.queryParams).then(response => {
-          this.deptList = this.handleTree(response.data, "deptId");
-          this.loading = false;
-        });
+        this.$api.post(this.apiPre + '/' + this.thisName + '/getAllDeptTree', null)
+          .then(r => {
+            _this.deptOptions = r.data;
+            console.log(r)
+          })
+        // listDept(this.queryParams).then(response => {
+        //   this.deptList = this.handleTree(response.data, "deptId");
+        //   this.loading = false;
+        // });
       },
       /** 转换部门数据结构 */
       normalizer(node) {

@@ -43,6 +43,12 @@ public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo>
         return super.ztSimpleSelectAll();
     }
 
+    @RequestMapping(value = "getAllDeptTree", method = RequestMethod.POST)
+    @ResponseBody
+    public ZtResBeanEx<List<ZtDeptInfo>> getAllDeptTree() throws Exception {
+        return ZtResBeanEx.ok(getIZtSimpleBaseService().getAllDeptTree());
+    }
+
     @RequestMapping(value = "getCurUserDeptCodes", method = RequestMethod.POST)
     @ResponseBody
     public List<String> getCurUserDeptCodes() {

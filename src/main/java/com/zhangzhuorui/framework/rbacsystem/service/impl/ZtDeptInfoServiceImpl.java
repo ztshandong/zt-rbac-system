@@ -87,6 +87,18 @@ public class ZtDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtDeptInf
         return ztDeptInfoParamEntity;
     }
 
+    @Override
+    @SneakyThrows
+    public List<ZtDeptInfo> getAllDeptTree() {
+        ZtParamEntity<ZtDeptInfo> ztDeptInfoZtParamEntity = getThisService().ztSimpleSelectAll();
+        List<ZtDeptInfo> allDeptInfoList = getThisService().getList(ztDeptInfoZtParamEntity);
+        for (ZtDeptInfo ztDeptInfo : allDeptInfoList) {
+            buildDeptTree(ztDeptInfo, allDeptInfoList);
+        }
+        allDeptInfoList = allDeptInfoList.stream().filter(t -> StringUtils.isEmpty(t.getParentCode())).collect(Collectors.toList());
+        return allDeptInfoList;
+    }
+
     /**
      * 获取用户所有部门
      * 1.查询用户部门关联表，排除特定部门

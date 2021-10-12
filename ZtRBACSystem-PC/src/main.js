@@ -27,10 +27,13 @@ import XEUtils from "xe-utils";
 import VXETable from "vxe-table";
 import VXEUtils from "vxe-utils";
 import 'vxe-table/lib/style.css'
+import ZtVxeGrid from '@/components/ZtVxeGrid';
+import EditDownTable from '@/components/EditDownTable'
 
 // 将API方法绑定到全局
 Vue.prototype.$api = api
 Vue.use(VXETable);
+Vue.use(ZtVxeGrid);
 Vue.use(VXEUtils, XEUtils);
 Vue.prototype.$XPrint = VXETable.print
 Vue.prototype.$XModal = VXETable.modal
@@ -88,6 +91,8 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
+
+Vue.component(EditDownTable.name, EditDownTable)
 
 new Vue({
   el: '#app',

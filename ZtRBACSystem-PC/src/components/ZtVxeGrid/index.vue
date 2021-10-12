@@ -4,7 +4,7 @@
 
     <!--
     第一种方式子类自行实现，此时@submit调用的是this.$refs.ztVxeGrid.queryEvent(this.queryData);传入的是对象
-    <vxe-form :data="queryData" @submit="doQuery" @reset="resetEvent">
+    <vxe-form :data="queryData" @submit="doQuery" @reset="resetEvent">  @submit.prevent="onSubmit"
       <vxe-form-item title="角色" field="thisName" :item-render="{}">
           <template #default="{ data }">
           <vxe-input v-model="data.thisName" placeholder="请输入名称"></vxe-input>
@@ -33,9 +33,10 @@
     <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
       height="130%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
       :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
-      :form-config="queryFormConfig" @form-submit="queryFormEvent"
+      :form-config="queryFormConfig" @form-submit="queryFormEvent" @form-reset="queryResetEvent"
+      @form-toggle-collapse="queryFormToggleEvent"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
-      @toolbar-button-click="toolbarButtonClickEvent" @form-toggle-collapse="queryFormToggleEvent">
+      @toolbar-button-click="toolbarButtonClickEvent">
 
       <template #operate_default="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
@@ -305,8 +306,13 @@
       }
     },
     methods: {
+      queryResetEvent(data, event) {
+        _this.$emit('formResetEvent',data)
+      },
       //表单提交
-      queryFormEvent(e) {
+      queryFormEvent(data, event) {
+        console.log(data)
+        console.log(event)
         this.queryData = this.queryFormConfig.data
         // console.log(this.queryData)
         this.loading = true
@@ -332,6 +338,7 @@
         this.doQuery(this.queryData);
       },
       doQuery(queryData) {
+        // console.log(queryData)
         this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
           .then(r => {
             var res = r.data.results;
@@ -680,7 +687,7 @@
                 type: 'submit',
                 content: '查询',
                 status: 'primary'
-              }
+              },
             }, {
               props: {
                 type: 'reset',

@@ -23,21 +23,63 @@
     <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
 
     <!-- :queryFormItemsProps="queryFormItems"  @setSaveFormItemsBak="setSaveFormItemsBak" @resetSaveFormData="resetSaveFormData"-->
+    <vxe-pulldown ref="xDown1">
+      <vxe-input v-model="queryFormConfig.data.thisCode" placeholder="可搜索的下拉框" @focus="focusEvent1"></vxe-input>
+      <!--
+      <template #default>
+        <vxe-input v-model="thisData.thisCode" placeholder="可搜索的下拉框" @focus="focusEvent1"></vxe-input>
+      </template>
+      -->
+      <template #dropdown>
+        <div class="my-dropdown1">
+          <div class="list-item1" v-for="item in list1" :key="item.value" @click="selectEvent1(item)">
+            <i class="fa fa-user-o"></i>
+            <span>{{ item.label }}</span>
+          </div>
+        </div>
+      </template>
+    </vxe-pulldown>
+
+    <vxe-button icon="fa fa-edit" @click="testButtonEvent">click</vxe-button>
+
     <ZtVxeGrid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
       :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData"
-      :saveFormItemsProps="saveFormItems" :saveFormRolesProps="saveFormRoles">
+      :saveFormItemsProps="saveFormItems" :saveFormRolesProps="saveFormRoles" @formResetEvent="formResetEvent">
     </ZtVxeGrid>
   </div>
 </template>
 
 <script>
+  import VXETable from "vxe-table";
+  import EditDownTable from '@/components/EditDownTable'
   import ZtVxeGrid from '@/components/ZtVxeGrid';
+  import Vue from 'vue'
+  Vue.component(EditDownTable.name, EditDownTable)
+
   var _this;
+
+  VXETable.renderer.add('FormItemInput', {
+              // 项内容模板
+              renderItemContent (h, renderOpts, params) {
+                // console.log('params')
+                // console.log(params)
+                const { data, property } = params
+                const props = renderOpts.props || {}
+                return [
+                  <edit-down-table params={ params }></edit-down-table>
+                   // <vxe-input v-model={ data[property] } { ...{ props } }></vxe-input>
+                ]
+              }
+            })
+
   export default {
     name: 'ROLE_MANAGE',
     components: {
-      ZtVxeGrid
+      ZtVxeGrid,
+      VXETable,
+      EditDownTable
     },
+
     data() {
       return {
         // tmpTableColumn: [{
@@ -52,6 +94,7 @@
         // }],
         // tmpTableData: [],
         //数据结构
+        list1: [],
         thisData: {
           id: null,
           thisCode: null,
@@ -63,7 +106,9 @@
           dataScopeType: null,
           dataScopeOpt: null,
           roleCustom: null,
-          remark: null
+          remark: null,
+          startTime: null,
+          endDate: null
         },
         //通用form表单元素。查询、新增、编辑都用
         thisCommonItem: [{
@@ -73,9 +118,88 @@
           span: 8,
           folding: false,
           itemRender: {
+            name: 'FormItemInput',
+            props: {
+              // prefixIcon: "fa fa-user",
+              // suffixIcon: "fa fa-search",
+              placeholder: '请输入角色名称',
+              clearable: true,
+              type: 'search',
+            },
+            events: {
+              // focus: this.focusEvent1,
+              // searchClick: this.doSearch,
+              // search: this.doSearch,
+              // click: this.doSearch,
+              // searchclick: this.doSearch,
+              // SearchClick: this.doSearch
+            },
+            nativeEvents: {
+              // focus: this.focusEvent1,
+              // searchClick: this.doSearch,
+              // search: this.doSearch,
+              // click: this.doSearch,
+              // searchclick: this.doSearch,
+              // SearchClick: this.doSearch
+            },
+          }
+        }, {
+          field: 'adminFlag',
+          resetValue: null,
+          title: '是否管理员',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$switch',
+            props: {
+              openIcon: "fa fa-bell",
+              closeIcon: "fa fa-bell-slash",
+              openValue: true,
+              closeValue: false
+            },
+          }
+        }, {
+          field: 'parentCode',
+          resetValue: null,
+          title: '密码类型',
+          span: 8,
+          folding: false,
+          itemRender: {
             name: '$input',
             props: {
-              placeholder: '请输入角色名称'
+              type: 'password',
+              placeholder: '密码类型',
+              clearable: true
+            }
+          }
+        }, {
+          field: 'startTime',
+          resetValue: null,
+          title: '开始日期',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '日期和时间选择',
+              clearable: true,
+              type: 'datetime',
+              transfer: true
+            }
+          }
+        }, {
+          field: 'endDate',
+          resetValue: null,
+          title: '结束时间',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '日期选择',
+              clearable: true,
+              type: 'date',
+              transfer: true
             }
           }
         }, {
@@ -86,7 +210,14 @@
           folding: false,
           itemRender: {
             name: '$select',
-            options: []
+            options: [],
+            props: {
+              multiple: false,
+              placeholder: '角色类型',
+              clearable: true,
+              transfer: true,
+              disabled: false,
+            }
           }
         }],
         //查询表单专用form元素
@@ -97,9 +228,10 @@
           span: 8,
           folding: true,
           itemRender: {
-            name: '$input',
+            name: '$textarea',
             props: {
-              placeholder: '请输入备注'
+              placeholder: '请输入备注',
+              resize: "both"
             }
           }
         }, ],
@@ -113,7 +245,11 @@
           itemRender: {
             name: '$input',
             props: {
-              placeholder: '请输入角色编号'
+              type: 'search',
+              placeholder: '请输入角色编号',
+            },
+            events: {
+              searchClick: this.doSearch
             }
           }
         }, ],
@@ -156,7 +292,8 @@
           },
           {
             field: 'thisCode',
-            title: '角色编号'
+            title: '角色编号',
+            titleHelp: "{message: '自定义图标', icon: 'fa fa-bell'}"
           },
           {
             field: 'thisName',
@@ -173,6 +310,7 @@
             editRender: {
               name: '$select',
               options: [],
+              multiple: true,
               props: {
                 placeholder: '请选择角色类型'
               }
@@ -237,6 +375,27 @@
       }) {
         let item = this.ztDataScopeTypeEnum.find(item => item.value === cellValue)
         return item ? item.label : null
+      },
+      doSearch(value, $event) {
+        console.log(value)
+        console.log($event)
+      },
+      focusEvent1(e) {
+        console.log(e)
+        this.$refs.xDown1.showPanel()
+      },
+      selectEvent1(item) {
+        this.queryFormConfig.data.thisCode = item.label
+        this.$refs.xDown1.hidePanel().then(() => {
+          // this.list1 = this.data1
+        })
+      },
+      formResetEvent(e) {
+        this.queryFormConfig.data.thisCode = null
+      },
+      testButtonEvent(e) {
+        // console.log(e)
+        this.queryFormConfig.data.thisCode = null
       },
       deepClone(target) {
         // console.log(target)
@@ -354,6 +513,16 @@
         .then(r => {
           _this.ztDataScopeTypeEnum = r.data
         })
+
+      const list1 = []
+      for (let index = 0; index < 20; index++) {
+        list1.push({
+          label: `选项${index}`,
+          value: index
+        })
+      }
+
+      this.list1 = list1
     },
     mounted() {
 
