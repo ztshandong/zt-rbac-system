@@ -1,8 +1,27 @@
 <template>
   <div class="app-container">
-    <!-- https://www.vue-treeselect.cn/ -->
-    <treeselect :multiple="true" :options="deptOptions" placeholder="xx" v-model="thisData.thisCode" />
+    <item icon="word2" title="xx" />
+    <vxe-input v-model="thisName" placeholder="请输入名称"></vxe-input>
+    <vxe-form :data="saveFormData">
+      <vxe-form-item title="app.body.label.name" field="name" :item-render="{}">
+        <template #default="{ data }">
+          <!-- <item icon="word2" title="xx" /> -->
+          <svg class="icon ali" aria-hidden="true">
+            <use xlink:href="#icon-word2"></use>
+          </svg>
+          <vxe-input v-model="data.name" placeholder="请输入名称"></vxe-input>
+        </template>
+      </vxe-form-item>
+    </vxe-form>
 
+    <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
+      :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData" :saveFormItemsProps="saveFormItems"
+      :saveFormRolesProps="saveFormRoles" @showEditForm="showEditForm">
+    </zt-vxe-grid>
+
+    <!-- https://www.vue-treeselect.cn/ -->
+    <!-- <treeselect :multiple="true" :options="deptOptions" placeholder="xx" v-model="thisData.thisCode" /> -->
+    <!--
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
       <el-form-item label="部门名称" prop="deptName">
         <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable size="small"
@@ -46,8 +65,8 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- 添加或修改部门对话框 -->
+ -->
+    <!--
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
@@ -97,11 +116,38 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    -->
   </div>
 </template>
 
 <script>
   var _this;
+
+  import Vue from 'vue'
+  import VXETable from "vxe-table";
+  VXETable.renderer.add('FormItemInput', {
+            // 项内容模板
+            renderItemContent (h, renderOpts, params) {
+              // console.log(h)
+              // console.log(renderOpts)
+              // console.log(params)
+              const { data, property } = params
+              const props = renderOpts.props || {}
+
+              // return [<template><svg class="icon ali" aria-hidden="true"><use xlink:href="#icon-word2"></use></svg><vxe-input v-model={ data[property] } { ...{ props } }></vxe-input></template>]
+              const vnodes = []
+// return [<svg class="icon ali" aria-hidden="false"><use xlink:href="#icon-word2"></use></svg>]
+                vnodes.push(<svg-icon icon-class="workd2"/>)
+
+                vnodes.push(<vxe-input v-model={ data[property] } { ...{ props } }></vxe-input>)
+
+              return vnodes
+              // return [
+              //   <vxe-input v-model={ data[property] } { ...{ props } }></vxe-input>
+              // ]
+            }
+          })
+
   import {
     listDept,
     getDept,
@@ -110,14 +156,17 @@
     updateDept,
     listDeptExcludeChild
   } from "@/api/system/dept";
-  import Treeselect from "@riophae/vue-treeselect";
-  import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+  import Item from '@/layout/components/Sidebar/Item.vue'
+  // import Treeselect from "@riophae/vue-treeselect";
+  // import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
+  // import ZtVxeGrid from '@/components/ZtVxeGrid';
   export default {
-    name: "DEPT_MANAGE",
     components: {
-      Treeselect
+      VXETable,
+      Item
     },
+    name: "DEPT_MANAGE",
     data() {
       return {
         apiPre: "",
@@ -130,21 +179,174 @@
           rootCode: null,
           enableFlag: null,
           deptLeaderCode: null,
+          remark: null
         },
         thisCommonItem: [{
+          title: '基础信息',
+          span: 24,
+          titleAlign: "left",
+          titleWidth: "200px",
+          titlePrefix: {
+            // icon: 'fa fa-address-card-o',
+            // icon: '<svg class="icon" aria-hidden="true"><use xlink:href="#icon-word2"></use></svg>'
+          },
+          itemRender: {
+            name: 'FormItemInput',
+          }
+        }, {
           field: 'thisName',
           resetValue: null,
           title: '部门名称',
-          span: 8,
+          span: 12,
           folding: false,
           itemRender: {
-            name: '$input',
+            name: 'FormItemInput',
             props: {
               placeholder: '请输入部门名称',
               clearable: true,
             },
           }
-        }],
+        }, {
+          field: 'thisCode',
+          resetValue: null,
+          title: '部门编号',
+          span: 12,
+          folding: false,
+          itemRender: {
+            name: '$input',
+            props: {
+              placeholder: '请输入部门编号',
+              clearable: true,
+              disabled: false
+            },
+          }
+        }, {
+          title: '其他信息',
+          span: 24,
+          titleAlign: "left",
+          titleWidth: "200px",
+          titlePrefix: {
+            icon: 'zhangtao icon-word2',
+            message: '请填写其他项'
+          }
+        }, {
+          field: 'parentCode',
+          resetValue: null,
+          title: '上级部门',
+          span: 12,
+          folding: false,
+          itemRender: {
+            name: 'ElCascader',
+            showAllLevels: false,
+            props: {
+              props: {
+                expandTrigger: 'hover',
+                checkStrictly: true,
+                emitPath: false
+              },
+              // prefixIcon: "fa fa-user",
+              // suffixIcon: "fa fa-search",
+              placeholder: '请选择上级部门',
+              clearable: true,
+              options: [],
+              filterable: true,
+              expandTrigger: 'hover',
+              showAllLevels: false,
+              checkStrictly: true
+              // type: 'search',
+            },
+          }
+        }, {
+          field: 'remark',
+          resetValue: null,
+          title: '备注',
+          span: 8,
+          folding: true,
+          itemRender: {
+            name: '$textarea',
+            props: {
+              placeholder: '请输入备注',
+              resize: "both"
+            }
+          }
+        }, ],
+        thisQueryItem: [],
+        thisSaveItem: [],
+        queryFormConfig: {
+          data: {},
+          items: [],
+          rules: {}
+        },
+        saveFormData: {},
+        //新增编辑界面表单元素 created()里面赋值
+        saveFormItems: [],
+        //新增编辑表单校验规则
+        saveFormRoles: {
+          thisName: [{
+              required: true,
+              message: '请输入部门名称'
+            },
+            {
+              min: 2,
+              max: 50,
+              message: '长度在 2 到 50 个字符'
+            }
+          ],
+          thisCode: [{
+              required: true,
+              message: '请输入部门编号'
+            },
+            {
+              min: 5,
+              max: 50,
+              message: '长度在 5 到 50 个字符'
+            }
+          ]
+        },
+        tableColumn: [{
+            field: 'id',
+            title: 'id',
+            visible: false
+          },
+          {
+            field: 'thisCode',
+            title: '角色编号',
+            titleHelp: "{message: '自定义图标', icon: 'fa fa-bell'}"
+          },
+          {
+            field: 'thisName',
+            title: '角色名称'
+          },
+          {
+            field: 'parentCode',
+            title: '上级部门编号',
+            showHeaderOverflow: true,
+            // filters: this.ztRoleTypeEnum,
+            filterMultiple: false,
+            // formatter: this.formatterRoleTypeEnum,
+            sortable: true,
+            // editRender: {
+            //   name: 'ElCascader',
+            //   showAllLevels: false,
+            //   props: {
+            //     props: {
+            //       expandTrigger: 'hover',
+            //       emitPath: false
+            //     },
+            //     placeholder: '请选择上级部门',
+            //     clearable: true,
+            //     options: [],
+            //     filterable: true,
+            //     expandTrigger: 'hover',
+            //     showAllLevels: false,
+            //   },
+            // }
+          },
+          {
+            field: 'remark',
+            title: '备注'
+          },
+        ],
         // 遮罩层
         loading: true,
         // 显示搜索条件
@@ -198,19 +400,78 @@
     },
     created() {
       _this = this
+
+      this.saveFormData = this.deepClone(this.thisData)
+
+      this.queryFormConfig.data = this.deepClone(this.thisData)
+      this.thisCommonItem.forEach(t => {
+        this.queryFormConfig.items.push(this.deepClone(t))
+      })
+      this.thisQueryItem.forEach(t => {
+        this.queryFormConfig.items.push(this.deepClone(t))
+      })
+      this.queryFormConfig.rules = this.queryFormRoles
+
+      this.thisCommonItem.forEach(t => {
+        this.saveFormItems.push(this.deepClone(t))
+      })
+      this.thisSaveItem.forEach(t => {
+        this.saveFormItems.push(this.deepClone(t))
+      })
+
       this.getList();
       // this.getDicts("sys_normal_disable").then(response => {
       //   this.statusOptions = response.data;
       // });
     },
+    computed: {
+      isDisable: function() {
+        return true;
+      },
+    },
     methods: {
+      showEditForm(row, items) {
+        console.log(row)
+        // console.log(items)
+        if (row.id) {
+          items.forEach(t => {
+            if (t.field == 'thisCode') {
+              t.itemRender.props.disabled = true;
+              return
+            }
+          })
+        } else {
+          items.forEach(t => {
+            if (t.field == 'thisCode') {
+              t.itemRender.props.disabled = false;
+              return
+            }
+          })
+        }
+      },
       /** 查询部门列表 */
       getList() {
         this.loading = true;
         this.$api.post(this.apiPre + '/' + this.thisName + '/getAllDeptTree', null)
           .then(r => {
-            _this.deptOptions = r.data;
-            console.log(r)
+            this.queryFormConfig.items.forEach(t => {
+              if (t.field == 'parentCode') {
+                t.itemRender.props.options = r.data;
+                return
+              }
+            })
+            this.saveFormItems.forEach(t => {
+              if (t.field == 'parentCode') {
+                t.itemRender.props.options = r.data;
+                return
+              }
+            })
+            // this.tableColumn.forEach(t => {
+            //   if (t.field == 'parentCode') {
+            //     t.editRender.props.options = r.data;
+            //     return
+            //   }
+            // })
           })
         // listDept(this.queryParams).then(response => {
         //   this.deptList = this.handleTree(response.data, "deptId");
@@ -316,7 +577,14 @@
           this.getList();
           this.msgSuccess("删除成功");
         })
-      }
+      },
+
     }
   };
 </script>
+
+<style>
+  .ali {
+    font-size: 24px;
+  }
+</style>

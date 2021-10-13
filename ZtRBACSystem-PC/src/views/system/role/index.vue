@@ -42,43 +42,22 @@
 
     <vxe-button icon="fa fa-edit" @click="testButtonEvent">click</vxe-button>
 
-    <ZtVxeGrid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
+    <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
       :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData"
       :saveFormItemsProps="saveFormItems" :saveFormRolesProps="saveFormRoles" @formResetEvent="formResetEvent">
-    </ZtVxeGrid>
+    </zt-vxe-grid>
   </div>
 </template>
 
 <script>
-  import VXETable from "vxe-table";
-  import EditDownTable from '@/components/EditDownTable'
-  import ZtVxeGrid from '@/components/ZtVxeGrid';
-  import Vue from 'vue'
-  Vue.component(EditDownTable.name, EditDownTable)
-
+  // import ZtVxeGrid from '@/components/ZtVxeGrid';
   var _this;
-
-  VXETable.renderer.add('FormItemInput', {
-              // 项内容模板
-              renderItemContent (h, renderOpts, params) {
-                // console.log('params')
-                // console.log(params)
-                const { data, property } = params
-                const props = renderOpts.props || {}
-                return [
-                  <edit-down-table params={ params }></edit-down-table>
-                   // <vxe-input v-model={ data[property] } { ...{ props } }></vxe-input>
-                ]
-              }
-            })
 
   export default {
     name: 'ROLE_MANAGE',
-    components: {
-      ZtVxeGrid,
-      VXETable,
-      EditDownTable
-    },
+    // components: {
+    //   ZtVxeGrid
+    // },
 
     data() {
       return {
@@ -108,23 +87,51 @@
           roleCustom: null,
           remark: null,
           startTime: null,
-          endDate: null
+          endDate: null,
+          deptCode: null,
         },
         //通用form表单元素。查询、新增、编辑都用
         thisCommonItem: [{
+          field: 'deptCode',
+          resetValue: null,
+          title: '部门名称',
+          span: 8,
+          folding: false,
+          itemRender: {
+            name: 'ElCascader',
+            showAllLevels: false,
+            props: {
+              props: {
+                expandTrigger: 'hover',
+                // checkStrictly: true,
+                emitPath:false
+              },
+              // prefixIcon: "fa fa-user",
+              // suffixIcon: "fa fa-search",
+              placeholder: '请选择部门',
+              clearable: true,
+              options: [],
+              filterable: true,
+              expandTrigger: 'hover',
+              showAllLevels: false,
+              // checkStrictly: true
+              // type: 'search',
+            },
+          }
+        }, {
           field: 'thisName',
           resetValue: null,
           title: '角色名称',
           span: 8,
           folding: false,
           itemRender: {
-            name: 'FormItemInput',
+            name: '$input',
             props: {
               // prefixIcon: "fa fa-user",
               // suffixIcon: "fa fa-search",
               placeholder: '请输入角色名称',
               clearable: true,
-              type: 'search',
+              // type: 'search',
             },
             events: {
               // focus: this.focusEvent1,
@@ -322,7 +329,15 @@
             showOverflow: true,
             filters: this.ztDataScopeTypeEnum,
             filterMultiple: false,
-            formatter: this.formatterDataScopeTypeEnum
+            // formatter: this.formatterDataScopeTypeEnum
+            editRender: {
+              name: '$select',
+              options: [],
+              multiple: true,
+              props: {
+                placeholder: '请选择数据权限范围'
+              }
+            }
           },
           {
             field: 'remark',
@@ -370,12 +385,12 @@
       //   let item = this.ztRoleTypeEnum.find(item => item.value === cellValue)
       //   return item ? item.label : null
       // },
-      formatterDataScopeTypeEnum({
-        cellValue
-      }) {
-        let item = this.ztDataScopeTypeEnum.find(item => item.value === cellValue)
-        return item ? item.label : null
-      },
+      // formatterDataScopeTypeEnum({
+      //   cellValue
+      // }) {
+      //   let item = this.ztDataScopeTypeEnum.find(item => item.value === cellValue)
+      //   return item ? item.label : null
+      // },
       doSearch(value, $event) {
         console.log(value)
         console.log($event)
@@ -512,6 +527,53 @@
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtDataScopeTypeEnum', null)
         .then(r => {
           _this.ztDataScopeTypeEnum = r.data
+
+          this.queryFormConfig.items.forEach(t => {
+            if (t.field == 'dataScopeType') {
+              t.itemRender.options = _this.ztDataScopeTypeEnum
+              return
+            }
+          })
+
+          this.saveFormItems.forEach(t => {
+            if (t.field == 'dataScopeType') {
+              t.itemRender.options = _this.ztDataScopeTypeEnum
+              return
+            }
+          })
+
+          this.tableColumn.forEach(t => {
+            if (t.field == 'dataScopeType') {
+              t.editRender.options = _this.ztDataScopeTypeEnum
+              return
+            }
+          })
+
+        })
+
+      this.$api.post('/ZtDeptInfo/getAllDeptTree', null)
+        .then(r => {
+          this.queryFormConfig.items.forEach(t => {
+            if (t.field == 'deptCode') {
+              t.itemRender.props.options = r.data;
+              return
+            }
+          })
+
+          this.saveFormItems.forEach(t => {
+            if (t.field == 'deptCode') {
+              t.itemRender.props.options = r.data;
+              return
+            }
+          })
+
+          this.tableColumn.forEach(t => {
+            if (t.field == 'deptCode') {
+              t.editRender.props.options = r.data;
+              return
+            }
+          })
+
         })
 
       const list1 = []

@@ -29,6 +29,14 @@ public class ZtDeptInfo extends ZtRbacBasicEntity<Long> {
     @ApiModelProperty(value = "部门编号（唯一，不可修改）")
     private String thisCode;
 
+    public String getValue() {
+        return thisCode;
+    }
+
+    public void setValue(String code) {
+        this.thisCode = code;
+    }
+
     /**
      * 上级部门编号（同公司）
      */

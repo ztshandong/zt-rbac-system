@@ -17,7 +17,15 @@ import './assets/icons' // icon
 import './permission' // permission control
 import {getDicts} from "@/api/system/dict/data";
 import {getConfigKey} from "@/api/system/config";
-import {addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels} from "@/utils/zhuorui";
+import {
+  addDateRange,
+  deepClone,
+  handleTree,
+  parseTime,
+  resetForm,
+  selectDictLabel,
+  selectDictLabels
+} from "@/utils/zhuorui";
 import Pagination from "@/components/Pagination";
 // 自定义表格工具扩展
 import RightToolbar from "@/components/RightToolbar"
@@ -27,13 +35,22 @@ import XEUtils from "xe-utils";
 import VXETable from "vxe-table";
 import VXEUtils from "vxe-utils";
 import 'vxe-table/lib/style.css'
+
+import VXETablePluginElement from 'vxe-table-plugin-element'
+import 'vxe-table-plugin-element/dist/style.css'
+
 import ZtVxeGrid from '@/components/ZtVxeGrid';
 import EditDownTable from '@/components/EditDownTable'
+
+Vue.component(EditDownTable.name, EditDownTable)
+
+VXETable.use(VXETablePluginElement)
 
 // 将API方法绑定到全局
 Vue.prototype.$api = api
 Vue.use(VXETable);
 Vue.use(ZtVxeGrid);
+Vue.component(ZtVxeGrid.name, ZtVxeGrid)
 Vue.use(VXEUtils, XEUtils);
 Vue.prototype.$XPrint = VXETable.print
 Vue.prototype.$XModal = VXETable.modal
@@ -50,6 +67,7 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
+Vue.prototype.deepClone = deepClone
 
 Vue.prototype.msgSuccess = function (msg) {
   this.$message({
@@ -91,8 +109,6 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
-
-Vue.component(EditDownTable.name, EditDownTable)
 
 new Vue({
   el: '#app',

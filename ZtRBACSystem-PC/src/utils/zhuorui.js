@@ -105,7 +105,9 @@ export function download(fileName) {
 
 // 字符串格式化(%s )
 export function sprintf(str) {
-  var args = arguments, flag = true, i = 1;
+  var args = arguments,
+    flag = true,
+    i = 1;
   str = str.replace(/%s/g, function () {
     var arg = args[i++];
     if (typeof arg === 'undefined') {
@@ -162,9 +164,45 @@ export function handleTree(data, id, parentId, children, rootId) {
 export function tansParams(params) {
   let result = ''
   Object.keys(params).forEach((key) => {
-    if (!Object.is(params[key], undefined) && !Object.is(params[key], null) && !Object.is(JSON.stringify(params[key]), '{}')) {
+    if (!Object.is(params[key], undefined) && !Object.is(params[key], null) && !Object.is(JSON.stringify(params[
+      key]), '{}')) {
       result += encodeURIComponent(key) + '=' + encodeURIComponent(params[key]) + '&'
     }
   })
   return result
+}
+
+export function deepClone(target) {
+  // console.log(target)
+  // 定义一个变量
+  let result;
+  // debugger
+  // 如果当前需要深拷贝的是一个对象的话
+  if (typeof target === 'object') {
+    // 如果是一个数组的话
+    if (Array.isArray(target)) {
+      result = []; // 将result赋值为一个数组，并且执行遍历
+      for (let i in target) {
+        // 递归克隆数组中的每一项
+        result.push(this.deepClone(target[i]))
+      }
+      // 判断如果当前的值是null的话；直接赋值为null
+    } else if (target === null) {
+      result = null;
+      // 判断如果当前的值是一个RegExp对象的话，直接赋值
+    } else if (target.constructor === RegExp) {
+      result = target;
+    } else {
+      // 否则是普通对象，直接for in循环，递归赋值对象的所有值
+      result = {};
+      for (let i in target) {
+        result[i] = this.deepClone(target[i]);
+      }
+    }
+    // 如果不是对象的话，就是基本数据类型，那么直接赋值
+  } else {
+    result = target;
+  }
+  // 返回最终结果
+  return result;
 }

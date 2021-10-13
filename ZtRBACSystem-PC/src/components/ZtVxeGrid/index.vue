@@ -89,9 +89,9 @@
     </vxe-grid>
 
     <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData.id ? '编辑' : '新增'" width="100%"
-      min-width="600" min-height="300" resize destroy-on-close>
+      min-width="600" min-height="300" resize destroy-on-close :show-close="false">
       <!-- <template v-slot> -->
-      <vxe-form ref="ZtVxeForm" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
+      <vxe-form ref="ZtVxeForm" :loading="submitLoading" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
         title-width="100" @submit="saveButtonEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
       <!-- </template> -->
     </vxe-modal>
@@ -271,6 +271,7 @@
     data() {
       return {
         loading: false,
+        submitLoading:false,
         showAdd: false,
         showQuery: false,
         showEdit: false,
@@ -291,10 +292,12 @@
         queryData: {},
         queryDataBak: {},
 
+        disableSave: false,
+        curRow: {},
         //对比，只传修改过的字段
         saveFormDataBak: {},
         saveFormData: this.saveFormDataProps,
-        addFormDataBak: {},
+        initFormData: {},
         saveFormRules: this.saveFormRolesProps,
         saveFormItems: this.saveFormItemsProps,
         saveFormItemsBak: this.saveFormItemsBakProps,
@@ -307,7 +310,7 @@
     },
     methods: {
       queryResetEvent(data, event) {
-        _this.$emit('formResetEvent',data)
+        _this.$emit('formResetEvent', data)
       },
       //表单提交
       queryFormEvent(data, event) {
@@ -520,7 +523,7 @@
             })
             break
           case PermissionDefine.BUTTON_ADD:
-            this.editButtonEvent(this.deepClone(this.addFormDataBak))
+            this.editButtonEvent(this.deepClone(this.initFormData))
             break
           case 'saveImport':
             setTimeout(() => {
@@ -556,38 +559,75 @@
       },
       editEvent(row) {
 
-        console.log(this.addFormDataBak)
-        console.log(row)
+        // console.log(this.initFormData)
+        // console.log(this.saveFormItems.length)
+
+        _this.$emit('showEditForm', row, this.saveFormItems)
+        // console.log(this.saveFormItems)
+        this.curRow = row
+        // console.log(this.initFormData)
+        // console.log(row)
         this.saveFormDataBak = this.deepClone(row)
-        this.saveFormData = row
+        this.saveFormData = this.deepClone(row)
         this.showSaveForm = true
       },
       saveButtonEvent(e) {
-        // this.submitLoading = true
-        // setTimeout(() => {}, 2000)
-        if (this.saveFormData.id) {
-          console.log('编辑')
-          let saveData = {}
-          let keys = Object.keys(this.saveFormData);
-          keys.forEach(key => {
-            let oriData = this.saveFormDataBak[`${key}`]
-            let curData = this.saveFormData[`${key}`]
-            if (JSON.stringify(curData) != JSON.stringify(oriData)) {
-              saveData[`${key}`] = curData
-            }
-          })
-          saveData.id = this.saveFormData.id
-          console.log(saveData)
-          this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).finally(r => {
-            // _this.submitLoading = false
-          });
-        } else {
-          console.log('新增')
-          this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData).finally(r => {
-            // _this.submitLoading = false
-          });
-        }
-        this.showSaveForm = false
+        this.disableSave = true
+
+        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = true
+        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = true
+        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = true
+        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = true
+        // console.log(this.saveButton)
+        this.submitLoading = true
+        setTimeout(() => {
+          if (this.saveFormData.id) {
+            console.log('编辑')
+            let saveData = {}
+            let keys = Object.keys(this.saveFormData);
+            keys.forEach(key => {
+              let oriData = this.saveFormDataBak[`${key}`]
+              let curData = this.saveFormData[`${key}`]
+              if (JSON.stringify(curData) != JSON.stringify(oriData)) {
+                saveData[`${key}`] = curData
+              }
+            })
+            saveData.id = this.saveFormData.id
+            console.log(saveData)
+            this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).then(t => {
+              this.queryFormEvent()
+            }).finally(r => {
+              _this.submitLoading = false
+              this.showSaveForm = false
+              this.disableSave = false
+
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = false
+
+              this.saveFormData = this.deepClone(this.initFormData)
+              this.saveFormDataBak = this.deepClone(this.initFormData)
+            });
+          } else {
+            console.log('新增')
+            this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData).then(t => {
+              this.queryFormEvent()
+            }).finally(r => {
+              _this.submitLoading = false
+              this.showSaveForm = false
+              this.disableSave = false
+
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = false
+              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = false
+
+              this.saveFormData = this.deepClone(this.initFormData)
+              this.saveFormDataBak = this.deepClone(this.initFormData)
+            });
+          }
+        }, 2000)
         // _this.$emit('resetSaveFormData', this.saveFormData)
         // this.saveFormData = this.saveFormDataProps
       },
@@ -632,6 +672,9 @@
         // console.log('permissions:' + permissions)
         return permissions.includes(per)
       },
+      close(e) {
+        this.showSaveForm = false
+      }
     },
     mounted() {
       // this.$store.dispatch("SetPermi")
@@ -699,6 +742,15 @@
 
         this.queryFormConfig.items.push(commonButton)
         // console.log(this.saveFormItems)
+
+        // {
+        //   props: {
+        //     type: 'submit',
+        //     content: '保存',
+        //     status: 'primary'
+        //   }
+        // }
+
         this.saveFormItems.push({
           align: 'center',
           span: 24,
@@ -710,13 +762,16 @@
               props: {
                 type: 'submit',
                 content: '保存',
-                status: 'primary'
+                status: 'primary',
+                disabled: this.disableSave,
+                loading: this.disableSave
               }
             }, {
               props: {
-                disabled: true,
-                type: 'reset',
-                content: '重置'
+                content: '取消'
+              },
+              events: {
+                click: this.close
               }
             }]
           }
@@ -768,7 +823,7 @@
       //   this.queryFormItems.push(t)
       // })
 
-      this.addFormDataBak = this.deepClone(this.saveFormData)
+      this.initFormData = this.deepClone(this.saveFormData)
     },
     created() {
       console.log('common created')
