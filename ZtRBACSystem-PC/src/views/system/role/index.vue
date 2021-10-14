@@ -23,13 +23,10 @@
     <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
 
     <!-- :queryFormItemsProps="queryFormItems"  @setSaveFormItemsBak="setSaveFormItemsBak" @resetSaveFormData="resetSaveFormData"-->
+    <!-- 
     <vxe-pulldown ref="xDown1">
       <vxe-input v-model="queryFormConfig.data.thisCode" placeholder="可搜索的下拉框" @focus="focusEvent1"></vxe-input>
-      <!--
-      <template #default>
-        <vxe-input v-model="thisData.thisCode" placeholder="可搜索的下拉框" @focus="focusEvent1"></vxe-input>
-      </template>
-      -->
+      
       <template #dropdown>
         <div class="my-dropdown1">
           <div class="list-item1" v-for="item in list1" :key="item.value" @click="selectEvent1(item)">
@@ -39,12 +36,12 @@
         </div>
       </template>
     </vxe-pulldown>
-
-    <vxe-button icon="fa fa-edit" @click="testButtonEvent">click</vxe-button>
+ -->
+    <!-- <vxe-button icon="fa fa-edit" @click="testButtonEvent">click</vxe-button> -->
 
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
-      :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData"
-      :saveFormItemsProps="saveFormItems" :saveFormRolesProps="saveFormRoles" @formResetEvent="formResetEvent">
+      :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig"
+      @formResetEvent="formResetEvent">
     </zt-vxe-grid>
   </div>
 </template>
@@ -104,7 +101,7 @@
               props: {
                 expandTrigger: 'hover',
                 // checkStrictly: true,
-                emitPath:false
+                emitPath: false
               },
               // prefixIcon: "fa fa-user",
               // suffixIcon: "fa fa-search",
@@ -270,10 +267,11 @@
           items: [],
           rules: {}
         },
-        //新增编辑界面数据 created()里面赋值
-        saveFormData: {},
-        //新增编辑界面表单元素 created()里面赋值
-        saveFormItems: [],
+        saveFormConfig: {
+          data: {},
+          items: [],
+          rules: {}
+        },
         //新增编辑表单校验规则
         saveFormRoles: {
           thisName: [{
@@ -412,61 +410,26 @@
         // console.log(e)
         this.queryFormConfig.data.thisCode = null
       },
-      deepClone(target) {
-        // console.log(target)
-        // 定义一个变量
-        let result;
-        // debugger
-        // 如果当前需要深拷贝的是一个对象的话
-        if (typeof target === 'object') {
-          // 如果是一个数组的话
-          if (Array.isArray(target)) {
-            result = []; // 将result赋值为一个数组，并且执行遍历
-            for (let i in target) {
-              // 递归克隆数组中的每一项
-              result.push(_this.deepClone(target[i]))
-            }
-            // 判断如果当前的值是null的话；直接赋值为null
-          } else if (target === null) {
-            result = null;
-            // 判断如果当前的值是一个RegExp对象的话，直接赋值
-          } else if (target.constructor === RegExp) {
-            result = target;
-          } else {
-            // 否则是普通对象，直接for in循环，递归赋值对象的所有值
-            result = {};
-            for (let i in target) {
-              result[i] = _this.deepClone(target[i]);
-            }
-          }
-          // 如果不是对象的话，就是基本数据类型，那么直接赋值
-        } else {
-          result = target;
-        }
-        // 返回最终结果
-        return result;
-      },
     },
     created() {
       _this = this
 
-      this.saveFormData = this.deepClone(this.thisData)
-
-      this.queryFormConfig.data = this.deepClone(this.thisData)
       this.thisCommonItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
+        this.saveFormConfig.items.push(this.deepClone(t))
       })
+
+      this.queryFormConfig.data = this.deepClone(this.thisData)
       this.thisQueryItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
       })
       this.queryFormConfig.rules = this.queryFormRoles
 
-      this.thisCommonItem.forEach(t => {
-        this.saveFormItems.push(this.deepClone(t))
-      })
+      this.saveFormConfig.data = this.deepClone(this.thisData)
       this.thisSaveItem.forEach(t => {
-        this.saveFormItems.push(this.deepClone(t))
+        this.saveFormConfig.items.push(this.deepClone(t))
       })
+      this.saveFormConfig.rules = this.saveFormRoles
 
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtRoleTypeEnum', null)
         .then(r => {
@@ -492,7 +455,7 @@
             }
           })
 
-          this.saveFormItems.forEach(t => {
+          this.saveFormConfig.items.forEach(t => {
             if (t.field == 'roleType') {
               t.itemRender.options = _this.ztRoleTypeEnum
               return
@@ -535,7 +498,7 @@
             }
           })
 
-          this.saveFormItems.forEach(t => {
+          this.saveFormConfig.items.forEach(t => {
             if (t.field == 'dataScopeType') {
               t.itemRender.options = _this.ztDataScopeTypeEnum
               return
@@ -560,7 +523,7 @@
             }
           })
 
-          this.saveFormItems.forEach(t => {
+          this.saveFormConfig.items.forEach(t => {
             if (t.field == 'deptCode') {
               t.itemRender.props.options = r.data;
               return

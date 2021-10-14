@@ -1,5 +1,7 @@
 <template>
-  <div :style="{height: scrollerHeight}">
+  <!-- :style="{'min-height':tableHeight+'px','max-height':tableHeight+'px','width':'100%'}" -->
+  <!-- <div :style="{height: scrollerHeight+'px'}"> -->
+  <el-scrollbar :height="scrollerHeight">
     <!-- <div height="800"> -->
 
     <!--
@@ -26,20 +28,90 @@
 
     <!--
     <vxe-form ref="ZtVxeQueryForm" :data="queryData" :items="queryFormItems" :rules="queryFormRoles" title-align="right"
-      title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="resetEvent"></vxe-form>
+      title-width="100" @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="queryResetEvent"></vxe-form>
        -->
 
-    <!-- queryFormConfig传全部的配置。通用组件里面添加查询与重制按钮，这样查询触发的就是@form-submit的queryFormEvent，入参是个事件，分页也要用这个 -->
+
+    <!-- queryFormConfig传全部的配置。通用组件里面添加查询与重制按钮，这样查询触发的就是@submit的queryFormEvent，入参是个事件，分页也要用这个 -->
+    <!--
+    :form-config="queryFormConfig" @form-submit="queryFormEvent" @form-reset="queryResetEvent"
+    @form-toggle-collapse="queryFormToggleEvent"
+    -->
+    <!-- custom-layout 可以内置div，但是会导致彩色图标失效 -->
+    <!-- <div :style="{'min-height':tableHeight+'px','max-height':tableHeight+'px','width':'100%'}"> -->
+    <!-- ,'border': '1px dashed red' -->
+    <vxe-form id="ZtVxeQueryForm" ref="ZtVxeQueryForm" :data="queryFormConfig.data" :rules="queryFormConfig.rules"
+      @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="queryResetEvent">
+      <vxe-form-item v-for="config in queryFormConfig.items" v-if="!config.editOnly" :field="config.field"
+        :key="config.field" :title="config.title" :span="config.span" :align="config.align"
+        :titleAlign="config.titleAlign" :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow"
+        :className="config.className" :visible="config.visible" :folding="config.folding"
+        :collapseNode="config.collapseNode" :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix"
+        :resetValue="config.resetValue" :itemRender="config.itemRender" :visibleMethod="config.visibleMethod"
+        :children="config.children">
+        <!--
+        <div v-if="config.isDiv" :style="config.style">
+          <vxe-form-item v-for="config2 in config.items" :field="config2.field" :title="config2.title"
+            :span="config2.span" :align="config2.align" :titleAlign="config2.titleAlign"
+            :titleWidth="config2.titleWidth" :titleOverflow="config2.titleOverflow" :className="config2.className"
+            :visible="config2.visible" :folding="config2.folding" :collapseNode="config2.collapseNode"
+            :titlePrefix="config2.titlePrefix" :titleSuffix="config2.titleSuffix" :resetValue="config2.resetValue"
+            :itemRender="config2.itemRender" :visibleMethod="config2.visibleMethod">
+            <template slot="title" v-if="config2.iconFirst">
+                <svg class="icon ali" aria-hidden="true" v-if="config2.alicon">
+                  <use v-bind:xlink:href="iconName(config2.alicon)"></use>
+                </svg>
+                <span slot='title'>{{config2.title}}</span>
+            </template>
+
+            <template slot="title" v-else-if="config2.textFirst">
+                <span slot='title'>{{config2.title}}</span>
+                <svg class="icon ali" aria-hidden="true" v-if="config2.alicon">
+                  <use v-bind:xlink:href="iconName(config2.alicon)"></use>
+                </svg>
+            </template>
+          </vxe-form-item>
+        </div>
+ -->
+        <!-- 方式一 -->
+        <!--
+        <template slot="title">
+          <item  icon="word2" :title="config.title" />
+        </template>
+        -->
+
+        <!-- 方式二 -->
+        <template slot="title" v-if="config.iconFirst">
+          <!-- <svg-icon icon-class="excel"/> 这个也可以-->
+          <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
+            <use v-bind:xlink:href="iconName(config.alicon)"></use>
+          </svg>
+          <span slot='title'>{{config.title}}</span>
+        </template>
+
+        <template slot="title" v-else-if="config.textFirst">
+          <span slot='title'>{{config.title}}</span>
+          <!-- <svg-icon icon-class="excel"/> 这个也可以-->
+          <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
+            <use v-bind:xlink:href="iconName(config.alicon)"></use>
+          </svg>
+        </template>
+
+      </vxe-form-item>
+    </vxe-form>
+    <!-- </div> -->
+
+    <!-- <div :style="{height: tableHeight+'px'}"> -->
+    <!-- <div :style="{'min-height':tableHeight+'px','max-height':tableHeight+'px','width':'100%'}"> -->
     <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
-      height="130%" :loading="loading" ref="ZtVxeGrid" row-id="id" :data="tableData" :columns="tableColumn"
-      :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
-      :form-config="queryFormConfig" @form-submit="queryFormEvent" @form-reset="queryResetEvent"
-      @form-toggle-collapse="queryFormToggleEvent"
+      :height="tableHeight" :loading="loading" id="ZtVxeGrid" ref="ZtVxeGrid" row-id="id" :data="tableData"
+      :columns="tableColumn" :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
       @toolbar-button-click="toolbarButtonClickEvent">
 
       <template #operate_default="{ row }">
-        <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">编辑
+        <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">
+          编辑
         </vxe-button>
         <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
           @click="removeButtonEvent(row)">删除</vxe-button>
@@ -87,15 +159,42 @@
         </vxe-pager>
       </template>
     </vxe-grid>
+    <!-- </div> -->
 
-    <vxe-modal ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData.id ? '编辑' : '新增'" width="100%"
-      min-width="600" min-height="300" resize destroy-on-close :show-close="false">
-      <!-- <template v-slot> -->
-      <vxe-form ref="ZtVxeForm" :loading="submitLoading" :data="saveFormData" :items="saveFormItems" :rules="saveFormRules" title-align="right"
-        title-width="100" @submit="saveButtonEvent" @toggle-collapse="queryFormToggleEvent"></vxe-form>
-      <!-- </template> -->
+    <vxe-modal id="ZtVxeModal" ref="ZtVxeModal" v-model="showSaveForm" :title="saveFormData.id ? '编辑' : '新增'"
+      width="100%" min-width="600" min-height="300" resize destroy-on-close :show-close="false">
+      <!-- <vxe-form ref="ZtVxeSaveForm" :loading="submitLoading" :data="saveFormData" :items="saveFormItems"
+        :rules="saveFormRules" title-align="right" title-width="100" @submit="saveButtonEvent"
+        @toggle-collapse="queryFormToggleEvent"></vxe-form> -->
+
+      <vxe-form id="ZtVxeSaveForm" ref="ZtVxeSaveForm" :data="saveFormData" :rules="saveFormConfig.rules"
+        @submit="saveButtonEvent">
+        <vxe-form-item v-for="config in saveFormConfig.items" v-if="!config.queryOnly" :field="config.field"
+          :key="config.field" :title="config.title" :span="config.span" :align="config.align"
+          :titleAlign="config.titleAlign" :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow"
+          :className="config.className" :visible="config.visible" :folding="config.folding"
+          :collapseNode="config.collapseNode" :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix"
+          :resetValue="config.resetValue" :itemRender="config.itemRender" :visibleMethod="config.visibleMethod"
+          :children="config.children">
+          <template slot="title" v-if="config.iconFirst">
+            <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
+              <use v-bind:xlink:href="iconName(config.alicon)"></use>
+            </svg>
+            <span slot='title'>{{config.title}}</span>
+          </template>
+
+          <template slot="title" v-else-if="config.textFirst">
+            <span slot='title'>{{config.title}}</span>
+            <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
+              <use v-bind:xlink:href="iconName(config.alicon)"></use>
+            </svg>
+          </template>
+        </vxe-form-item>
+      </vxe-form>
+
     </vxe-modal>
-  </div>
+    <!-- </div> -->
+  </el-scrollbar>
 </template>
 
 <script>
@@ -160,6 +259,34 @@
       //   type: Object,
       //   default: () => ({}),
       // },
+
+      saveFormConfigProps: {
+        // 查询条件配置
+        type: Object,
+        default: () => ({
+          data: {},
+          titleWidth: 100,
+          titleAlign: 'right',
+          items: []
+        }),
+      },
+      // saveFormDataProps: {
+      //   type: Object,
+      //   default: () => ({}),
+      // },
+      // saveFormRolesProps: {
+      //   type: Object,
+      //   default: () => ({}),
+      // },
+      // saveFormItemsProps: {
+      //   type: Array,
+      //   default: () => [],
+      // },
+      // saveFormItemsBakProps: {
+      //   // 弹框界面各个字段
+      //   type: Array,
+      //   default: () => [],
+      // },
       tablePageProps: {
         //默认分页大小
         type: Object,
@@ -169,28 +296,6 @@
           pageSize: 10
         }),
       },
-
-      saveFormDataProps: {
-        // 保存的实体类
-        type: Object,
-        default: () => ({}),
-      },
-      saveFormRolesProps: {
-        // 校验规则
-        type: Object,
-        default: () => ({}),
-      },
-      saveFormItemsProps: {
-        // 弹框界面各个字段
-        type: Array,
-        default: () => [],
-      },
-      saveFormItemsBakProps: {
-        // 弹框界面各个字段
-        type: Array,
-        default: () => [],
-      },
-
       printConfigProps: {
         // 打印配置
         type: Object,
@@ -270,8 +375,9 @@
     },
     data() {
       return {
+        tableHeight: 100,
         loading: false,
-        submitLoading:false,
+        submitLoading: false,
         showAdd: false,
         showQuery: false,
         showEdit: false,
@@ -290,17 +396,18 @@
         // queryFormItems: this.queryFormItemsProps,
         // queryFormRoles: this.queryFormRolesProps,
         queryData: {},
-        queryDataBak: {},
+        // queryDataBak: {},
 
+        initSaveFormData: {}, //初始化空对象
+        saveFormConfig: this.saveFormConfigProps,
         disableSave: false,
         curRow: {},
         //对比，只传修改过的字段
         saveFormDataBak: {},
-        saveFormData: this.saveFormDataProps,
-        initFormData: {},
-        saveFormRules: this.saveFormRolesProps,
-        saveFormItems: this.saveFormItemsProps,
-        saveFormItemsBak: this.saveFormItemsBakProps,
+        saveFormData: {},
+        // saveFormRules: this.saveFormRolesProps,
+        // saveFormItems: this.saveFormItemsProps,
+        // saveFormItemsBak: this.saveFormItemsBakProps,
 
         printConfig: this.printConfigProps,
         importConfig: this.importConfigProps,
@@ -523,7 +630,7 @@
             })
             break
           case PermissionDefine.BUTTON_ADD:
-            this.editButtonEvent(this.deepClone(this.initFormData))
+            this.editButtonEvent(this.deepClone(this.initSaveFormData))
             break
           case 'saveImport':
             setTimeout(() => {
@@ -559,112 +666,79 @@
       },
       editEvent(row) {
 
-        // console.log(this.initFormData)
+        // console.log(this.initSaveFormData)
         // console.log(this.saveFormItems.length)
 
-        _this.$emit('showEditForm', row, this.saveFormItems)
+        _this.$emit('showEditForm', row, this.saveFormConfig.items)
         // console.log(this.saveFormItems)
         this.curRow = row
-        // console.log(this.initFormData)
-        // console.log(row)
+        // console.log(this.initSaveFormData)
+        console.log(row)
         this.saveFormDataBak = this.deepClone(row)
         this.saveFormData = this.deepClone(row)
         this.showSaveForm = true
       },
       saveButtonEvent(e) {
-        this.disableSave = true
-
-        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = true
-        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = true
-        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = true
-        this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = true
-        // console.log(this.saveButton)
-        this.submitLoading = true
-        setTimeout(() => {
-          if (this.saveFormData.id) {
-            console.log('编辑')
-            let saveData = {}
-            let keys = Object.keys(this.saveFormData);
-            keys.forEach(key => {
-              let oriData = this.saveFormDataBak[`${key}`]
-              let curData = this.saveFormData[`${key}`]
-              if (JSON.stringify(curData) != JSON.stringify(oriData)) {
-                saveData[`${key}`] = curData
-              }
+        this.lockForm()
+        // setTimeout(() => {
+        if (this.saveFormData.id) {
+          console.log('编辑')
+          let saveData = {}
+          let keys = Object.keys(this.saveFormData);
+          keys.forEach(key => {
+            let oriData = this.saveFormDataBak[`${key}`]
+            let curData = this.saveFormData[`${key}`]
+            if (JSON.stringify(curData) != JSON.stringify(oriData)) {
+              saveData[`${key}`] = curData
+            }
+          })
+          let keyLength = Object.keys(saveData).length
+          if (keyLength <= 0) {
+            this.$XModal.message({
+              message: '没有修改数据，不需要保存',
+              status: 'warn'
             })
-            saveData.id = this.saveFormData.id
-            console.log(saveData)
-            this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).then(t => {
-              this.queryFormEvent()
-            }).finally(r => {
-              _this.submitLoading = false
-              this.showSaveForm = false
-              this.disableSave = false
-
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = false
-
-              this.saveFormData = this.deepClone(this.initFormData)
-              this.saveFormDataBak = this.deepClone(this.initFormData)
-            });
-          } else {
-            console.log('新增')
-            this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData).then(t => {
-              this.queryFormEvent()
-            }).finally(r => {
-              _this.submitLoading = false
-              this.showSaveForm = false
-              this.disableSave = false
-
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.disabled = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[0].props.loading = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.disabled = false
-              this.saveFormItems[this.saveFormItems.length - 1].itemRender.children[1].props.loading = false
-
-              this.saveFormData = this.deepClone(this.initFormData)
-              this.saveFormDataBak = this.deepClone(this.initFormData)
-            });
+            this.releaseForm()
+            return
           }
-        }, 2000)
+          saveData.id = this.saveFormData.id
+          console.log(saveData)
+          this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).then(t => {
+            this.queryFormEvent()
+          }).finally(r => {
+            this.releaseForm()
+          });
+        } else {
+          console.log('新增')
+          this.$api.post(this.apiPre + '/' + this.thisName + '/insertSimple', this.saveFormData).then(t => {
+            this.queryFormEvent()
+          }).finally(r => {
+            this.releaseForm()
+          });
+        }
+        // }, 2000)
         // _this.$emit('resetSaveFormData', this.saveFormData)
         // this.saveFormData = this.saveFormDataProps
       },
+      lockForm() {
+        this.submitLoading = true
+        this.disableSave = true
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.disabled = true
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.loading = true
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[1].props.disabled = true
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[1].props.loading = true
+      },
+      releaseForm() {
+        this.showSaveForm = false
+        this.submitLoading = false
+        this.disableSave = false
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.disabled = false
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.loading = false
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[1].props.disabled = false
+        this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[1].props.loading = false
 
-      deepClone(target) {
-        // console.log(target)
-        // 定义一个变量
-        let result;
-        // debugger
-        // 如果当前需要深拷贝的是一个对象的话
-        if (typeof target === 'object') {
-          // 如果是一个数组的话
-          if (Array.isArray(target)) {
-            result = []; // 将result赋值为一个数组，并且执行遍历
-            for (let i in target) {
-              // 递归克隆数组中的每一项
-              result.push(_this.deepClone(target[i]))
-            }
-            // 判断如果当前的值是null的话；直接赋值为null
-          } else if (target === null) {
-            result = null;
-            // 判断如果当前的值是一个RegExp对象的话，直接赋值
-          } else if (target.constructor === RegExp) {
-            result = target;
-          } else {
-            // 否则是普通对象，直接for in循环，递归赋值对象的所有值
-            result = {};
-            for (let i in target) {
-              result[i] = _this.deepClone(target[i]);
-            }
-          }
-          // 如果不是对象的话，就是基本数据类型，那么直接赋值
-        } else {
-          result = target;
-        }
-        // 返回最终结果
-        return result;
+        this.saveFormData = this.deepClone(this.initSaveFormData)
+        this.saveFormDataBak = this.deepClone(this.initSaveFormData)
       },
       hasPermi(per) {
         // console.log('per:' + per)
@@ -674,7 +748,31 @@
       },
       close(e) {
         this.showSaveForm = false
-      }
+      },
+      iconName(iconName) {
+        let name = "#icon-"
+        name = name + iconName
+        return `${name}`
+      },
+      getTableHeight() {
+        this.$nextTick(function() {
+          // console.log(this.$refs.ZtVxeQueryForm)
+          // let contentHeight = document.getElementsByClassName("vxemodal")[0].clientHeight; // tabs高度/
+          let contentHeight = document.getElementById("ZtVxeQueryForm").clientHeight; // tabs高度 不稳定
+          // console.log('contentHeight')
+          // console.log(contentHeight)
+          // console.log(this.scrollerHeight)
+
+          // this.tableHeight = contentHeight == '0' ? '440' : (contentHeight - 55);
+          // console.log(contentHeight+" -- contentHeight --  tableHeight --         "+this.tableHeight);
+          this.tableHeight = this.scrollerHeight - contentHeight
+          console.log(this.tableHeight)
+          // this.$refs.ZtVxeGrid.height = this.tableHeight
+          // console.log(document.getElementById("ZtVxeGrid")) // tabs高度 不稳定
+          // console.log(document.getElementById("ZtVxeModal")) // tabs高度 不稳定
+          // console.log(document.getElementById("ZtVxeSaveForm")) // tabs高度 不稳定
+        })
+      },
     },
     mounted() {
       // this.$store.dispatch("SetPermi")
@@ -720,8 +818,8 @@
 
 
         var commonButton = {
-          // span: 24,
-          // align: 'center',
+          span: 24,
+          align: 'center',
           collapseNode: true,
           itemRender: {
             name: '$buttons',
@@ -751,7 +849,7 @@
         //   }
         // }
 
-        this.saveFormItems.push({
+        this.saveFormConfig.items.push({
           align: 'center',
           span: 24,
           titleAlign: 'left',
@@ -823,7 +921,15 @@
       //   this.queryFormItems.push(t)
       // })
 
-      this.initFormData = this.deepClone(this.saveFormData)
+      this.initSaveFormData = this.deepClone(this.saveFormConfig.data)
+
+      // console.log('this.$refs.ZtVxeQueryForm')
+      // console.log(this.$refs)
+      // console.log(this.$refs.ZtVxeQueryForm)
+
+      this.getTableHeight()
+      // setInterval(this.getTableHeight, 1000);
+
     },
     created() {
       console.log('common created')
@@ -834,8 +940,26 @@
     },
     computed: {
       scrollerHeight: function() {
-        return (document.body.clientHeight - 170) + 'px';
-      }
+        console.log(document.body.clientHeight)
+        return (document.body.clientHeight - 180) ; // + 'px'
+      },
+      // tableHeight: function(){
+      //   let contentHeight = document.getElementById("ZtVxeQueryForm").clientHeight; // tabs高度 不稳定
+      //   console.log(contentHeight)
+      //   // this.tableHeight = contentHeight == '0' ? '440' : (contentHeight - 55);
+      //   // console.log(contentHeight+" -- contentHeight --  tableHeight --         "+this.tableHeight);
+      //   return ((document.body.clientHeight - 170) - contentHeight)+ 'px';
+      // }
+
+      // 方式二
+      // iconName: function() {
+      //   return function(iconName) {
+      //     let name = "#icon-"
+      //     name = name + iconName
+      //     console.log(name)
+      //     return `${name}`
+      //   }
+      // }
     }
   }
 </script>

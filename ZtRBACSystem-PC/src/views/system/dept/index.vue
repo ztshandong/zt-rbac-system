@@ -1,44 +1,8 @@
 <template>
   <div class="app-container">
-    <vxe-form :data="saveFormData">
-      <vxe-form-item v-for="config in thisCommonItem" :field="config.field" :title="config.title" :span="config.span"
-        :align="config.align" :titleAlign="config.titleAlign" :titleWidth="config.titleWidth"
-        :titleOverflow="config.titleOverflow" :className="config.className" :visible="config.visible"
-        :folding="config.folding" :collapseNode="config.collapseNode" :titlePrefix="config.titlePrefix"
-        :titleSuffix="config.titleSuffix" :resetValue="config.resetValue" :itemRender="config.itemRender"
-        :visibleMethod="config.visibleMethod">
-        <!-- 方式一 -->
-        <!--
-        <template slot="title">
-          <item  icon="word2" :title="config.title" />
-        </template>
-        -->
-
-        <!-- 方式二 -->
-        <template slot="title" v-if="config.iconFirst">
-          <!-- <svg-icon icon-class="excel"/> 这个也可以-->
-          <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
-            <use v-bind:xlink:href="iconName(config.alicon)"></use>
-          </svg>
-          <span slot='title'>{{config.title}}</span>
-        </template>
-
-        <template slot="title" v-else-if="config.textFirst">
-          <span slot='title'>{{config.title}}</span>
-          <!-- <svg-icon icon-class="excel"/> 这个也可以-->
-          <svg class="icon ali" aria-hidden="true" v-if="config.alicon">
-            <use v-bind:xlink:href="iconName(config.alicon)"></use>
-          </svg>
-        </template>
-
-      </vxe-form-item>
-    </vxe-form>
-    <!--
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormDataProps="saveFormData" :saveFormItemsProps="saveFormItems"
-      :saveFormRolesProps="saveFormRoles" @showEditForm="showEditForm">
+      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm">
     </zt-vxe-grid>
- -->
   </div>
 </template>
 
@@ -74,97 +38,133 @@
           deptLeaderCode: null,
           remark: null
         },
-        thisCommonItem: [{
-          alicon: 'word2',
-          iconFirst: true,
-          title: '基础信息',
-          span: 24,
-          titleAlign: "left",
-          titleWidth: "200px",
-          titlePrefix: {
-            icon: 'fa fa-address-card-o',
-            message: '请填写基础信息'
-          },
-          visibleMethod: this.testVisible
-        }, {
-          alicon: 'excel',
-          textFirst: true,
-          field: 'thisName',
-          resetValue: null,
-          title: '部门名称',
-          span: 12,
-          folding: false,
-          itemRender: {
-            name: '$input',
-            props: {
-              placeholder: '请输入部门名称',
-              clearable: true,
+        thisCommonItem: [
+          // 内嵌div
+          // {
+          //   isDiv: true,
+          //   style: 'border: 1px dashed red;padding: 10px;',
+          //   items: [{
+          //     alicon: 'word2',
+          //     iconFirst: true,
+          //     title: '基础信息222',
+          //     span: 24,
+          //     titleAlign: "left",
+          //     titleWidth: "200px",
+          //     titlePrefix: {
+          //       icon: 'fa fa-address-card-o',
+          //       message: '请填写基础信息222'
+          //     },
+          //   }, {
+          //     alicon: 'excel',
+          //     textFirst: true,
+          //     field: 'thisName',
+          //     resetValue: null,
+          //     title: '部门名称222',
+          //     span: 12,
+          //     folding: false,
+          //     itemRender: {
+          //       name: '$input',
+          //       props: {
+          //         placeholder: '请输入部门名称222',
+          //         clearable: true,
+          //       },
+          //     }
+          //   }]
+          // },
+          {
+            queryOnly: true,
+            alicon: 'word2',
+            iconFirst: true,
+            title: '基础信息',
+            span: 24,
+            titleAlign: "left",
+            titleWidth: "200px",
+            titlePrefix: {
+              icon: 'fa fa-address-card-o',
+              message: '请填写基础信息'
             },
-          }
-        }, {
-          field: 'thisCode',
-          resetValue: null,
-          title: '部门编号',
-          span: 12,
-          folding: false,
-          itemRender: {
-            name: '$input',
-            props: {
-              placeholder: '请输入部门编号',
-              clearable: true,
-              disabled: false
-            },
-          }
-        }, {
-          title: '其他信息',
-          span: 24,
-          titleAlign: "left",
-          titleWidth: "200px",
-          titlePrefix: {
-            icon: 'zhangtao icon-word2',
-            message: '请填写其他项'
-          }
-        }, {
-          field: 'parentCode',
-          resetValue: null,
-          title: '上级部门',
-          span: 12,
-          folding: false,
-          itemRender: {
-            name: 'ElCascader',
-            showAllLevels: false,
-            props: {
+            visibleMethod: this.testVisible
+          }, {
+            editOnly: true,
+            alicon: 'excel',
+            textFirst: true,
+            field: 'thisName',
+            resetValue: null,
+            title: '部门名称',
+            span: 12,
+            folding: false,
+            itemRender: {
+              name: '$input',
               props: {
-                expandTrigger: 'hover',
-                checkStrictly: true,
-                emitPath: false
+                placeholder: '请输入部门名称',
+                clearable: true,
               },
-              // prefixIcon: "fa fa-user",
-              // suffixIcon: "fa fa-search",
-              placeholder: '请选择上级部门',
-              clearable: true,
-              options: [],
-              filterable: true,
-              expandTrigger: 'hover',
-              showAllLevels: false,
-              checkStrictly: true
-              // type: 'search',
-            },
-          }
-        }, {
-          field: 'remark',
-          resetValue: null,
-          title: '备注',
-          span: 8,
-          folding: true,
-          itemRender: {
-            name: '$textarea',
-            props: {
-              placeholder: '请输入备注',
-              resize: "both"
             }
-          }
-        }, ],
+          }, {
+            field: 'thisCode',
+            resetValue: null,
+            title: '部门编号',
+            span: 12,
+            folding: false,
+            itemRender: {
+              name: '$input',
+              props: {
+                placeholder: '请输入部门编号',
+                clearable: true,
+                disabled: false
+              },
+            }
+          }, {
+            title: '其他信息',
+            span: 24,
+            titleAlign: "left",
+            titleWidth: "200px",
+            titlePrefix: {
+              icon: 'zhangtao icon-word2',
+              message: '请填写其他项'
+            }
+          }, {
+            field: 'parentCode',
+            resetValue: null,
+            title: '上级部门',
+            span: 12,
+            folding: false,
+            itemRender: {
+              name: 'ElCascader',
+              showAllLevels: false,
+              props: {
+                props: {
+                  expandTrigger: 'hover',
+                  checkStrictly: true,
+                  emitPath: false
+                },
+                // prefixIcon: "fa fa-user",
+                // suffixIcon: "fa fa-search",
+                placeholder: '请选择上级部门',
+                clearable: true,
+                options: [],
+                filterable: true,
+                expandTrigger: 'hover',
+                showAllLevels: false,
+                checkStrictly: true
+                // type: 'search',
+              },
+            }
+          }, {
+            field: 'remark',
+            resetValue: null,
+            title: '备注',
+            span: 8,
+            folding: true,
+            itemRender: {
+              name: '$textarea',
+              props: {
+                placeholder: '请输入备注',
+                resize: "both"
+              }
+            }
+          },
+        ],
         thisQueryItem: [],
         thisSaveItem: [],
         queryFormConfig: {
@@ -172,9 +172,11 @@
           items: [],
           rules: {}
         },
-        saveFormData: {},
-        //新增编辑界面表单元素 created()里面赋值
-        saveFormItems: [],
+        saveFormConfig: {
+          data: {},
+          items: [],
+          rules: {}
+        },
         //新增编辑表单校验规则
         saveFormRoles: {
           thisName: [{
@@ -296,23 +298,22 @@
     created() {
       _this = this
 
-      this.saveFormData = this.deepClone(this.thisData)
-
-      this.queryFormConfig.data = this.deepClone(this.thisData)
       this.thisCommonItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
+        this.saveFormConfig.items.push(this.deepClone(t))
       })
+
+      this.queryFormConfig.data = this.deepClone(this.thisData)
       this.thisQueryItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
       })
       this.queryFormConfig.rules = this.queryFormRoles
 
-      this.thisCommonItem.forEach(t => {
-        this.saveFormItems.push(this.deepClone(t))
-      })
+      this.saveFormConfig.data = this.deepClone(this.thisData)
       this.thisSaveItem.forEach(t => {
-        this.saveFormItems.push(this.deepClone(t))
+        this.saveFormConfig.items.push(this.deepClone(t))
       })
+      this.saveFormConfig.rules = this.saveFormRoles
 
       this.getList();
       // this.getDicts("sys_normal_disable").then(response => {
@@ -335,7 +336,7 @@
     },
     methods: {
       testVisible(e) {
-        console.log(e)
+        // console.log(e)
         return true
       },
       iconName(iconName) {
@@ -344,7 +345,7 @@
         return `${name}`
       },
       showEditForm(row, items) {
-        console.log(row)
+        // console.log(row)
         // console.log(items)
         if (row.id) {
           items.forEach(t => {
@@ -364,7 +365,7 @@
       },
       /** 查询部门列表 */
       getList() {
-        this.loading = true;
+        // this.loading = true;
         this.$api.post(this.apiPre + '/' + this.thisName + '/getAllDeptTree', null)
           .then(r => {
             this.queryFormConfig.items.forEach(t => {
@@ -373,7 +374,7 @@
                 return
               }
             })
-            this.saveFormItems.forEach(t => {
+            this.saveFormConfig.items.forEach(t => {
               if (t.field == 'parentCode') {
                 t.itemRender.props.options = r.data;
                 return
@@ -500,5 +501,4 @@
   .ali {
     font-size: 20px;
   }
-
 </style>
