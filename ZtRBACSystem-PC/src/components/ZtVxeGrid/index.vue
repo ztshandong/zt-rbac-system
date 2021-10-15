@@ -109,12 +109,14 @@
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
       @toolbar-button-click="toolbarButtonClickEvent" @toolbar-tool-click="toolbarButtonClickEvent">
 
-      <template v-if="useCommonSlot" #operate_default="{ row }">
+      <template #operate_default="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">
           编辑
         </vxe-button>
         <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
           @click="removeButtonEvent(row)">删除</vxe-button>
+        <vxe-button v-for="button in customGridSlotButton" :key="button.title" :icon="button.icon" :title="button.title"
+          :status="button.status" v-if="button.show" @click="button.click(row)">{{button.title}}</vxe-button>
       </template>
 
       <!--
@@ -224,9 +226,9 @@
         type: String,
         default: "",
       },
-      useCommonSlot: {
-        type: Boolean,
-        default: true,
+      customGridSlotButton: {
+        type: Array,
+        default: () => [],
       },
       tableColumnProps: {
         // 列
@@ -379,7 +381,7 @@
                 type: 'text',
                 disabled: false
               },
-              
+
             ]
           }],
           // refresh: {
@@ -905,16 +907,14 @@
         }
 
         // this.queryDataBak = this.deepClone(this.queryData)
-        if (this.useCommonSlot) {
-          this.tableColumn.push({
-            field: 'operate',
-            title: '操作',
-            minWidth: 120,
-            slots: {
-              default: 'operate_default'
-            }
-          })
-        }
+        this.tableColumn.push({
+          field: 'operate',
+          title: '操作',
+          minWidth: 120,
+          slots: {
+            default: 'operate_default'
+          }
+        })
       })
 
       // this.$forceUpdate();

@@ -2,7 +2,8 @@
   <div class="app-container">
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
       :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
-      :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm" @customToolbarButton="customToolbarButton">
+      :customGridSlotButton="customGridSlotButton" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm"
+      @customToolbarButton="customToolbarButton">
     </zt-vxe-grid>
   </div>
 </template>
@@ -27,6 +28,19 @@
     name: "DEPT_MANAGE",
     data() {
       return {
+        customGridSlotButton: [{
+          icon: "fa fa-edit",
+          title: "title1",
+          status: "primary",
+          show: this.title1Show(),
+          click: this.title1Click
+        }, {
+          icon: "fa fa-edit",
+          title: "title2",
+          status: "primary",
+          show: this.title2Show(),
+          click: this.title2Click
+        }],
         otherButtons: [{
           code: 'customButton',
           name: '部门专用',
@@ -249,7 +263,7 @@
           {
             field: 'remark',
             title: '备注'
-          },
+          }
         ],
         // 遮罩层
         loading: true,
@@ -342,6 +356,20 @@
       // }
     },
     methods: {
+      title1Show() {
+        return false
+      },
+      title2Show() {
+        return true
+      },
+      title1Click(row) {
+        console.log('title1Click')
+        console.log(row)
+      },
+      title2Click(row) {
+        console.log('title2Click')
+        console.log(row)
+      },
       customToolbarButton(code) {
         console.log('code')
         console.log(code)
