@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm">
+      :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
+      :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm" @customToolbarButton="customToolbarButton">
     </zt-vxe-grid>
   </div>
 </template>
@@ -26,6 +27,12 @@
     name: "DEPT_MANAGE",
     data() {
       return {
+        otherButtons: [{
+          code: 'customButton',
+          name: '部门专用',
+          status: 'info',
+          icon: 'fa fa-plus'
+        }, ],
         apiPre: "",
         thisName: "ZtDeptInfo",
         thisData: {
@@ -335,6 +342,10 @@
       // }
     },
     methods: {
+      customToolbarButton(code) {
+        console.log('code')
+        console.log(code)
+      },
       testVisible(e) {
         // console.log(e)
         return true

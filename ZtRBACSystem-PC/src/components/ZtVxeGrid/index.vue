@@ -107,9 +107,9 @@
       :height="tableHeight" :loading="loading" id="ZtVxeGrid" ref="ZtVxeGrid" row-id="id" :data="tableData"
       :columns="tableColumn" :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
-      @toolbar-button-click="toolbarButtonClickEvent">
+      @toolbar-button-click="toolbarButtonClickEvent" @toolbar-tool-click="toolbarButtonClickEvent">
 
-      <template #operate_default="{ row }">
+      <template v-if="useCommonSlot" #operate_default="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">
           编辑
         </vxe-button>
@@ -224,6 +224,10 @@
         type: String,
         default: "",
       },
+      useCommonSlot: {
+        type: Boolean,
+        default: true,
+      },
       tableColumnProps: {
         // 列
         type: Array,
@@ -315,6 +319,10 @@
           modes: ['current', 'selected', 'all']
         }),
       },
+      toolbarCustomButtonConfig: {
+        type: Array,
+        default: () => [],
+      },
       toolbarConfigProps: {
         // 工具栏按钮配置
         type: Object,
@@ -335,31 +343,6 @@
               name: 'app.body.button.save',
               status: 'success'
             },
-            {
-              name: '其他',
-              disabled: false,
-              status: 'danger',
-              dropdowns: [{
-                  code: 'other1',
-                  name: '自定义1',
-                  status: 'primary',
-                  disabled: false
-                },
-                {
-                  code: 'other2',
-                  name: '自定义2',
-                  type: 'text',
-                  status: 'info',
-                  disabled: true
-                },
-                {
-                  code: 'other3',
-                  name: '自定义3',
-                  type: 'text',
-                  disabled: false
-                }
-              ]
-            }
           ],
           perfect: true,
           import: false,
@@ -367,6 +350,43 @@
           print: false,
           zoom: true,
           custom: true,
+          tools: [{
+            name: '其他',
+            disabled: false,
+            status: 'danger',
+            dropdowns: [{
+                code: 'other1',
+                name: '自定义1',
+                status: 'primary',
+                disabled: false
+              },
+              {
+                code: 'other2',
+                name: '自定义2',
+                type: 'text',
+                status: 'info',
+                disabled: true
+              },
+              {
+                code: 'other3',
+                name: '自定义3',
+                type: 'text',
+                disabled: false
+              },
+              {
+                code: 'myExport',
+                name: '导出3',
+                type: 'text',
+                disabled: false
+              },
+              
+            ]
+          }],
+          // refresh: {
+          //   // query: this.queryFormEvent(),
+          //   icon: 'fa fa-refresh',
+          //   iconLoading: 'fa fa-spinner fa-spin'
+          // },
           // slots: {
           //   buttons: 'toolbar_buttons'
           // }
@@ -419,7 +439,7 @@
       queryResetEvent(data, event) {
         _this.$emit('formResetEvent', data)
       },
-      //表单提交
+      //表单提交，分页也是这个
       queryFormEvent(data, event) {
         console.log(data)
         console.log(event)
@@ -651,6 +671,9 @@
             //   type: 'csv'
             // })
             break
+          default:
+            // console.log(code)
+            _this.$emit('customToolbarButton', code)
         }
       },
       editButtonEvent(row) {
@@ -766,11 +789,14 @@
           // this.tableHeight = contentHeight == '0' ? '440' : (contentHeight - 55);
           // console.log(contentHeight+" -- contentHeight --  tableHeight --         "+this.tableHeight);
           this.tableHeight = this.scrollerHeight - contentHeight
-          console.log(this.tableHeight)
+          // console.log(this.tableHeight)
           // this.$refs.ZtVxeGrid.height = this.tableHeight
           // console.log(document.getElementById("ZtVxeGrid")) // tabs高度 不稳定
           // console.log(document.getElementById("ZtVxeModal")) // tabs高度 不稳定
           // console.log(document.getElementById("ZtVxeSaveForm")) // tabs高度 不稳定
+          let grid = document.getElementsByClassName("vxe-grid")[0]; // tabs高度/
+          // console.log(grid)
+          // this.$refs.ZtVxeGrid.toolbarConfig.refresh.query = this.queryFormEvent()
         })
       },
     },
@@ -837,8 +863,9 @@
             }]
           }
         }
-
-        this.queryFormConfig.items.push(commonButton)
+        if (!this.queryFormConfig.useSpecialQuery) {
+          this.queryFormConfig.items.push(commonButton)
+        }
         // console.log(this.saveFormItems)
 
         // {
@@ -849,42 +876,45 @@
         //   }
         // }
 
-        this.saveFormConfig.items.push({
-          align: 'center',
-          span: 24,
-          titleAlign: 'left',
-          collapseNode: true,
-          itemRender: {
-            name: '$buttons',
-            children: [{
-              props: {
-                type: 'submit',
-                content: '保存',
-                status: 'primary',
-                disabled: this.disableSave,
-                loading: this.disableSave
-              }
-            }, {
-              props: {
-                content: '取消'
-              },
-              events: {
-                click: this.close
-              }
-            }]
-          }
-        })
+        if (!this.saveFormConfig.useSpecialSave) {
+          this.saveFormConfig.items.push({
+            align: 'center',
+            span: 24,
+            titleAlign: 'left',
+            collapseNode: true,
+            itemRender: {
+              name: '$buttons',
+              children: [{
+                props: {
+                  type: 'submit',
+                  content: '保存',
+                  status: 'primary',
+                  disabled: this.disableSave,
+                  loading: this.disableSave
+                }
+              }, {
+                props: {
+                  content: '取消'
+                },
+                events: {
+                  click: this.close
+                }
+              }]
+            }
+          })
+        }
 
         // this.queryDataBak = this.deepClone(this.queryData)
-        this.tableColumn.push({
-          field: 'operate',
-          title: '操作',
-          minWidth: 120,
-          slots: {
-            default: 'operate_default'
-          }
-        })
-
+        if (this.useCommonSlot) {
+          this.tableColumn.push({
+            field: 'operate',
+            title: '操作',
+            minWidth: 120,
+            slots: {
+              default: 'operate_default'
+            }
+          })
+        }
       })
 
       // this.$forceUpdate();
@@ -934,6 +964,10 @@
     created() {
       console.log('common created')
       _this = this
+      this.toolbarCustomButtonConfig.forEach(t => {
+        this.toolbarConfigProps.buttons.push(t)
+        // this.toolbarConfigProps.buttons.unshift(t)
+      })
       // console.log(this.queryFormConfig)
       // console.log(PermissionDefine)
 
@@ -941,7 +975,7 @@
     computed: {
       scrollerHeight: function() {
         console.log(document.body.clientHeight)
-        return (document.body.clientHeight - 180) ; // + 'px'
+        return (document.body.clientHeight - 180); // + 'px'
       },
       // tableHeight: function(){
       //   let contentHeight = document.getElementById("ZtVxeQueryForm").clientHeight; // tabs高度 不稳定
