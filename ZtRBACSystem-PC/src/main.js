@@ -41,10 +41,16 @@ import 'vxe-table-plugin-element/dist/style.css'
 
 import ZtVxeGrid from '@/components/ZtVxeGrid';
 import EditDownTable from '@/components/EditDownTable'
+import VXETablePluginExportXLSX from 'vxe-table-plugin-export-xlsx'
+import VXETablePluginExportPDF from 'vxe-table-plugin-export-pdf'
 
 Vue.component(EditDownTable.name, EditDownTable)
 
 VXETable.use(VXETablePluginElement)
+
+VXETable.use(VXETablePluginExportXLSX)
+
+VXETable.use(VXETablePluginExportPDF)
 
 // 将API方法绑定到全局
 Vue.prototype.$api = api

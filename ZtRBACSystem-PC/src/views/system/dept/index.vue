@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
+      :treeConfigProps="treeConfig" :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
       :customGridSlotButton="customGridSlotButton" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm"
-      @customToolbarButton="customToolbarButton">
+      @customToolbarButton="customToolbarButton" @specialQuery="specialQuery">
     </zt-vxe-grid>
   </div>
 </template>
@@ -28,6 +28,10 @@
     name: "DEPT_MANAGE",
     data() {
       return {
+        treeConfig: {
+          children: 'children',
+          expandAll: true
+        },
         customGridSlotButton: [{
           icon: "fa fa-edit",
           title: "title1",
@@ -46,7 +50,31 @@
           name: '部门专用',
           status: 'info',
           icon: 'fa fa-plus'
-        }, ],
+        }, {
+          name: '树操作',
+          disabled: false,
+          status: 'primary',
+          dropdowns: [{
+              code: 'getCheckBox',
+              name: '获取已选择复选框',
+              status: 'primary',
+              disabled: false
+            },
+            {
+              code: 'expandAll',
+              name: '展开全部',
+              type: 'text',
+              status: 'info',
+              disabled: false
+            },
+            {
+              code: 'closeAll',
+              name: '折叠全部',
+              type: 'text',
+              disabled: false
+            }
+          ]
+        }],
         apiPre: "",
         thisName: "ZtDeptInfo",
         thisData: {
@@ -189,6 +217,7 @@
         thisQueryItem: [],
         thisSaveItem: [],
         queryFormConfig: {
+          useSpecialQuery: true,
           data: {},
           items: [],
           rules: {}
@@ -222,18 +251,21 @@
           ]
         },
         tableColumn: [{
+            type: 'checkbox',
+            treeNode: true,
+          }, {
             field: 'id',
             title: 'id',
             visible: false
           },
           {
             field: 'thisCode',
-            title: '角色编号',
+            title: '部门编号',
             titleHelp: "{message: '自定义图标', icon: 'fa fa-bell'}"
           },
           {
             field: 'thisName',
-            title: '角色名称'
+            title: '部门名称',
           },
           {
             field: 'parentCode',
@@ -335,11 +367,13 @@
         this.saveFormConfig.items.push(this.deepClone(t))
       })
       this.saveFormConfig.rules = this.saveFormRoles
-
       this.getList();
       // this.getDicts("sys_normal_disable").then(response => {
       //   this.statusOptions = response.data;
       // });
+    },
+    mounted() {
+      // setCheckboxRow
     },
     computed: {
       isDisable: function() {
@@ -356,6 +390,21 @@
       // }
     },
     methods: {
+      specialQuery(param, callback) {
+        this.$api.post('/ZtDeptInfo/getAllDeptTree', null)
+          .then(r => {
+            callback(r)
+            this.$nextTick(() => {
+              let data = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getTableData().tableData
+              // _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setAllCheckboxRow(true)
+              let checkedIds = [4, 6]
+              checkedIds.forEach(id => {
+                let checkedRow = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
+                _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
+              })
+            })
+          })
+      },
       title1Show() {
         return false
       },
@@ -371,8 +420,19 @@
         console.log(row)
       },
       customToolbarButton(code) {
-        console.log('code')
         console.log(code)
+        switch (code) {
+          case 'getCheckBox':
+            let selectRow = this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getCheckboxRecords(true)
+            console.log(selectRow)
+            break
+          case 'expandAll':
+            this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setAllTreeExpand(true)
+            break
+          case 'closeAll':
+            this.$refs.ztVxeGrid.$refs.ZtVxeGrid.clearTreeExpand()
+            break
+        }
       },
       testVisible(e) {
         // console.log(e)
@@ -409,13 +469,13 @@
           .then(r => {
             this.queryFormConfig.items.forEach(t => {
               if (t.field == 'parentCode') {
-                t.itemRender.props.options = r.data;
+                t.itemRender.props.options = r.data.results;
                 return
               }
             })
             this.saveFormConfig.items.forEach(t => {
               if (t.field == 'parentCode') {
-                t.itemRender.props.options = r.data;
+                t.itemRender.props.options = r.data.results;
                 return
               }
             })

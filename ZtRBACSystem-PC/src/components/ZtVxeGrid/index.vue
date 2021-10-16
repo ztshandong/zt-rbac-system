@@ -107,6 +107,7 @@
       :height="tableHeight" :loading="loading" id="ZtVxeGrid" ref="ZtVxeGrid" row-id="id" :data="tableData"
       :columns="tableColumn" :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
+      :tree-config="treeConfigProps" :checkbox-config="checkBoxConfigProps"
       @toolbar-button-click="toolbarButtonClickEvent" @toolbar-tool-click="toolbarButtonClickEvent">
 
       <template #operate_default="{ row }">
@@ -318,12 +319,22 @@
         // 导出配置
         type: Object,
         default: () => ({
-          modes: ['current', 'selected', 'all']
+          type: 'xlsx',
+          types: ['xlsx', 'pdf', 'csv', 'html', 'xml', 'txt'],
+          modes: ['current', 'selected']
         }),
       },
       toolbarCustomButtonConfig: {
         type: Array,
         default: () => [],
+      },
+      treeConfigProps: {
+        type: Object,
+        default: () => null,
+      },
+      checkBoxConfigProps: {
+        type: Object,
+        default: () => ({}),
       },
       toolbarConfigProps: {
         // 工具栏按钮配置
@@ -471,31 +482,63 @@
       },
       doQuery(queryData) {
         // console.log(queryData)
-        this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
-          .then(r => {
+        if (!this.queryFormConfig.useSpecialQuery) {
+          this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
+            .then(r => {
+              var res = r.data.results;
+              // console.log('r:' + JSON.stringify(r))
+              this.tablePage.total = r.data.total
+              // console.log('res:' + JSON.stringify(res))
+              // 使用函数式加载，阻断 vue 对大数据的监听
+              const xTable = this.$refs.ZtVxeGrid
+              // console.log('res:')
+              // console.log(res)
+              const startTime = Date.now()
+              if (xTable) {
+                this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+                  _this.$XModal.message({
+                    message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
+                    status: 'info'
+                  })
+                })
+              }
+              this.tableData = r.data.results
+              this.$nextTick(() => {
+                let data = _this.$refs.ZtVxeGrid.getTableData()
+                // console.log(data)
+              })
+              // console.log('tableData:' + JSON.stringify(this.tableData))
+            })
+            .finally(r => {
+              this.loading = false
+            });
+        } else {
+          _this.$emit('specialQuery', queryData, r => {
+            // console.log('callback')
+            // console.log(r)
             var res = r.data.results;
             // console.log('r:' + JSON.stringify(r))
-            this.tablePage.total = r.data.total
+            _this.tablePage.total = r.data.total
             // console.log('res:' + JSON.stringify(res))
             // 使用函数式加载，阻断 vue 对大数据的监听
-            const xTable = this.$refs.ZtVxeGrid
+            const xTable = _this.$refs.ZtVxeGrid
             // console.log('res:')
             // console.log(res)
             const startTime = Date.now()
             if (xTable) {
-              this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+              _this.$refs.ZtVxeGrid.reloadData(res).then(() => {
                 _this.$XModal.message({
                   message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
                   status: 'info'
                 })
               })
             }
-            this.tableData = r.data.results
+            _this.tableData = r.data.results
+            _this.loading = false
+
             // console.log('tableData:' + JSON.stringify(this.tableData))
           })
-          .finally(r => {
-            this.loading = false
-          });
+        }
       },
       // resetEvent() {
       // },
@@ -865,9 +908,7 @@
             }]
           }
         }
-        if (!this.queryFormConfig.useSpecialQuery) {
-          this.queryFormConfig.items.push(commonButton)
-        }
+        this.queryFormConfig.items.push(commonButton)
         // console.log(this.saveFormItems)
 
         // {

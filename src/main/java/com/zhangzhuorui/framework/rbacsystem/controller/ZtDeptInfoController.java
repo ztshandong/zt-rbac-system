@@ -45,8 +45,12 @@ public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo>
 
     @RequestMapping(value = "getAllDeptTree", method = RequestMethod.POST)
     @ResponseBody
-    public ZtResBeanEx<List<ZtDeptInfo>> getAllDeptTree() throws Exception {
-        return ZtResBeanEx.ok(getIZtSimpleBaseService().getAllDeptTree());
+    public ZtResBeanEx<ZtPage<ZtDeptInfo>> getAllDeptTree() throws Exception {
+        List<ZtDeptInfo> allDeptTree = getIZtSimpleBaseService().getAllDeptTree();
+        ZtPage ztPage = new ZtPage();
+        ztPage.setResults(allDeptTree);
+        ztPage.setTotal(allDeptTree.size());
+        return ZtResBeanEx.ok(ztPage);
     }
 
     @RequestMapping(value = "getCurUserDeptCodes", method = RequestMethod.POST)

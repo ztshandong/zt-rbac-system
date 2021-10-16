@@ -23,10 +23,10 @@
     <!-- <i class='zhangtao icon-excel ali' ></i>excel -->
 
     <!-- :queryFormItemsProps="queryFormItems"  @setSaveFormItemsBak="setSaveFormItemsBak" @resetSaveFormData="resetSaveFormData"-->
-    <!-- 
+    <!--
     <vxe-pulldown ref="xDown1">
       <vxe-input v-model="queryFormConfig.data.thisCode" placeholder="可搜索的下拉框" @focus="focusEvent1"></vxe-input>
-      
+
       <template #dropdown>
         <div class="my-dropdown1">
           <div class="list-item1" v-for="item in list1" :key="item.value" @click="selectEvent1(item)">
@@ -302,7 +302,7 @@
           },
           {
             field: 'thisName',
-            title: '角色名称'
+            title: '角色名称',
           },
           {
             field: 'roleType',
@@ -518,21 +518,21 @@
         .then(r => {
           this.queryFormConfig.items.forEach(t => {
             if (t.field == 'deptCode') {
-              t.itemRender.props.options = r.data;
+              t.itemRender.props.options = r.data.results;
               return
             }
           })
 
           this.saveFormConfig.items.forEach(t => {
             if (t.field == 'deptCode') {
-              t.itemRender.props.options = r.data;
+              t.itemRender.props.options = r.data.results;
               return
             }
           })
 
           this.tableColumn.forEach(t => {
             if (t.field == 'deptCode') {
-              t.editRender.props.options = r.data;
+              t.editRender.props.options = r.data.results;
               return
             }
           })
