@@ -40,15 +40,15 @@
     <!-- custom-layout 可以内置div，但是会导致彩色图标失效 -->
     <!-- <div :style="{'min-height':tableHeight+'px','max-height':tableHeight+'px','width':'100%'}"> -->
     <!-- ,'border': '1px dashed red' -->
+    <!-- v-if="!config.editOnly" -->
     <vxe-form id="ZtVxeQueryForm" ref="ZtVxeQueryForm" :data="queryFormConfig.data" :rules="queryFormConfig.rules"
       @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="queryResetEvent">
-      <vxe-form-item v-for="config in queryFormConfig.items" v-if="!config.editOnly" :field="config.field"
-        :key="config.field" :title="config.title" :span="config.span" :align="config.align"
-        :titleAlign="config.titleAlign" :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow"
-        :className="config.className" :visible="config.visible" :folding="config.folding"
-        :collapseNode="config.collapseNode" :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix"
-        :resetValue="config.resetValue" :itemRender="config.itemRender" :visibleMethod="config.visibleMethod"
-        :children="config.children">
+      <vxe-form-item v-for="config in queryFormConfig.items" v-if="!config.editOnly" :field="config.field" :key="config.field"
+        :title="config.title" :span="config.span" :align="config.align" :titleAlign="config.titleAlign"
+        :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow" :className="config.className"
+        :visible="config.visible" :folding="config.folding" :collapseNode="config.collapseNode"
+        :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix" :resetValue="config.resetValue"
+        :itemRender="config.itemRender" :visibleMethod="config.visibleMethod" :children="config.children">
         <!--
         <div v-if="config.isDiv" :style="config.style">
           <vxe-form-item v-for="config2 in config.items" :field="config2.field" :title="config2.title"
@@ -902,6 +902,21 @@
         _this.$refs.ZtVxeGrid.toolbarConfig.export = this.showExport
         _this.$refs.ZtVxeGrid.toolbarConfig.print = this.showPrint
 
+        const remark = {
+          index: 99999,
+          field: 'remark',
+          resetValue: null,
+          title: '备注',
+          span: 24,
+          folding: true,
+          itemRender: {
+            name: '$textarea',
+            props: {
+              placeholder: '请输入备注',
+              resize: "both"
+            }
+          }
+        }
 
         var commonButton = {
           span: 24,
@@ -923,7 +938,10 @@
             }]
           }
         }
+
+        this.queryFormConfig.items.push(this.deepClone(remark))
         this.queryFormConfig.items.push(commonButton)
+
         // console.log(this.saveFormItems)
 
         // {
@@ -933,6 +951,8 @@
         //     status: 'primary'
         //   }
         // }
+
+        this.saveFormConfig.items.push(this.deepClone(remark))
 
         if (!this.saveFormConfig.useSpecialSave) {
           this.saveFormConfig.items.push({

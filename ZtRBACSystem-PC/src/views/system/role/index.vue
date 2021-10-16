@@ -225,20 +225,7 @@
           }
         }],
         //查询表单专用form元素
-        thisQueryItem: [{
-          field: 'remark',
-          resetValue: null,
-          title: '备注',
-          span: 8,
-          folding: true,
-          itemRender: {
-            name: '$textarea',
-            props: {
-              placeholder: '请输入备注',
-              resize: "both"
-            }
-          }
-        }, ],
+        thisQueryItem: [],
         //新增、编辑专用form元素
         thisSaveItem: [{
           field: 'thisCode',
@@ -410,7 +397,7 @@
         // console.log(e)
         this.queryFormConfig.data.thisCode = null
       },
-      afterQuery(){
+      afterQuery() {
         // console.log('role afterQuery')
       }
     },

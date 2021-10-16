@@ -193,20 +193,7 @@
                 // type: 'search',
               },
             }
-          }, {
-            field: 'remark',
-            resetValue: null,
-            title: '备注',
-            span: 8,
-            folding: true,
-            itemRender: {
-              name: '$textarea',
-              props: {
-                placeholder: '请输入备注',
-                resize: "both"
-              }
-            }
-          },
+          }, 
         ],
         thisQueryItem: [],
         thisSaveItem: [],

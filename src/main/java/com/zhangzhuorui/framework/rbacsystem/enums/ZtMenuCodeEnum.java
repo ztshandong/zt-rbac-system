@@ -17,13 +17,14 @@ public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
 
     //region
     ROOT(0, "顶级模块"),
-    SYSTEM_MANAGE(-1, "系统配置"),
-    USER_MANAGE(-2, "用户管理"),
-    DEPT_MANAGE(-3, "部门管理"),
-    POST_MANAGE(-4, "职位管理"),
-    ROLE_MANAGE(-5, "角色管理"),
-    COMPONENT_MANAGE(-6, "组件管理"),
-    BUTTON_MANAGE(-7, "按钮管理"),
+    CONFIG_MANAGE(-1, "配置管理"),
+    SYSTEM_MANAGE(-2, "系统管理"),
+    USER_MANAGE(-3, "用户管理"),
+    DEPT_MANAGE(-4, "部门管理"),
+    POST_MANAGE(-5, "职位管理"),
+    ROLE_MANAGE(-6, "角色管理"),
+    COMPONENT_MANAGE(-7, "组件管理"),
+    BUTTON_MANAGE(-8, "按钮管理"),
 
     BUTTON(1, "按钮信息"),
     COMPONENT(2, "组件信息"),
