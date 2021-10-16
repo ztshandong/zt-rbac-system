@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig">
+      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm">
     </zt-vxe-grid>
   </div>
 </template>
@@ -157,25 +157,31 @@
               clearable: true,
               transfer: true,
               disabled: false,
+            },
+            events: {
+              change: this.menuTypeChange
             }
           }
         }, {
           index: 120,
           field: 'buttonCode',
           resetValue: null,
-          title: '组件编号',
+          title: '按钮编号',
           span: 8,
           folding: false,
           titlePrefix: {
             icon: 'fa fa-address-card-o',
           },
           itemRender: {
-            name: '$input',
+            name: '$select',
+            options: [],
             props: {
-              placeholder: '请输入组件编号',
+              multiple: false,
+              placeholder: '按钮编号',
               clearable: true,
-              disabled: false
-            },
+              transfer: true,
+              disabled: false,
+            }
           }
         }, ],
         thisQueryItem: [],
@@ -241,6 +247,23 @@
             }
           },
           {
+            field: 'buttonCode',
+            title: '按钮',
+            showHeaderOverflow: true,
+            // filters: this.ztRoleTypeEnum,
+            filterMultiple: false,
+            // formatter: this.formatterRoleTypeEnum,
+            sortable: true,
+            editRender: {
+              name: '$select',
+              options: [],
+              multiple: true,
+              props: {
+                placeholder: '请选择按钮编号'
+              }
+            }
+          },
+          {
             field: 'remark',
             title: '备注'
           }
@@ -296,7 +319,6 @@
 
         })
 
-
       this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtMenuCodeEnum', null)
         .then(r => {
 
@@ -323,11 +345,75 @@
 
         })
 
+      this.$api.get(this.apiPre + '/' + this.thisName + '/getEnumInfo?enumName=ZtButtonCodeEnum', null)
+        .then(r => {
+
+          this.queryFormConfig.items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.options = r.data
+              return
+            }
+          })
+
+          this.saveFormConfig.items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.options = r.data
+              return
+            }
+          })
+
+          this.tableColumn.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.editRender.options = r.data
+              return
+            }
+          })
+
+        })
+
     },
     mounted() {
 
     },
     methods: {
+      showEditForm(row, items) {
+        if (row.menuType == "BUTTON") {
+          items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.props.disabled = false
+              return
+            }
+          })
+        } else {
+          this.$refs.ztVxeGrid.saveFormData.buttonCode = null
+          items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.props.disabled = true
+              return
+            }
+          })
+        }
+      },
+      menuTypeChange(value, $event) {
+        if ($event.value == "BUTTON") {
+          this.saveFormConfig.items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.props.disabled = false
+              return
+            }
+          })
+        } else {
+          this.$refs.ztVxeGrid.saveFormData.buttonCode = null
+          this.saveFormConfig.items.forEach(t => {
+            if (t.field == 'buttonCode') {
+              t.itemRender.props.disabled = true
+              return
+            }
+          })
+        }
+      }
+    },
+    computed: {
 
     }
   };
