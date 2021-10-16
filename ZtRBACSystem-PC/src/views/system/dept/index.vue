@@ -3,28 +3,14 @@
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
       :treeConfigProps="treeConfig" :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
       :customGridSlotButton="customGridSlotButton" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm"
-      @customToolbarButton="customToolbarButton" @specialQuery="specialQuery">
+      @customToolbarButton="customToolbarButton" @specialQuery="specialQuery" @afterQuery="afterQuery">
     </zt-vxe-grid>
   </div>
 </template>
 
 <script>
   var _this;
-
-  import {
-    listDept,
-    getDept,
-    delDept,
-    addDept,
-    updateDept,
-    listDeptExcludeChild
-  } from "@/api/system/dept";
-  import Item from '@/layout/components/Sidebar/Item.vue'
-  // import ZtVxeGrid from '@/components/ZtVxeGrid';
   export default {
-    components: {
-      Item
-    },
     name: "DEPT_MANAGE",
     data() {
       return {
@@ -121,6 +107,7 @@
           //   }]
           // },
           {
+            index:3,
             queryOnly: true,
             alicon: 'word2',
             iconFirst: true,
@@ -134,6 +121,7 @@
             },
             visibleMethod: this.testVisible
           }, {
+            index:2,
             editOnly: true,
             alicon: 'excel',
             textFirst: true,
@@ -150,11 +138,16 @@
               },
             }
           }, {
+            index:1,
             field: 'thisCode',
             resetValue: null,
             title: '部门编号',
             span: 12,
             folding: false,
+            titlePrefix: {
+              icon: 'fa fa-address-card-o',
+              message: '部门编号不可修改'
+            },
             itemRender: {
               name: '$input',
               props: {
@@ -173,6 +166,7 @@
               message: '请填写其他项'
             }
           }, {
+            index:4,
             field: 'parentCode',
             resetValue: null,
             title: '上级部门',
@@ -395,15 +389,22 @@
           .then(r => {
             callback(r)
             this.$nextTick(() => {
-              let data = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getTableData().tableData
+              // let data = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getTableData().tableData
               // _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setAllCheckboxRow(true)
-              let checkedIds = [4, 6]
-              checkedIds.forEach(id => {
-                let checkedRow = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
-                _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
-              })
+              // let checkedIds = [4, 6]
+              // checkedIds.forEach(id => {
+              //   let checkedRow = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
+              //   _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
+              // })
             })
           })
+      },
+      afterQuery() {
+        let checkedIds = [4, 6]
+        checkedIds.forEach(id => {
+          let checkedRow = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
+          _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
+        })
       },
       title1Show() {
         return false
@@ -491,107 +492,6 @@
         //   this.loading = false;
         // });
       },
-      /** 转换部门数据结构 */
-      normalizer(node) {
-        if (node.children && !node.children.length) {
-          delete node.children;
-        }
-        return {
-          id: node.deptId,
-          label: node.deptName,
-          children: node.children
-        };
-      },
-      // 字典状态字典翻译
-      statusFormat(row, column) {
-        return this.selectDictLabel(this.statusOptions, row.status);
-      },
-      // 取消按钮
-      cancel() {
-        this.open = false;
-        this.reset();
-      },
-      // 表单重置
-      reset() {
-        this.form = {
-          deptId: undefined,
-          parentId: undefined,
-          deptName: undefined,
-          orderNum: undefined,
-          leader: undefined,
-          phone: undefined,
-          email: undefined,
-          status: "0"
-        };
-        this.resetForm("form");
-      },
-      /** 搜索按钮操作 */
-      handleQuery() {
-        this.getList();
-      },
-      /** 重置按钮操作 */
-      resetQuery() {
-        this.resetForm("queryForm");
-        this.handleQuery();
-      },
-      /** 新增按钮操作 */
-      handleAdd(row) {
-        this.reset();
-        if (row != undefined) {
-          this.form.parentId = row.deptId;
-        }
-        this.open = true;
-        this.title = "添加部门";
-        listDept().then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId");
-        });
-      },
-      /** 修改按钮操作 */
-      handleUpdate(row) {
-        this.reset();
-        getDept(row.deptId).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = "修改部门";
-        });
-        listDeptExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId");
-        });
-      },
-      /** 提交按钮 */
-      submitForm: function() {
-        this.$refs["form"].validate(valid => {
-          if (valid) {
-            if (this.form.deptId != undefined) {
-              updateDept(this.form).then(response => {
-                this.msgSuccess("修改成功");
-                this.open = false;
-                this.getList();
-              });
-            } else {
-              addDept(this.form).then(response => {
-                this.msgSuccess("新增成功");
-                this.open = false;
-                this.getList();
-              });
-            }
-          }
-        });
-      },
-      /** 删除按钮操作 */
-      handleDelete(row) {
-        this.$confirm('是否确认删除名称为"' + row.deptName + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return delDept(row.deptId);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("删除成功");
-        })
-      },
-
     }
   };
 </script>

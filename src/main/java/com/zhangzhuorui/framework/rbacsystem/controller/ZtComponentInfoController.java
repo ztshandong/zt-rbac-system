@@ -1,6 +1,8 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import com.zhangzhuorui.framework.rbacsystem.aspects.ZtPreAuthorize;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtMenuCodeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api
 @RestController
 @RequestMapping(value = "/ZtComponentInfo")
+@ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.COMPONENT_MANAGE_CODE})
 public class ZtComponentInfoController extends ZtRbacSimpleBaseController<ZtComponentInfo> {
 
 }

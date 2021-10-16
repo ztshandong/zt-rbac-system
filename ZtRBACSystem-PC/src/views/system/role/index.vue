@@ -41,7 +41,7 @@
 
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
       :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig"
-      @formResetEvent="formResetEvent">
+      @formResetEvent="formResetEvent" @afterQuery="afterQuery">
     </zt-vxe-grid>
   </div>
 </template>
@@ -410,6 +410,9 @@
         // console.log(e)
         this.queryFormConfig.data.thisCode = null
       },
+      afterQuery(){
+        // console.log('role afterQuery')
+      }
     },
     created() {
       _this = this

@@ -19,12 +19,13 @@ public enum ZtButtonCodeEnum implements IZtBaseEnum<ZtButtonCodeEnum> {
     EDIT(3, "编辑"),
     DEL(4, "删除"),
     APP(5, "审核"),
-    UNAPP(6, "反审核"),
+    UNAPP(6, "反审"),
     UPLOAD(7, "上传"),
     DOWNLOAD(8, "下载"),
     IMPORT(9, "导入"),
     EXPORT(10, "导出"),
     PRINT(11, "打印"),
+    ENABLE(12, "启用"),
     ;
 
     public static final String QUERY_CODE = "QUERY";
@@ -38,6 +39,7 @@ public enum ZtButtonCodeEnum implements IZtBaseEnum<ZtButtonCodeEnum> {
     public static final String IMPORT_CODE = "IMPORT";
     public static final String EXPORT_CODE = "EXPORT";
     public static final String PRINT_CODE = "PRINT";
+    public static final String ENABLE_CODE = "ENABLE";
 
     private final Integer intValue;
 

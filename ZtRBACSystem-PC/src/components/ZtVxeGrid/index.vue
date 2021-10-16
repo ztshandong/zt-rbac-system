@@ -454,8 +454,8 @@
       },
       //表单提交，分页也是这个
       queryFormEvent(data, event) {
-        console.log(data)
-        console.log(event)
+        // console.log(data)
+        // console.log(event)
         this.queryData = this.queryFormConfig.data
         // console.log(this.queryData)
         this.loading = true
@@ -481,7 +481,7 @@
         this.doQuery(this.queryData);
       },
       doQuery(queryData) {
-        // console.log(queryData)
+        console.log(queryData)
         if (!this.queryFormConfig.useSpecialQuery) {
           this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
             .then(r => {
@@ -505,6 +505,7 @@
               this.tableData = r.data.results
               this.$nextTick(() => {
                 let data = _this.$refs.ZtVxeGrid.getTableData()
+                _this.$emit('afterQuery', null)
                 // console.log(data)
               })
               // console.log('tableData:' + JSON.stringify(this.tableData))
@@ -535,6 +536,12 @@
             }
             _this.tableData = r.data.results
             _this.loading = false
+
+            this.$nextTick(() => {
+              let data = _this.$refs.ZtVxeGrid.getTableData()
+              _this.$emit('afterQuery', null)
+              // console.log(data)
+            })
 
             // console.log('tableData:' + JSON.stringify(this.tableData))
           })
@@ -844,6 +851,14 @@
           // this.$refs.ZtVxeGrid.toolbarConfig.refresh.query = this.queryFormEvent()
         })
       },
+      compareEx(property) {
+        return function(a, b) {
+          var value1 = a[property];
+          var value2 = b[property];
+          return value1 - value2;
+        }
+      }
+
     },
     mounted() {
       // this.$store.dispatch("SetPermi")
@@ -1009,6 +1024,11 @@
         this.toolbarConfigProps.buttons.push(t)
         // this.toolbarConfigProps.buttons.unshift(t)
       })
+
+      this.queryFormConfig.items.sort(this.compareEx("index"))
+      this.saveFormConfig.items.sort(this.compareEx("index"))
+      // this.saveFormConfig.items
+
       // console.log(this.queryFormConfig)
       // console.log(PermissionDefine)
 

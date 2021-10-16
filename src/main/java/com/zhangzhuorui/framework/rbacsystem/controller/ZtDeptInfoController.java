@@ -3,8 +3,10 @@ package com.zhangzhuorui.framework.rbacsystem.controller;
 import com.zhangzhuorui.framework.core.ZtPage;
 import com.zhangzhuorui.framework.core.ZtResBeanEx;
 import com.zhangzhuorui.framework.core.ZtStrUtils;
+import com.zhangzhuorui.framework.rbacsystem.aspects.ZtPreAuthorize;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtMenuCodeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
 import io.swagger.annotations.Api;
@@ -29,6 +31,7 @@ import java.util.List;
 @Api
 @RestController
 @RequestMapping(value = "/ZtDeptInfo")
+@ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.DEPT_MANAGE_CODE})
 public class ZtDeptInfoController extends ZtRbacSimpleBaseController<ZtDeptInfo> {
 
     @Override

@@ -15,7 +15,7 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
 @ModuleName("菜单权限")
 public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
 
-    //region 模块编号
+    //region
     ROOT(0, "顶级模块"),
     SYSTEM_MANAGE(-1, "系统配置"),
     USER_MANAGE(-2, "用户管理"),
@@ -24,9 +24,7 @@ public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
     ROLE_MANAGE(-5, "角色管理"),
     COMPONENT_MANAGE(-6, "组件管理"),
     BUTTON_MANAGE(-7, "按钮管理"),
-    //endregion
 
-    //region 菜单编号
     BUTTON(1, "按钮信息"),
     COMPONENT(2, "组件信息"),
     DEPT(3, "部门信息"),
@@ -45,6 +43,14 @@ public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
     //endregion
 
     ;
+
+    public static final String SYSTEM_MANAGE_CODE = "SYSTEM_MANAGE";
+    public static final String USER_MANAGE_CODE = "USER_MANAGE";
+    public static final String DEPT_MANAGE_CODE = "DEPT_MANAGE";
+    public static final String POST_MANAGE_CODE = "POST_MANAGE";
+    public static final String ROLE_MANAGE_CODE = "ROLE_MANAGE";
+    public static final String COMPONENT_MANAGE_CODE = "COMPONENT_MANAGE";
+    public static final String BUTTON_MANAGE_CODE = "BUTTON_MANAGE";
 
     public static final String BUTTON_CODE = "BUTTON";
     public static final String COMPONENT_CODE = "COMPONENT";
