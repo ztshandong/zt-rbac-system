@@ -4,30 +4,24 @@
       :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @currentChange="currentChange"
       @cellClick="cellClick">
     </zt-vxe-grid>
-    <el-transfer v-model="value" :props="{
-          key: 'value',
-          label: 'desc',
-        }" :data="data">
+    <el-transfer v-model="transferValue" :props="transferProps" :data="transferData" filterable
+      :titles="['所有部门', '用户部门']">
     </el-transfer>
+    <vxe-button icon="fa fa-edit" title="保存" @click="saveTransferValue">
+      保存
+    </vxe-button>
   </div>
 </template>
 
 <script>
   var _this;
+  import {
+    getToken,
+    setToken
+  } from '@/utils/auth'
   export default {
     name: "USER_MANAGE",
     data() {
-      const generateData = (_) => {
-        const data = []
-        for (let i = 1; i <= 15; i++) {
-          data.push({
-            value: i,
-            desc: `Option ${i}`,
-            disabled: i % 4 === 0,
-          })
-        }
-        return data
-      }
 
       const checkPhone = (
         item
@@ -41,8 +35,12 @@
       }
 
       return {
-        data: generateData(),
-        value: [],
+        transferProps: {
+          key: 'thisCode',
+          label: 'thisName',
+        },
+        transferData: [],
+        transferValue: [],
         apiPre: "",
         thisName: "ZtUserInfo",
         thisData: {
@@ -249,6 +247,7 @@
             title: '备注'
           }
         ],
+        curRow: {}
       };
     },
     watch: {
@@ -273,21 +272,53 @@
         this.saveFormConfig.items.push(this.deepClone(t))
       })
       this.saveFormConfig.rules = this.saveFormRoles
+
+      this.$api.post('/ZtDeptInfo/selectSimple', null)
+        .then(r => {
+          this.transferData = r.data.results;
+        })
     },
     mounted() {
 
     },
     methods: {
+      saveTransferValue() {
+        // let user = this.getUserInfo()
+        // console.log(this.transferValue)
+        let userDeptInfo = []
+        this.transferValue.forEach(e => {
+          let tmp = {
+            userCode: this.curRow.userCode,
+            deptCode: e
+          }
+          userDeptInfo.push(tmp)
+        })
+        this.$api.post('/ZtUserDeptInfo/insertBatchSimple', userDeptInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
       currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
         // console.log(newValue.row)
+        this.curRow = newValue.row
+        let user = {
+          userCode: newValue.row.userCode
+        }
+        this.$api.post('/ZtUserDeptInfo/selectSimple', user)
+          .then(r => {
+            let deptCodes = r.data.results.map(item => {
+              return item.deptCode;
+            })
+            this.transferValue = deptCodes
+          })
       },
       cellClick(data) {
         // console.log(data.column)
         // console.log(data.column.title)
         this.tableColumn.forEach(t => {
           if (t.title == data.column.title) {
-            console.log(t.field)
-            console.log(data.row[`${t.field}`])
+            // console.log(t.field)
+            // console.log(data.row[`${t.field}`])
             return
           }
         })

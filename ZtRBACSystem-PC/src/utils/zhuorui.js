@@ -4,6 +4,7 @@
  */
 
 const baseURL = process.env.VUE_APP_BASE_API
+import {getToken} from '@/utils/auth'
 
 // 日期格式化
 export function parseTime(time, pattern) {
@@ -205,4 +206,10 @@ export function deepClone(target) {
   }
   // 返回最终结果
   return result;
+}
+
+export function getUserInfo() {
+  let userString = decodeURIComponent(escape(window.atob(getToken().split('.')[1])))
+  let user = JSON.parse(JSON.parse(userString).sub)
+  return user
 }

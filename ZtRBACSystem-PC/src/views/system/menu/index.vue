@@ -383,7 +383,7 @@
               t.itemRender.props.disabled = false
               return
             }
-          })
+          }) 
         } else {
           this.$refs.ztVxeGrid.saveFormData.buttonCode = null
           items.forEach(t => {

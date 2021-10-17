@@ -20,6 +20,7 @@ import {getConfigKey} from "@/api/system/config";
 import {
   addDateRange,
   deepClone,
+  getUserInfo,
   handleTree,
   parseTime,
   resetForm,
@@ -74,6 +75,7 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.deepClone = deepClone
+Vue.prototype.getUserInfo = getUserInfo
 
 Vue.prototype.msgSuccess = function (msg) {
   this.$message({
