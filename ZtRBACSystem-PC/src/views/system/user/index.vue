@@ -255,6 +255,7 @@
     },
     created() {
       _this = this
+      console.log('_this = this')
 
       this.thisCommonItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
@@ -279,9 +280,21 @@
         })
     },
     mounted() {
-
+      console.log('_this mounted')
     },
     methods: {
+      formResetEvent(e) {
+        
+      },
+      afterQuery() {
+      
+      },
+      showEditForm(row, items){
+      
+      },
+      customToolbarButton(code){
+      
+      },
       saveTransferValue() {
         // let user = this.getUserInfo()
         // console.log(this.transferValue)
@@ -289,7 +302,8 @@
         this.transferValue.forEach(e => {
           let tmp = {
             userCode: this.curRow.userCode,
-            deptCode: e
+            deptCode: e,
+            otherParams: 'USER_MANAGE'
           }
           userDeptInfo.push(tmp)
         })
@@ -298,12 +312,15 @@
             this.$refs.ztVxeGrid.$emit("queryFormEvent")
           })
       },
-      currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
+      currentChange(newValue) {
         // console.log(newValue.row)
         this.curRow = newValue.row
+        // console.log('user')
+        // console.log(this.curRow)
         let user = {
           userCode: newValue.row.userCode
         }
+        console.log(user)
         this.$api.post('/ZtUserDeptInfo/selectSimple', user)
           .then(r => {
             let deptCodes = r.data.results.map(item => {

@@ -6,6 +6,12 @@
       @customToolbarButton="customToolbarButton" @specialQuery="specialQuery" @afterQuery="afterQuery"
       @currentChange="currentChange" @cellClick="cellClick">
     </zt-vxe-grid>
+    <el-transfer v-model="transferValue" :props="transferProps" :data="transferData" filterable
+      :titles="['所有用户', '部门用户']">
+    </el-transfer>
+    <vxe-button icon="fa fa-edit" title="保存" @click="saveTransferValue">
+      保存
+    </vxe-button>
   </div>
 </template>
 
@@ -15,6 +21,13 @@
     name: "DEPT_MANAGE",
     data() {
       return {
+        transferProps: {
+          key: 'userCode',
+          label: 'userName',
+        },
+        transferData: [],
+        transferValue: [],
+        curRow: {},
         treeConfig: {
           children: 'children',
           expandAll: true
@@ -332,6 +345,7 @@
     },
     created() {
       _this = this
+      console.log('_this = this')
 
       this.thisCommonItem.forEach(t => {
         this.queryFormConfig.items.push(this.deepClone(t))
@@ -350,12 +364,19 @@
       })
       this.saveFormConfig.rules = this.saveFormRoles
       this.getList();
+
+      this.$api.post('/ZtUserInfo/selectSimple', null)
+        .then(r => {
+          this.transferData = r.data.results;
+        })
+
       // this.getDicts("sys_normal_disable").then(response => {
       //   this.statusOptions = response.data;
       // });
     },
     mounted() {
       // setCheckboxRow
+      console.log('_this mounted')
     },
     computed: {
       isDisable: function() {
@@ -372,15 +393,49 @@
       // }
     },
     methods: {
+      formResetEvent(e) {
+
+      },
+      saveTransferValue() {
+        // let user = this.getUserInfo()
+        // console.log(this.transferValue)
+        let userDeptInfo = []
+        this.transferValue.forEach(e => {
+          let tmp = {
+            userCode: e,
+            deptCode: this.curRow.thisCode,
+            otherParams: 'DEPT_MANAGE'
+          }
+          userDeptInfo.push(tmp)
+        })
+        this.$api.post('/ZtUserDeptInfo/insertBatchSimple', userDeptInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
       currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
         // console.log(newValue.row)
+        this.curRow = newValue.row
+        // console.log('dept')
+        // console.log(this.curRow)
+        let dept = {
+          deptCode: newValue.row.thisCode
+        }
+        console.log(dept)
+        this.$api.post('/ZtUserDeptInfo/selectSimple', dept)
+          .then(r => {
+            let userCodes = r.data.results.map(item => {
+              return item.userCode;
+            })
+            this.transferValue = userCodes
+          })
       },
       cellClick(data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio, triggerCheckbox,
         triggerTreeNode, triggerExpandNode, $event) {
-        console.log(data)
+        // console.log(data)
       },
       specialQuery(param, callback) {
-        console.log('specialQuery')
+        // console.log('specialQuery')
         this.$api.post('/ZtDeptInfo/getAllDeptTree', null)
           .then(r => {
             callback(r)
@@ -396,10 +451,15 @@
           })
       },
       afterQuery() {
-        let checkedIds = [4, 6]
-        checkedIds.forEach(id => {
-          let checkedRow = _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
-          _this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
+        // console.log('afterQuery')
+        this.$nextTick(() => {
+          let checkedIds = [4, 6]
+          checkedIds.forEach(id => {
+            let checkedRow = this.$refs.ztVxeGrid.$refs.ZtVxeGrid.getRowById(id)
+            // console.log(this.$refs.ztVxeGrid.$refs.ZtVxeGrid)
+            // console.log(checkedRow)
+            this.$refs.ztVxeGrid.$refs.ZtVxeGrid.setCheckboxRow(checkedRow, true)
+          })
         })
       },
       title1Show() {

@@ -461,18 +461,28 @@
       }
     },
     methods: {
+      //父类要有的方法
+      // formResetEvent(e) {},
+      // afterQuery() {},
+      // showEditForm(row, items){},
+      // cellClick(data){},
+      // currentChange(data){},
+      // customToolbarButton(code){},
+
       cellClick(data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio, triggerCheckbox,
         triggerTreeNode, triggerExpandNode, $event) {
-        _this.$emit('cellClick', data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio,
+        this.$parent.cellClick(data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio,
           triggerCheckbox,
           triggerTreeNode, triggerExpandNode, $event)
       },
       currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
-        _this.$emit('currentChange', newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex,
+        // console.log(this.$parent)
+        this.$parent.currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex,
           $event)
+        // this.$emit('currentChange', newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event)
       },
       queryResetEvent(data, event) {
-        _this.$emit('formResetEvent', data)
+        this.$parent.formResetEvent(data)
       },
       //表单提交，分页也是这个
       queryFormEvent(data, event) {
@@ -503,7 +513,7 @@
         this.doQuery(this.queryData);
       },
       doQuery(queryData) {
-        console.log(queryData)
+        // console.log(queryData)
         if (!this.queryFormConfig.useSpecialQuery) {
           this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
             .then(r => {
@@ -526,9 +536,9 @@
               }
               this.tableData = r.data.results
               this.$nextTick(() => {
-                let data = _this.$refs.ZtVxeGrid.getTableData()
-                _this.$emit('afterQuery', null)
+                // let data = _this.$refs.ZtVxeGrid.getTableData()
                 // console.log(data)
+                this.$parent.afterQuery()
               })
               // console.log('tableData:' + JSON.stringify(this.tableData))
             })
@@ -536,36 +546,37 @@
               this.loading = false
             });
         } else {
-          _this.$emit('specialQuery', queryData, r => {
+          this.$parent.specialQuery(queryData, r => {
             // console.log('callback')
             // console.log(r)
             var res = r.data.results;
             // console.log('r:' + JSON.stringify(r))
-            _this.tablePage.total = r.data.total
+            this.tablePage.total = r.data.total
             // console.log('res:' + JSON.stringify(res))
             // 使用函数式加载，阻断 vue 对大数据的监听
-            const xTable = _this.$refs.ZtVxeGrid
+            const xTable = this.$refs.ZtVxeGrid
             // console.log('res:')
             // console.log(res)
             const startTime = Date.now()
             if (xTable) {
-              _this.$refs.ZtVxeGrid.reloadData(res).then(() => {
+              this.$refs.ZtVxeGrid.reloadData(res).then(() => {
                 _this.$XModal.message({
                   message: `渲染 ${res.length} 行，用时 ${Date.now() - startTime}毫秒`,
                   status: 'info'
                 })
+
+                this.$nextTick(() => {
+                  // let data = _this.$refs.ZtVxeGrid.getTableData()
+                  // console.log(data)
+                  this.$parent.afterQuery()
+                })
+
+              }).finally(t => {
+                this.tableData = r.data.results
+                this.loading = false
               })
             }
-            _this.tableData = r.data.results
-            _this.loading = false
 
-            this.$nextTick(() => {
-              let data = _this.$refs.ZtVxeGrid.getTableData()
-              _this.$emit('afterQuery', null)
-              // console.log(data)
-            })
-
-            // console.log('tableData:' + JSON.stringify(this.tableData))
           })
         }
       },
@@ -747,7 +758,7 @@
             break
           default:
             // console.log(code)
-            _this.$emit('customToolbarButton', code)
+            this.$parent.customToolbarButton(code)
         }
       },
       editButtonEvent(row) {
@@ -766,7 +777,7 @@
         // console.log(this.initSaveFormData)
         // console.log(this.saveFormItems.length)
 
-        _this.$emit('showEditForm', row, this.saveFormConfig.items)
+        this.$parent.showEditForm(row, this.saveFormConfig.items)
         // console.log(this.saveFormItems)
         this.curRow = row
         // console.log(this.initSaveFormData)
@@ -1074,6 +1085,14 @@
       // console.log(this.queryFormConfig)
       // console.log(PermissionDefine)
 
+    },
+    activated() {
+      console.log('activated')
+      console.log(this.thisName)
+    },
+    deactivated() {
+      console.log('deactivated')
+      console.log(this.thisName)
     },
     computed: {
       scrollerHeight: function() {

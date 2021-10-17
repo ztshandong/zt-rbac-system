@@ -376,6 +376,21 @@
 
     },
     methods: {
+      formResetEvent(e) {
+
+      },
+      afterQuery() {
+
+      },
+      cellClick(data){
+
+      },
+      currentChange(data){
+
+      },
+      customToolbarButton(code){
+
+      },
       showEditForm(row, items) {
         if (row.menuType == "BUTTON") {
           items.forEach(t => {
@@ -383,7 +398,7 @@
               t.itemRender.props.disabled = false
               return
             }
-          }) 
+          })
         } else {
           this.$refs.ztVxeGrid.saveFormData.buttonCode = null
           items.forEach(t => {

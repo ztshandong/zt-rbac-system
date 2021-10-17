@@ -393,13 +393,21 @@
       formResetEvent(e) {
         this.queryFormConfig.data.thisCode = null
       },
-      testButtonEvent(e) {
-        // console.log(e)
-        this.queryFormConfig.data.thisCode = null
-      },
       afterQuery() {
-        // console.log('role afterQuery')
-      }
+
+      },
+      showEditForm(row, items){
+
+      },
+      cellClick(data){
+
+      },
+      currentChange(data){
+
+      },
+      customToolbarButton(code){
+
+      },
     },
     created() {
       _this = this
