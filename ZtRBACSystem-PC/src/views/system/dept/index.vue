@@ -3,7 +3,8 @@
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
       :treeConfigProps="treeConfig" :toolbarCustomButtonConfig="otherButtons" :queryFormConfigProps="queryFormConfig"
       :customGridSlotButton="customGridSlotButton" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm"
-      @customToolbarButton="customToolbarButton" @specialQuery="specialQuery" @afterQuery="afterQuery">
+      @customToolbarButton="customToolbarButton" @specialQuery="specialQuery" @afterQuery="afterQuery"
+      @currentChange="currentChange" @cellClick="cellClick">
     </zt-vxe-grid>
   </div>
 </template>
@@ -107,7 +108,7 @@
           //   }]
           // },
           {
-            index:3,
+            index: 3,
             queryOnly: true,
             alicon: 'word2',
             iconFirst: true,
@@ -121,7 +122,7 @@
             },
             visibleMethod: this.testVisible
           }, {
-            index:2,
+            index: 2,
             editOnly: true,
             alicon: 'excel',
             textFirst: true,
@@ -138,7 +139,7 @@
               },
             }
           }, {
-            index:1,
+            index: 1,
             field: 'thisCode',
             resetValue: null,
             title: '部门编号',
@@ -166,7 +167,7 @@
               message: '请填写其他项'
             }
           }, {
-            index:4,
+            index: 4,
             field: 'parentCode',
             resetValue: null,
             title: '上级部门',
@@ -193,7 +194,7 @@
                 // type: 'search',
               },
             }
-          }, 
+          },
         ],
         thisQueryItem: [],
         thisSaveItem: [],
@@ -371,7 +372,15 @@
       // }
     },
     methods: {
+      currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
+        // console.log(newValue.row)
+      },
+      cellClick(data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio, triggerCheckbox,
+        triggerTreeNode, triggerExpandNode, $event) {
+        console.log(data)
+      },
       specialQuery(param, callback) {
+        console.log('specialQuery')
         this.$api.post('/ZtDeptInfo/getAllDeptTree', null)
           .then(r => {
             callback(r)
@@ -420,6 +429,17 @@
           case 'closeAll':
             this.$refs.ztVxeGrid.$refs.ZtVxeGrid.clearTreeExpand()
             break
+          case 'customButton':
+            this.queryFormConfig.useSpecialQuery = !this.queryFormConfig.useSpecialQuery
+            if (this.queryFormConfig.useSpecialQuery) {
+              this.treeConfig = {
+                children: 'children',
+                expandAll: true
+              }
+            } else {
+              this.treeConfig = null
+            }
+
         }
       },
       testVisible(e) {

@@ -43,12 +43,13 @@
     <!-- v-if="!config.editOnly" -->
     <vxe-form id="ZtVxeQueryForm" ref="ZtVxeQueryForm" :data="queryFormConfig.data" :rules="queryFormConfig.rules"
       @submit="queryFormEvent" @toggle-collapse="queryFormToggleEvent" @reset="queryResetEvent">
-      <vxe-form-item v-for="config in queryFormConfig.items" v-if="!config.editOnly" :field="config.field" :key="config.field"
-        :title="config.title" :span="config.span" :align="config.align" :titleAlign="config.titleAlign"
-        :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow" :className="config.className"
-        :visible="config.visible" :folding="config.folding" :collapseNode="config.collapseNode"
-        :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix" :resetValue="config.resetValue"
-        :itemRender="config.itemRender" :visibleMethod="config.visibleMethod" :children="config.children">
+      <vxe-form-item v-for="config in queryFormConfig.items" v-if="!config.editOnly" :field="config.field"
+        :key="config.field" :title="config.title" :span="config.span" :align="config.align"
+        :titleAlign="config.titleAlign" :titleWidth="config.titleWidth" :titleOverflow="config.titleOverflow"
+        :className="config.className" :visible="config.visible" :folding="config.folding"
+        :collapseNode="config.collapseNode" :titlePrefix="config.titlePrefix" :titleSuffix="config.titleSuffix"
+        :resetValue="config.resetValue" :itemRender="config.itemRender" :visibleMethod="config.visibleMethod"
+        :children="config.children">
         <!--
         <div v-if="config.isDiv" :style="config.style">
           <vxe-form-item v-for="config2 in config.items" :field="config2.field" :title="config2.title"
@@ -103,12 +104,14 @@
 
     <!-- <div :style="{height: tableHeight+'px'}"> -->
     <!-- <div :style="{'min-height':tableHeight+'px','max-height':tableHeight+'px','width':'100%'}"> -->
-    <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightHoverRow keep-source :show-header="true"
-      :height="tableHeight" :loading="loading" id="ZtVxeGrid" ref="ZtVxeGrid" row-id="id" :data="tableData"
-      :columns="tableColumn" :toolbar-config="toolbarConfig" :import-config="importConfig" :export-config="exportConfig"
+    <vxe-grid border stripe resizable show-overflow showHeaderOverflow highlightCurrentRow highlightHoverRow keep-source
+      :show-header="true" :height="tableHeight" :loading="loading" id="ZtVxeGrid" ref="ZtVxeGrid" row-id="id"
+      :data="tableData" :columns="tableColumn" :keyboard-config="keyboardConfig" :toolbar-config="toolbarConfig"
+      :import-config="importConfig" :export-config="exportConfig"
       :seq-config="{startIndex: (tablePage.currentPage - 1) * tablePage.pageSize}" :print-config="printConfig"
       :tree-config="treeConfigProps" :checkbox-config="checkBoxConfigProps"
-      @toolbar-button-click="toolbarButtonClickEvent" @toolbar-tool-click="toolbarButtonClickEvent">
+      @toolbar-button-click="toolbarButtonClickEvent" @toolbar-tool-click="toolbarButtonClickEvent"
+      @current-change="currentChange" @cell-click="cellClick">
 
       <template #operate_default="{ row }">
         <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">
@@ -336,6 +339,14 @@
         type: Object,
         default: () => ({}),
       },
+      keyboardConfigProps: {
+        type: Object,
+        default: () => ({
+          isArrow: true,
+          isChecked: true,
+          isEnter: true
+        }),
+      },
       toolbarConfigProps: {
         // 工具栏按钮配置
         type: Object,
@@ -446,9 +457,20 @@
         importConfig: this.importConfigProps,
         exportConfig: this.exportConfigProps,
         toolbarConfig: this.toolbarConfigProps,
+        keyboardConfig: this.keyboardConfigProps,
       }
     },
     methods: {
+      cellClick(data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio, triggerCheckbox,
+        triggerTreeNode, triggerExpandNode, $event) {
+        _this.$emit('cellClick', data, rowIndex, $rowIndex, column, columnIndex, $columnIndex, triggerRadio,
+          triggerCheckbox,
+          triggerTreeNode, triggerExpandNode, $event)
+      },
+      currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
+        _this.$emit('currentChange', newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex,
+          $event)
+      },
       queryResetEvent(data, event) {
         _this.$emit('formResetEvent', data)
       },

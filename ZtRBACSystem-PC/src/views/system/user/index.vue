@@ -1,8 +1,14 @@
 <template>
   <div class="app-container">
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig">
+      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @currentChange="currentChange"
+      @cellClick="cellClick">
     </zt-vxe-grid>
+    <el-transfer v-model="value" :props="{
+          key: 'value',
+          label: 'desc',
+        }" :data="data">
+    </el-transfer>
   </div>
 </template>
 
@@ -11,6 +17,18 @@
   export default {
     name: "USER_MANAGE",
     data() {
+      const generateData = (_) => {
+        const data = []
+        for (let i = 1; i <= 15; i++) {
+          data.push({
+            value: i,
+            desc: `Option ${i}`,
+            disabled: i % 4 === 0,
+          })
+        }
+        return data
+      }
+
       const checkPhone = (
         item
       ) => {
@@ -23,6 +41,8 @@
       }
 
       return {
+        data: generateData(),
+        value: [],
         apiPre: "",
         thisName: "ZtUserInfo",
         thisData: {
@@ -150,7 +170,7 @@
               disabled: false
             },
           }
-        },],
+        }, ],
         thisQueryItem: [],
         thisSaveItem: [{
           index: 105,
@@ -258,7 +278,20 @@
 
     },
     methods: {
-
+      currentChange(newValue, oldValue, row, rowIndex, $rowIndex, column, columnIndex, $columnIndex, $event) {
+        // console.log(newValue.row)
+      },
+      cellClick(data) {
+        // console.log(data.column)
+        // console.log(data.column.title)
+        this.tableColumn.forEach(t => {
+          if (t.title == data.column.title) {
+            console.log(t.field)
+            console.log(data.row[`${t.field}`])
+            return
+          }
+        })
+      }
     }
   };
 </script>
