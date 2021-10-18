@@ -34,9 +34,9 @@ public class ZtUserDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUse
         ZtUserDeptInfo entity = ztParamEntity.getEntity();
         Object otherParams = entity.getOtherParams();
         ZtUserDeptInfo tmp4Del = new ZtUserDeptInfo();
-        if (otherParams.equals(ZtMenuCodeEnum.USER_MANAGE)) {
+        if (otherParams.equals(ZtMenuCodeEnum.USER_MANAGE.name())) {
             tmp4Del.setUserCode(entity.getUserCode());
-        } else if (otherParams.equals(ZtMenuCodeEnum.DEPT_MANAGE)) {
+        } else if (otherParams.equals(ZtMenuCodeEnum.DEPT_MANAGE.name())) {
             tmp4Del.setDeptCode(entity.getDeptCode());
         }
         ZtParamEntity<ZtUserDeptInfo> ztUserDeptInfoZtParamEntity4Del = getThisService().getInitZtParamEntityWithOutCount(tmp4Del);
@@ -56,7 +56,6 @@ public class ZtUserDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUse
         List<ZtUserDeptInfo> entityList = ztParamEntity.getEntityList();
         if (entityList.size() > 0) {
             Object otherParams = entityList.get(0).getOtherParams();
-
             ZtUserDeptInfo tmp4Del = new ZtUserDeptInfo();
             ZtParamEntity<ZtUserDeptInfo> ztUserDeptInfoZtParamEntity4Del = getThisService().getInitZtParamEntityWithOutCount(tmp4Del);
             if (otherParams.equals(ZtMenuCodeEnum.USER_MANAGE.name())) {
@@ -72,7 +71,6 @@ public class ZtUserDeptInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUse
                 ztUserDeptInfoZtParamEntity4Del.setEntityList(delList);
                 getThisService().ztSimpleDeleteByPrimaryKeyBatch(ztUserDeptInfoZtParamEntity4Del);
             }
-
         }
         return super.ztBeforeSimpleInsertBatch(ztParamEntity);
     }

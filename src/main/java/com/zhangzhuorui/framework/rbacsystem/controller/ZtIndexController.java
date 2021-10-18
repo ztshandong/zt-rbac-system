@@ -88,15 +88,14 @@ public class ZtIndexController {
     @RequestMapping(value = "getUserInfoAfterLogin", method = RequestMethod.POST)
     public ZtResBeanEx<ZtUserRolePermissionVo> getUserInfoAfterLogin() {
         ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
-        iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+        userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
         iZtRoleInfoService.getCurUserAdminFlag(userInfo);
         ZtUserRolePermissionVo ztUserRolePermissionVo = new ZtUserRolePermissionVo();
         List<String> curUserPermission = iZtRoleInfoService.getCurUserPermission(userInfo);
         List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
-        ZtUserInfo fullUserInfoFromCache = ztCacheUtil.getFullUserInfoFromCache(userInfo);
         ztUserRolePermissionVo.setPermissions(curUserPermission);
         ztUserRolePermissionVo.setRoles(curUserAllRoleCodes);
-        ztUserRolePermissionVo.setUser(fullUserInfoFromCache);
+        ztUserRolePermissionVo.setUser(userInfo);
         return ZtResBeanEx.ok(ztUserRolePermissionVo);
     }
 }

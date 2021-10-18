@@ -1,6 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.extenduse;
 
 import com.zhangzhuorui.framework.core.ZtPropertyFunc;
+import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.IZtSimpleBaseService;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtDeptInfo;
@@ -18,6 +19,8 @@ import java.util.List;
  * @updateRemark :
  */
 public interface IZtRbacSimpleBaseService<T extends ZtRbacBasicEntity> extends IZtSimpleBaseService<T> {
+
+    ZtParamEntity<T> setUserInfo(ZtParamEntity<T> ztParamEntity);
 
     ZtUserInfo getSimpleUserInfoFromToken();
 

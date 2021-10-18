@@ -7,6 +7,7 @@ import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/zhuorui.scss' // zhuorui css
+import '@/assets/styles/zttable.scss' // zttable css
 import App from './App'
 import store from './store'
 import router from './router'
@@ -45,6 +46,19 @@ import EditDownTable from '@/components/EditDownTable'
 import VXETablePluginExportXLSX from 'vxe-table-plugin-export-xlsx'
 import VXETablePluginExportPDF from 'vxe-table-plugin-export-pdf'
 
+VXETablePluginExportPDF.setup({
+  // Set default font
+  fontName: 'SourceHanSans-Normal',
+  // Font maps
+  fonts: [
+    {
+      // Font name
+      fontName: 'SourceHanSans-Normal',
+      // Font library url
+      fontUrl: 'https://cdn.jsdelivr.net/npm/vxe-table-plugin-export-pdf/fonts/source-han-sans-normal.js'
+    }
+  ]
+})
 Vue.component(EditDownTable.name, EditDownTable)
 
 VXETable.use(VXETablePluginElement)

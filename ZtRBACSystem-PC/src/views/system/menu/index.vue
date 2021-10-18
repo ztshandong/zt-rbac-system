@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
+    <!-- @showEditForm="showEditForm" -->
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @showEditForm="showEditForm">
+      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig">
     </zt-vxe-grid>
   </div>
 </template>
@@ -382,17 +383,17 @@
       afterQuery() {
 
       },
-      cellClick(data){
+      cellClick(data) {
 
       },
-      currentChange(data){
+      currentChange(data) {
+        // console.log(data.row)
+      },
+      customToolbarButton(code) {
 
       },
-      customToolbarButton(code){
-
-      },
-      showEditForm(row, items) {
-        if (row.menuType == "BUTTON") {
+      showEditForm(row, items, canEdit) {
+        if (row.menuType == "BUTTON" && canEdit) {
           items.forEach(t => {
             if (t.field == 'buttonCode') {
               t.itemRender.props.disabled = false

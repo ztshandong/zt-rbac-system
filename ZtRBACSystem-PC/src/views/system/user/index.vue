@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
+    <!-- @currentChange="currentChange" @cellClick="cellClick" -->
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :tableColumnProps="tableColumn"
-      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" @currentChange="currentChange"
-      @cellClick="cellClick">
+      :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig" >
     </zt-vxe-grid>
     <el-transfer v-model="transferValue" :props="transferProps" :data="transferData" filterable
       :titles="['所有部门', '用户部门']">
@@ -284,16 +284,16 @@
     },
     methods: {
       formResetEvent(e) {
-        
+
       },
       afterQuery() {
-      
+
       },
       showEditForm(row, items){
-      
+
       },
       customToolbarButton(code){
-      
+
       },
       saveTransferValue() {
         // let user = this.getUserInfo()
@@ -320,7 +320,7 @@
         let user = {
           userCode: newValue.row.userCode
         }
-        console.log(user)
+        // console.log(user)
         this.$api.post('/ZtUserDeptInfo/selectSimple', user)
           .then(r => {
             let deptCodes = r.data.results.map(item => {

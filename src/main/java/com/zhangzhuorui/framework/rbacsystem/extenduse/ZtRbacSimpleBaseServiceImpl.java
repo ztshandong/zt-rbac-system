@@ -66,6 +66,71 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         return userInfoFromToken;
     }
 
+    @Override
+    public ZtParamEntity<T> setUserInfo(ZtParamEntity<T> ztParamEntity) {
+        ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+        if (userInfo == null) {
+            userInfo = getSimpleUserInfoFromToken();
+            userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+            ztParamEntity.setUserInfo(userInfo);
+        }
+        return ztParamEntity;
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleSelectProvider(ZtParamEntity<T> ztParamEntity) throws Exception {
+        // ztParamEntity = setUserInfo(ztParamEntity);
+        return super.ztBeforeSimpleSelectProvider(ztParamEntity);
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleUpdateByPrimaryKey(ZtParamEntity<T> ztParamEntity) throws Exception {
+        ztParamEntity = setUserInfo(ztParamEntity);
+        ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+        T entity = ztParamEntity.getEntity();
+        entity.setUpdatedBy(userInfo.getUserCode());
+        entity.setUpdatedByName(userInfo.getUserName());
+        return super.ztBeforeSimpleUpdateByPrimaryKey(ztParamEntity);
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleDeleteByPrimaryKey(ZtParamEntity<T> ztParamEntity) throws Exception {
+        ztParamEntity = setUserInfo(ztParamEntity);
+        return super.ztBeforeSimpleDeleteByPrimaryKey(ztParamEntity);
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleDeleteByPrimaryKeyBatch(ZtParamEntity<T> ztParamEntity) throws Exception {
+        ztParamEntity = setUserInfo(ztParamEntity);
+        return super.ztBeforeSimpleDeleteByPrimaryKeyBatch(ztParamEntity);
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleInsert(ZtParamEntity<T> ztParamEntity) throws Exception {
+        ztParamEntity = setUserInfo(ztParamEntity);
+        ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+        T entity = ztParamEntity.getEntity();
+        entity.setCreatedBy(userInfo.getUserCode());
+        entity.setUpdatedBy(userInfo.getUserCode());
+        entity.setCreatedByName(userInfo.getUserName());
+        entity.setUpdatedByName(userInfo.getUserName());
+        return super.ztBeforeSimpleInsert(ztParamEntity);
+    }
+
+    @Override
+    public ZtParamEntity<T> ztBeforeSimpleInsertBatch(ZtParamEntity<T> ztParamEntity) throws Exception {
+        ztParamEntity = setUserInfo(ztParamEntity);
+        ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
+        List<T> entityList = ztParamEntity.getEntityList();
+        for (T entity : entityList) {
+            entity.setCreatedBy(userInfo.getUserCode());
+            entity.setUpdatedBy(userInfo.getUserCode());
+            entity.setCreatedByName(userInfo.getUserName());
+            entity.setUpdatedByName(userInfo.getUserName());
+        }
+        return super.ztBeforeSimpleInsertBatch(ztParamEntity);
+    }
+
     /**
      * List组装成为树
      *
@@ -166,6 +231,7 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                     if (userInfo == null) {
                         userInfo = getSimpleUserInfoFromToken();
                         userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+                        ztParamEntity.setUserInfo(userInfo);
                     }
                     List<String> curUserAllRoleCodes = iZtRoleInfoService.getCurUserAllRoleCodes(userInfo);
                     ZtParamEntity<ZtRoleInfo> ztRoleInfoZtParamEntity = iZtRoleInfoService.ztSimpleSelectAll();

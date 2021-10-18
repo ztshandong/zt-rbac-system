@@ -1,12 +1,8 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
-import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -101,14 +97,6 @@ public class ZtCacheUtil {
             Cache cache = cacheManager.getCache(name);
             cache.clear();
         }
-    }
-
-    @SneakyThrows
-    @Caching(cacheable =
-            {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userInfoFromToken.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
-    )
-    public ZtUserInfo getFullUserInfoFromCache(ZtUserInfo userInfoFromToken) {
-        return userInfoFromToken;
     }
 
 }

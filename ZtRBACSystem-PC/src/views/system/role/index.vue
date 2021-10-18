@@ -38,11 +38,41 @@
     </vxe-pulldown>
  -->
     <!-- <vxe-button icon="fa fa-edit" @click="testButtonEvent">click</vxe-button> -->
-
+    <!-- @formResetEvent="formResetEvent" @afterQuery="afterQuery" -->
     <zt-vxe-grid ref="ztVxeGrid" :apiPre="apiPre" :thisName="thisName" :thisPermissionPre="thisPermissionPre"
-      :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig"
-      @formResetEvent="formResetEvent" @afterQuery="afterQuery">
+      :tableColumnProps="tableColumn" :queryFormConfigProps="queryFormConfig" :saveFormConfigProps="saveFormConfig">
     </zt-vxe-grid>
+
+    <el-tabs v-model="activeName" @tab-click="tabClick">
+      <el-tab-pane label="菜单" name="menu">
+        <el-transfer v-model="menuValue" :props="menuProps" :data="menuData" filterable :titles="['所有菜单', '角色菜单']">
+        </el-transfer>
+        <vxe-button icon="fa fa-edit" title="保存" @click="saveMenuRole">
+          保存菜单角色
+        </vxe-button>
+      </el-tab-pane>
+      <el-tab-pane label="部门" name="dept">
+        <el-transfer v-model="deptValue" :props="deptProps" :data="deptData" filterable :titles="['所有部门', '角色部门']">
+        </el-transfer>
+        <vxe-button icon="fa fa-edit" title="保存" @click="saveDeptRole">
+          保存部门角色
+        </vxe-button>
+      </el-tab-pane>
+      <el-tab-pane label="人员" name="user">
+        <el-transfer v-model="userValue" :props="userProps" :data="userData" filterable :titles="['所有人员', '角色人员']">
+        </el-transfer>
+        <vxe-button icon="fa fa-edit" title="保存" @click="saveUserRole">
+          保存人员角色
+        </vxe-button>
+      </el-tab-pane>
+      <el-tab-pane label="职位" name="post">
+        <el-transfer v-model="postValue" :props="postProps" :data="postData" filterable :titles="['所有职位', '角色职位']">
+        </el-transfer>
+        <vxe-button icon="fa fa-edit" title="保存" @click="savePostRole">
+          保存职位角色
+        </vxe-button>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -58,19 +88,33 @@
 
     data() {
       return {
-        // tmpTableColumn: [{
-        //   field: 'name',
-        //   title: 'Name'
-        // }, {
-        //   field: 'operate',
-        //   title: '操作',
-        //   slots: {
-        //     default: 'operate_default'
-        //   }
-        // }],
-        // tmpTableData: [],
+        activeName: 'menu',
+        menuProps: {
+          key: 'thisCode',
+          label: 'thisName',
+        },
+        menuData: [],
+        menuValue: [],
+        deptProps: {
+          key: 'thisCode',
+          label: 'thisName',
+        },
+        deptData: [],
+        deptValue: [],
+        userProps: {
+          key: 'userCode',
+          label: 'userName',
+        },
+        userData: [],
+        userValue: [],
+        postProps: {
+          key: 'thisCode',
+          label: 'thisName',
+        },
+        postData: [],
+        postValue: [],
+        curRow: {},
         //数据结构
-        list1: [],
         thisData: {
           id: null,
           thisCode: null,
@@ -334,48 +378,66 @@
       }
     },
     methods: {
-      // resetSaveFormData(saveFormData) {
-      // console.log(saveFormData)
-      // saveFormData = {
-      //   "ztEnum2": null
-      // }
-      // _this.saveFormData = {
-      //   "ztEnum2": null
-      // }
-      // },
-      // doQuery() {
-      //   this.$refs.ztVxeGrid.queryEvent(this.queryData);
-      // },
-      // resetEvent() {
-      //   console.log(this.queryData)
-      // },
-      // getZtEnum2RenderSource() {
-      //   this.$api.get(this.apiPre + '/getenuminfo?enumName=ZtTestStrEnum2', null, r => {
-      //     this.ztEnum2Render = r.data
-      //   })
-      // },
-      // setSaveFormItemsBak(saveFormItems, callback) {
-      //   let ztEnum = saveFormItems.filter(function(cur, index, arr) {
-      //     return cur.field == 'ztEnum2';
-      //   })
-      //   if (ztEnum[0]) {
-      //     ztEnum[0].itemRender.options = this.ztEnum2Render
-      //   }
-      //   this.saveFormItemsBak = this.deepClone(saveFormItems)
-      //   callback(this.saveFormItemsBak)
-      // },
-      // formatterRoleTypeEnum({
-      //   cellValue
-      // }) {
-      //   let item = this.ztRoleTypeEnum.find(item => item.value === cellValue)
-      //   return item ? item.label : null
-      // },
-      // formatterDataScopeTypeEnum({
-      //   cellValue
-      // }) {
-      //   let item = this.ztDataScopeTypeEnum.find(item => item.value === cellValue)
-      //   return item ? item.label : null
-      // },
+      saveMenuRole() {
+        let ztRoleComponentInfo = []
+        this.menuValue.forEach(e => {
+          let tmp = {
+            componentCode: e,
+            roleCode: this.curRow.thisCode,
+            otherParams: 'ROLE_MANAGE'
+          }
+          ztRoleComponentInfo.push(tmp)
+        })
+        this.$api.post('/ZtRoleComponentInfo/insertBatchSimple', ztRoleComponentInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
+      saveDeptRole() {
+        let ztRoleDeptInfo = []
+        this.deptValue.forEach(e => {
+          let tmp = {
+            deptCode: e,
+            roleCode: this.curRow.thisCode,
+            otherParams: 'ROLE_MANAGE'
+          }
+          ztRoleDeptInfo.push(tmp)
+        })
+        this.$api.post('/ZtRoleDeptInfo/insertBatchSimple', ztRoleDeptInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
+      saveUserRole() {
+        let ztRoleUserInfo = []
+        this.userValue.forEach(e => {
+          let tmp = {
+            userCode: e,
+            roleCode: this.curRow.thisCode,
+            otherParams: 'ROLE_MANAGE'
+          }
+          ztRoleUserInfo.push(tmp)
+        })
+        this.$api.post('/ZtRoleUserInfo/insertBatchSimple', ztRoleUserInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
+      savePostRole() {
+        let ztRolePostInfo = []
+        this.postValue.forEach(e => {
+          let tmp = {
+            postCode: e,
+            roleCode: this.curRow.thisCode,
+            otherParams: 'ROLE_MANAGE'
+          }
+          ztRolePostInfo.push(tmp)
+        })
+        this.$api.post('/ZtRolePostInfo/insertBatchSimple', ztRolePostInfo)
+          .then(r => {
+            this.$refs.ztVxeGrid.$emit("queryFormEvent")
+          })
+      },
       doSearch(value, $event) {
         console.log(value)
         console.log($event)
@@ -396,17 +458,57 @@
       afterQuery() {
 
       },
-      showEditForm(row, items){
+      showEditForm(row, items) {
 
       },
-      cellClick(data){
+      cellClick(data) {
 
       },
-      currentChange(data){
+      currentChange(data) {
+        this.curRow = data.row
+        let role = {
+          roleCode: data.row.thisCode,
+          limit: 1000
+        }
+        // console.log(role)
+        this.$api.post('/ZtRoleComponentInfo/selectSimple', role)
+          .then(r => {
+            let menuCodes = r.data.results.map(item => {
+              return item.componentCode;
+            })
+            this.menuValue = menuCodes
+          })
+
+        this.$api.post('/ZtRoleDeptInfo/selectSimple', role)
+          .then(r => {
+            let deptCodes = r.data.results.map(item => {
+              return item.deptCode;
+            })
+            this.deptValue = deptCodes
+          })
+
+        this.$api.post('/ZtRoleUserInfo/selectSimple', role)
+          .then(r => {
+            let userCodes = r.data.results.map(item => {
+              return item.userCode;
+            })
+            this.userValue = userCodes
+          })
+
+        this.$api.post('/ZtRolePostInfo/selectSimple', role)
+          .then(r => {
+            let postCodes = r.data.results.map(item => {
+              return item.postCode;
+            })
+            this.postValue = postCodes
+          })
 
       },
-      customToolbarButton(code){
+      customToolbarButton(code) {
 
+      },
+      tabClick(tab, event) {
+        // console.log(tab, event)
       },
     },
     created() {
@@ -537,15 +639,26 @@
 
         })
 
-      const list1 = []
-      for (let index = 0; index < 20; index++) {
-        list1.push({
-          label: `选项${index}`,
-          value: index
+      this.$api.post('/ZtComponentInfo/selectSimple', null)
+        .then(r => {
+          let menuCodes = r.data.results.filter(t => t.leafFlag)
+          this.menuData = menuCodes;
         })
-      }
 
-      this.list1 = list1
+      this.$api.post('/ZtDeptInfo/selectSimple', null)
+        .then(r => {
+          this.deptData = r.data.results;
+        })
+
+      this.$api.post('/ZtUserInfo/selectSimple', null)
+        .then(r => {
+          this.userData = r.data.results;
+        })
+
+      this.$api.post('/ZtPostInfo/selectSimple', null)
+        .then(r => {
+          this.postData = r.data.results;
+        })
     },
     mounted() {
 

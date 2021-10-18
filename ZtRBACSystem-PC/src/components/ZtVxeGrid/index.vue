@@ -114,7 +114,11 @@
       @current-change="currentChange" @cell-click="cellClick">
 
       <template #operate_default="{ row }">
-        <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit" @click="editButtonEvent(row)">
+        <vxe-button icon="fa fa-edit" title="编辑" @click="editButtonEvent(row,false)">
+          查看
+        </vxe-button>
+        <vxe-button icon="fa fa-edit" title="编辑" v-if="showEdit" :disabled="!showEdit"
+          @click="editButtonEvent(row,true)">
           编辑
         </vxe-button>
         <vxe-button icon="fa fa-edit" title="删除" status="danger" v-if="showRemove" :disabled="!showRemove"
@@ -735,7 +739,7 @@
             })
             break
           case PermissionDefine.BUTTON_ADD:
-            this.editButtonEvent(this.deepClone(this.initSaveFormData))
+            this.editButtonEvent(this.deepClone(this.initSaveFormData), true)
             break
           case 'saveImport':
             setTimeout(() => {
@@ -761,8 +765,8 @@
             this.$parent.customToolbarButton(code)
         }
       },
-      editButtonEvent(row) {
-        this.editEvent(row)
+      editButtonEvent(row, canEdit) {
+        this.editEvent(row, canEdit)
       },
       async removeButtonEvent(row) {
         const type = await this.$XModal.confirm('您确定要删除选中的数据?')
@@ -772,16 +776,35 @@
         console.log(row)
         // this.$api.post(this.apiPre + '/' + this.thisName + '/deleteSimple', row, r => {})
       },
-      editEvent(row) {
-
+      editEvent(row, canEdit) {
+        if (canEdit) {
+          this.saveFormConfig.items.forEach(t => {
+            if (t.itemRender) {
+              if (t.itemRender.props) {
+                t.itemRender.props.disabled = false
+              }
+            }
+          })
+          this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.disabled = false
+        } else {
+          this.saveFormConfig.items.forEach(t => {
+            if (t.itemRender) {
+              if (t.itemRender.props) {
+                t.itemRender.props.disabled = true
+              }
+            }
+          })
+          this.saveFormConfig.items[this.saveFormConfig.items.length - 1].itemRender.children[0].props.disabled = true
+        }
+        // console.log(row)
+        // console.log(canEdit)
         // console.log(this.initSaveFormData)
         // console.log(this.saveFormItems.length)
 
-        this.$parent.showEditForm(row, this.saveFormConfig.items)
+        this.$parent.showEditForm(row, this.saveFormConfig.items, canEdit)
         // console.log(this.saveFormItems)
         this.curRow = row
         // console.log(this.initSaveFormData)
-        console.log(row)
         this.saveFormDataBak = this.deepClone(row)
         this.saveFormData = this.deepClone(row)
         this.showSaveForm = true
@@ -810,7 +833,7 @@
             return
           }
           saveData.id = this.saveFormData.id
-          console.log(saveData)
+          // console.log(saveData)
           this.$api.post(this.apiPre + '/' + this.thisName + '/updateSimple', saveData).then(t => {
             this.queryFormEvent()
           }).finally(r => {
@@ -1119,3 +1142,6 @@
     }
   }
 </script>
+<style lang="scss">
+  @import '@/assets/styles/zttable.scss';
+</style>
