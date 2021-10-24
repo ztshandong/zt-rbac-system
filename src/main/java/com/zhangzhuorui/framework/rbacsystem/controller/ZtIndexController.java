@@ -71,14 +71,18 @@ public class ZtIndexController {
     @SneakyThrows
     @ResponseBody
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public ZtResBeanEx<String> login(@RequestBody ZtUserInfo ztUserInfo) {
+    public ZtResBeanEx login(@RequestBody ZtUserInfo ztUserInfo) {
         List<ZtUserInfo> ztUserInfos = iZtUserInfoService.ztSimpleGetList(ztUserInfo);
         ZtUserInfo ztUserInfo1 = ztUserInfos.get(0);
         String token = ztJwtTokenUtil.generateToken(ztUserInfo1);
         ztCacheUtil.refreshCacheByCurUserId(ztUserInfo1.getId());
         // iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
-        ZtResBeanEx<String> ok = ZtResBeanEx.ok();
+        ZtResBeanEx ok = ZtResBeanEx.ok();
         ok.setData(token);
+        ZtResBeanEx<List<ZtComponentInfo>> curUserRouteAfterLogin = getCurUserRouteAfterLogin(ztUserInfo1);
+        ZtResBeanEx<ZtUserRolePermissionVo> userInfoAfterLogin = getUserInfoAfterLogin(ztUserInfo1);
+        ok.put("route", curUserRouteAfterLogin.getData());
+        ok.put("user", userInfoAfterLogin.getData());
         return ok;
     }
 
@@ -86,6 +90,7 @@ public class ZtIndexController {
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     public String logout() {
         ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+        log.info(userInfo.getUserCode() + " logout");
         ztCacheUtil.refreshCacheByCurUserId(userInfo.getId());
         return "ok";
     }
@@ -99,16 +104,20 @@ public class ZtIndexController {
 
     @ResponseBody
     @RequestMapping(value = "getCurUserRouteAfterLogin", method = RequestMethod.POST)
-    public ZtResBeanEx<List<ZtComponentInfo>> getCurUserRouteAfterLogin() {
-        ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+    public ZtResBeanEx<List<ZtComponentInfo>> getCurUserRouteAfterLogin(@RequestBody(required = false) ZtUserInfo userInfo) {
+        if (userInfo == null) {
+            userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+        }
         List<ZtComponentInfo> curUserRouteAfterLogin = iZtRoleInfoService.getCurUserRouteAfterLogin(userInfo);
         return ZtResBeanEx.ok(curUserRouteAfterLogin);
     }
 
     @ResponseBody
     @RequestMapping(value = "getUserInfoAfterLogin", method = RequestMethod.POST)
-    public ZtResBeanEx<ZtUserRolePermissionVo> getUserInfoAfterLogin() {
-        ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+    public ZtResBeanEx<ZtUserRolePermissionVo> getUserInfoAfterLogin(@RequestBody(required = false) ZtUserInfo userInfo) {
+        if (userInfo == null) {
+            userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+        }
         userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
         iZtRoleInfoService.getCurUserAdminFlag(userInfo);
         ZtUserRolePermissionVo ztUserRolePermissionVo = new ZtUserRolePermissionVo();
