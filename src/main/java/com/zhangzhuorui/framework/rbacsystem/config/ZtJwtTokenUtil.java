@@ -39,7 +39,9 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
 
     static {
         IGNORE_URLS.add("/ZtIndex/login");
+        IGNORE_URLS.add("/ZtIndex/login/");
         IGNORE_URLS.add("/ZtIndex/getUserInfoAfterLogin");
+        IGNORE_URLS.add("/ZtIndex/getUserInfoAfterLogin/");
     }
 
     private final static String CLAIMS_USER_ID = "userId";
