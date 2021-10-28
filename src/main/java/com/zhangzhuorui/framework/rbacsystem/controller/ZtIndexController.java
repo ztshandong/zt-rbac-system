@@ -22,6 +22,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 基于张涛极速开发框架的RBAC权限管理系统
@@ -62,10 +68,10 @@ public class ZtIndexController {
     @Autowired
     IZtUserInfoService iZtUserInfoService;
 
-    @Value("${wx:appId}")
+    @Value("${wx.appId}")
     String appId;
 
-    @Value("${wx:secret}")
+    @Value("${wx.secret}")
     String secret;
 
     @SneakyThrows
@@ -127,6 +133,120 @@ public class ZtIndexController {
         ztUserRolePermissionVo.setRoles(curUserAllRoleCodes);
         ztUserRolePermissionVo.setUser(userInfo);
         return ZtResBeanEx.ok(ztUserRolePermissionVo);
+    }
+
+    Map<String, String> tokenMap = new HashMap<>();
+
+    @ResponseBody
+    @RequestMapping(value = "getWeixinConfig", method = RequestMethod.GET)
+    public ZtResBeanEx<JSONObject> getWeixinConfig(@RequestParam String url) {
+        //url为前端动态入参
+        JSONObject object = new JSONObject();
+        String access_token = tokenMap.get("AccessToken");
+        String jsapi_ticket = tokenMap.get("JsapiTicket");
+        if (StringUtils.isEmpty(access_token)) {
+            //获取access_token
+            String tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="
+                    + appId
+                    + "&secret="
+                    + secret;
+
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+
+            HttpGet httpGet = new HttpGet(tokenUrl);
+            CloseableHttpResponse response = null;
+            try {
+                response = httpClient.execute(httpGet);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            HttpEntity entity = response.getEntity();
+            String strEntity = null;
+            try {
+                strEntity = EntityUtils.toString(entity, "UTF-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("get openid err");
+            }
+            log.info("accessToken");
+            log.info(strEntity);
+            JSONObject accessObj = JSON.parseObject(strEntity);
+
+            access_token = accessObj.getString("access_token");
+            tokenMap.put("AccessToken", access_token);
+        }
+        if (StringUtils.isEmpty(jsapi_ticket)) {
+            //获取jsapi
+            String jsapiUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi";
+
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+
+            HttpGet httpGet = new HttpGet(jsapiUrl);
+            CloseableHttpResponse response = null;
+            try {
+                response = httpClient.execute(httpGet);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            HttpEntity entity = response.getEntity();
+            String strEntity = null;
+            try {
+                strEntity = EntityUtils.toString(entity, "UTF-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("get openid err");
+            }
+
+            log.info("JsapiTicket");
+            log.info(strEntity);
+            JSONObject jsapi = JSON.parseObject(strEntity);
+            jsapi_ticket = jsapi.getString("ticket");
+            tokenMap.put("JsapiTicket", jsapi_ticket);
+
+        }
+        //获取签名signature
+        String noncestr = UUID.randomUUID().toString().replace("-", "");
+        String timestamp = Long.toString(System.currentTimeMillis() / 1000);
+        String str = "jsapi_ticket=" + jsapi_ticket +
+                "&noncestr=" + noncestr +
+                "&timestamp=" + timestamp +
+                "&url=" + url;
+        //sha1加密
+        String signature = sha1(str);
+        object.put("noncestr", noncestr);
+        object.put("timestamp", timestamp);
+        object.put("signature", signature);
+        object.put("appId", appId);
+        object.put("jsapi_ticket", jsapi_ticket);
+        log.info("jsapi_ticket=" + jsapi_ticket);
+        log.info("noncestr=" + noncestr);
+        log.info("timestamp=" + timestamp);
+        log.info("url=" + url);
+        log.info("signature=" + signature);
+        return ZtResBeanEx.ok(object);
+    }
+
+    public static String sha1(String str) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            digest.update(str.getBytes());
+            byte messageDigest[] = digest.digest();
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            // 字节数组转换为 十六进制 数
+            for (int i = 0; i < messageDigest.length; i++) {
+                String shaHex = Integer.toHexString(messageDigest[i] & 0xFF);
+                if (shaHex.length() < 2) {
+                    hexString.append(0);
+                }
+                hexString.append(shaHex);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @ApiOperation(value = "获取openid")
