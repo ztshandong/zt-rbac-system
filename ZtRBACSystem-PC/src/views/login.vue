@@ -154,15 +154,15 @@
   }
 
   .background1 {
-    background-image: url("../assets/images/login-background.jpg");
+    background-image: url("https://ztshandong.oss-cn-shanghai.aliyuncs.com/kid/login-background.jpg");
   }
 
   .background2 {
-    background-image: url("../assets/images/login-background2.jpg");
+    background-image: url("https://ztshandong.oss-cn-shanghai.aliyuncs.com/kid/login-background2.jpg");
   }
 
   .background3 {
-    background-image: url("../assets/images/login-background3.jpg");
+    background-image: url("https://ztshandong.oss-cn-shanghai.aliyuncs.com/kid/login-background3.jpg");
   }
 
   .title {

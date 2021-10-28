@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtBaseRbacResultMapMapper">
-    <resultMap id="ZtBasicRbacEntityResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
-               extends="com.zhangzhuorui.framework.mybatis.simplebasemapper.ZtBaseResultMapMapper.ZtBasicEntityResultMap">
+    <resultMap id="ZtBasicRbacEntityResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity">
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_update" jdbcType="TIMESTAMP" property="gmtUpdate"/>
+        <result column="created_by" jdbcType="VARCHAR" property="createdBy"/>
+        <result column="updated_by" jdbcType="VARCHAR" property="updatedBy"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="created_by_name" jdbcType="VARCHAR" property="createdByName"/>
+        <result column="updated_by_name" jdbcType="VARCHAR" property="updatedByName"/>
     </resultMap>
 
     <resultMap id="ZtBaseRbacLongIdResultMap" type="com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacBasicEntity"
