@@ -1,11 +1,11 @@
 {
-  "name": "uniapp-template",
-  "version": "1.0.0",
-  "description": "uniapp + uview-ui空白项目模版",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "vaevie520",
-  "license": "ISC"
+	"name": "张涛的app",
+	"version": "1.0.0",
+	"description": "https://uniapp.dcloud.io/collocation/package",
+	"main": "main.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "zhangtao",
+	"license": "ISC"
 }

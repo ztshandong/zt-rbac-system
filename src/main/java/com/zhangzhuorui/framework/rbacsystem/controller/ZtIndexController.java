@@ -94,18 +94,18 @@ public class ZtIndexController {
 
     @ResponseBody
     @RequestMapping(value = "logout", method = RequestMethod.POST)
-    public String logout() {
+    public ZtResBeanEx logout() {
         ZtUserInfo userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
         log.info(userInfo.getUserCode() + " logout");
         ztCacheUtil.refreshCacheByCurUserId(userInfo.getId());
-        return "ok";
+        return ZtResBeanEx.ok("ok");
     }
 
     @ResponseBody
     @RequestMapping(value = "refreshAllCache", method = RequestMethod.POST)
-    public String refreshAllCache() {
+    public ZtResBeanEx refreshAllCache() {
         ztCacheUtil.refreshAllCache();
-        return "refreshAllCache";
+        return ZtResBeanEx.ok("refreshAllCache");
     }
 
     @ResponseBody
@@ -252,7 +252,7 @@ public class ZtIndexController {
     @ApiOperation(value = "获取openid")
     @GetMapping("getOpenIdInXiaoChengXu")
     @ResponseBody
-    public Object getOpenIdInXiaoChengXu(@RequestParam String code) {
+    public ZtResBeanEx<JSONObject> getOpenIdInXiaoChengXu(@RequestParam String code) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code";
@@ -279,7 +279,7 @@ public class ZtIndexController {
         } catch (Exception e) {
             log.error("close error", e);
         }
-        return jsonObject;
+        return ZtResBeanEx.ok(jsonObject);
     }
 }
 

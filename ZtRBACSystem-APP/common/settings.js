@@ -10,9 +10,9 @@ module.exports = {
     // 版本号
     version: '1.0.0',
     // 开发环境接口Url
-    devUrl: 'http://172.16.1.217:8080',
+    devUrl: 'https://zt.zhangzhuorui.com/dev',
     // 线上环境接口Url
-    prodUrl: 'http://172.16.1.217:8080',
+    prodUrl: 'https://zt.zhangzhuorui.com/prod',
     // 配后端数据的接收方式application/json;charset=UTF-8或者application/x-www-form-urlencoded;charset=UTF-8
     contentType: 'application/json;charset=UTF-8',
     // 后端返回状态码，如code,status

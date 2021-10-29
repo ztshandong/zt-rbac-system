@@ -3,9 +3,11 @@
 		<u-cell-group>
 			<u-cell-item icon="fingerprint" title="登录" @click="gotToLogin">
 				<!-- v-if="isLogin" -->
-				<view class="u-flex u-row-right" v-if="isLogin">
-					<u-avatar :src="userInfo.avatarUrl"></u-avatar>
-					<view class="u-m-l-24">{{ userInfo.nickname }}</view>
+				<view class="u-flex u-row-right" v-if="isLogin2">
+					<!-- <u-avatar :src="userInfo2.avatarUrl"></u-avatar> -->
+					<!-- <view class="u-m-l-24">{{ userInfo2.nickname }}</view> -->
+					<u-avatar :src="userInfo2.avatar"></u-avatar>
+					<view class="u-m-l-24">{{ userInfo2.userNickName }}</view>
 				</view>
 			</u-cell-item>
 			<u-cell-item icon="chat" title="消息提示" @click="showToast('我是一条随机消息提示', toastType[$u.random(0, 2)])">
@@ -40,8 +42,8 @@
 				tabbar: tabbars,
 				location: null,
 				toastType: ['success', 'warning', 'error'],
-				isLogin: false,
-				userInfo: {}
+				isLogin2: false,
+				userInfo2: {}
 			}
 		},
 		onLoad() {
@@ -53,9 +55,12 @@
 			// console.log(this.lifeData)
 			// console.log(this.userInfo)
 			// console.log(uni.getStorageSync('lifeData'))
-			
-			this.userInfo = uni.getStorageSync('lifeData').userInfo
-			this.isLogin = uni.getStorageSync('lifeData').isLogin
+			if (uni.getStorageSync('lifeData').userInfo) {
+				this.userInfo2 = uni.getStorageSync('lifeData').userInfo
+			}
+			if (uni.getStorageSync('lifeData').isLogin) {
+				this.isLogin2 = uni.getStorageSync('lifeData').isLogin
+			}
 		},
 		methods: {
 			gotToLogin() {

@@ -147,27 +147,43 @@
 								//{errMsg: "login:ok", code: "021rewFa1F5R0C0WG6Ja1U1Gez0rewFk"}
 								// console.log(res1)
 								// return
-								uni.request({
-									url: 'http://172.16.1.217:8080/ZtIndex/getOpenIdInXiaoChengXu',
-									method: 'GET',
-									data: {
-										code: res1.code
-									},
-									success(res2) {
-										console.log('getOpenIdInXiaoChengXu:' + res2);
-										//{"data":{"unionid":"oumM8wq8TCU-brqH7dkf8sc7LAAU","openid":"ol3XN4uW7125_XoGTyfq07Tna3LA","session_key":"8EWyicU1zghTvx9H7NjV3Q=="},"profile":{"transportRttEstimate":33,"domainLookUpStart":1635039991975,"responseEnd":1635039993523,"sendBytesCount":581,"redirectStart":0,"connectEnd":1635039992077,"protocol":"unknown","peerIP":"192.168.1.6","requestStart":1635039991974,"socketReused":false,"fetchStart":1635039991973,"SSLconnectionStart":1635039991978,"estimate_nettype":5,"httpRttEstimate":115,"throughputKbps":0,"SSLconnectionEnd":1635039991978,"downstreamThroughputKbpsEstimate":1961,"domainLookUpEnd":1635039991975,"responseStart":1635039993520,"redirectEnd":0,"rtt":33,"connectStart":1635039991975,"port":8080,"receivedBytedCount":296,"requestEnd":1635039993523},"header":{"Transfer-Encoding":"chunked","Keep-Alive":"timeout=60","Connection":"keep-alive","Date":"Sun, 24 Oct 2021 01:46:36 GMT","Content-Type":"application/json"},"statusCode":200,"cookies":[],"errMsg":"request:ok"}
-								
-										// this.$refs.xiaoChengXuGetPhoneNumber.$el.click();
-										// if (res.data.code !== 0) {
-										// 	console.log('获取openid失败：', res.result.msg);
-										// 	return
-										// }
-										// uni.setStorageSync('openid', res.data.openid)
-									},
-									fail(err) {
-										console.log('获取openid失败：', err);
-									}
-								})
+								let data = {
+									code: res1.code
+								}
+								this.$u.get('/ZtIndex/getOpenIdInXiaoChengXu', data)
+									.then(res2 => {
+										console.log('getOpenIdInXiaoChengXu:');
+										console.log(res2);
+									})
+									.catch(err => {
+										console.log('login err' + err)
+										// console.log(JSON.stringify(err))
+									})
+									.finally(t => {
+										uni.hideLoading();
+									})
+
+								// uni.request({
+								// 	url: 'http://172.16.1.217:8080/ZtIndex/getOpenIdInXiaoChengXu',
+								// 	method: 'GET',
+								// 	data: {
+								// 		code: res1.code
+								// 	},
+								// 	success(res2) {
+								// 		console.log('getOpenIdInXiaoChengXu:' + res2);
+								// 		//{"data":{"unionid":"oumM8wq8TCU-brqH7dkf8sc7LAAU","openid":"ol3XN4uW7125_XoGTyfq07Tna3LA","session_key":"8EWyicU1zghTvx9H7NjV3Q=="},"profile":{"transportRttEstimate":33,"domainLookUpStart":1635039991975,"responseEnd":1635039993523,"sendBytesCount":581,"redirectStart":0,"connectEnd":1635039992077,"protocol":"unknown","peerIP":"192.168.1.6","requestStart":1635039991974,"socketReused":false,"fetchStart":1635039991973,"SSLconnectionStart":1635039991978,"estimate_nettype":5,"httpRttEstimate":115,"throughputKbps":0,"SSLconnectionEnd":1635039991978,"downstreamThroughputKbpsEstimate":1961,"domainLookUpEnd":1635039991975,"responseStart":1635039993520,"redirectEnd":0,"rtt":33,"connectStart":1635039991975,"port":8080,"receivedBytedCount":296,"requestEnd":1635039993523},"header":{"Transfer-Encoding":"chunked","Keep-Alive":"timeout=60","Connection":"keep-alive","Date":"Sun, 24 Oct 2021 01:46:36 GMT","Content-Type":"application/json"},"statusCode":200,"cookies":[],"errMsg":"request:ok"}
+
+								// 		// this.$refs.xiaoChengXuGetPhoneNumber.$el.click();
+								// 		// if (res.data.code !== 0) {
+								// 		// 	console.log('获取openid失败：', res.result.msg);
+								// 		// 	return
+								// 		// }
+								// 		// uni.setStorageSync('openid', res.data.openid)
+								// 	},
+								// 	fail(err) {
+								// 		console.log('获取openid失败：', err);
+								// 	}
+								// })
 							}
 						})
 						uni.navigateBack({})
@@ -220,7 +236,7 @@
 			},
 			accountLogin() {
 				console.log('accountLogin')
-				return
+				// return
 				uni.showLoading({
 					title: '正在登录'
 				});
@@ -235,7 +251,7 @@
 							uni.setStorageSync('token', res.data)
 							// this.isLogin = true;
 							// this.hasUserInfo = true;
-							this.$u.vuex('userInfo', user.userInfo)
+							this.$u.vuex('userInfo', res.user.user)
 							// console.log(this.$u.userInfo)
 							this.$u.vuex('isLogin', true)
 							// this.userInfo = result.userInfo;
