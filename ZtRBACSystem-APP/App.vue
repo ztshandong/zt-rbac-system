@@ -56,4 +56,9 @@
 		// justify-content:space-between;
 		flex-wrap: wrap;
 	}
+	
+	.ali {
+		width: 100rpx;
+		height: 100rpx;
+	}
 </style>

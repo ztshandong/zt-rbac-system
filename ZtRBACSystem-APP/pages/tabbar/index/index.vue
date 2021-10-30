@@ -5,7 +5,7 @@
 		<view class="text-area">
 			<text class="title">{{ title }}</text>
 		</view>
-		<view class="t-zhangtao t-zhangtao-word2"></view>
+		<view class="t-zhangtao t-zhangtao-word2 ali"></view>aaa
 		<text class="t-zhangtao t-zhangtao-ppt2 ali"></text>
 		<u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar>
 	</view>
@@ -63,8 +63,4 @@
 		color: #8f8f94;
 	}
 
-	.ali {
-		width: 100rpx;
-		height: 100rpx;
-	}
 </style>
