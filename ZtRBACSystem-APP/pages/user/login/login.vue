@@ -150,7 +150,7 @@
 								let data = {
 									code: res1.code
 								}
-								this.$u.get('/ZtIndex/getOpenIdInXiaoChengXu', data)
+								this.$u.get('ZtIndex/getOpenIdInXiaoChengXu', data)
 									.then(res2 => {
 										console.log('getOpenIdInXiaoChengXu:');
 										console.log(res2);
@@ -244,7 +244,7 @@
 					userName: 'zhangtao',
 					userPwd: '123456'
 				}
-				this.$u.post('/ZtIndex/login', user)
+				this.$u.post('ZtIndex/login', user)
 					.then(res => {
 						if (res.data.msg != 'fail') {
 							this.$u.vuex('token', res.data)

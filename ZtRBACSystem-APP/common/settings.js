@@ -10,7 +10,7 @@ module.exports = {
     // 版本号
     version: '1.0.0',
     // 开发环境接口Url
-    devUrl: 'https://zt.zhangzhuorui.com/dev',
+    devUrl: 'development',
     // 线上环境接口Url
     prodUrl: 'https://zt.zhangzhuorui.com/prod',
     // 配后端数据的接收方式application/json;charset=UTF-8或者application/x-www-form-urlencoded;charset=UTF-8

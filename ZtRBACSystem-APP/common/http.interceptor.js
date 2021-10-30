@@ -14,6 +14,14 @@ import {
 // 这里的vm，就是我们在vue文件里面的this，所以我们能在这里获取vuex的变量，比如存放在里面的token变量
 const install = (Vue, vm) => {
 	console.log(process.env)
+	/*
+	BASE_URL: "/"
+	NODE_ENV: "development"
+	VUE_APP_INDEX_CSS_HASH: "5e7e3b56"
+	VUE_APP_NAME: "张涛的app"
+	VUE_APP_PLATFORM: "h5"
+	VUE_APP_TEST: "test"
+	*/
     // 此为自定义配置参数，具体参数见上方说明
     Vue.prototype.$u.http.setConfig({
         baseUrl: process.env.NODE_ENV === 'development' ? devUrl : prodUrl, // 请求的本域名
