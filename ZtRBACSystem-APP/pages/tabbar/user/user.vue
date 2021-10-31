@@ -81,7 +81,7 @@
 						this.wgtVersion = widgetInfo.version
 					},
 					fail: (error) => {
-			
+
 					}
 				})
 			})
@@ -214,23 +214,22 @@
 				})
 			},
 			async scan() {
-					// #ifdef APP-PLUS
-					let status = await this.checkPermission();
-					if (status !== 1) {
-						return;
-					}
-					// #endif
-					uni.scanCode({
-						success: (res) => {
-							this.showToast(res.result)
-						},
-						fail: (err) => {
-							// 需要注意的是小程序扫码不需要申请相机权限
-						}
-					});
-				}
 				// #ifdef APP-PLUS
-				,
+				let status = await this.checkPermission();
+				if (status !== 1) {
+					return;
+				}
+				// #endif
+				uni.scanCode({
+					success: (res) => {
+						this.showToast(res.result)
+					},
+					fail: (err) => {
+						// 需要注意的是小程序扫码不需要申请相机权限
+					}
+				});
+			},
+			// #ifdef APP-PLUS
 			async checkPermission(code) {
 				let status = permision.isIOS ? await permision.requestIOS('camera') :
 					await permision.requestAndroid('android.permission.CAMERA');
