@@ -28,6 +28,9 @@
 			<u-cell-item icon="phone" title="打电话" @click="makePhoneCall"></u-cell-item>
 			<!-- #ifdef APP-PLUS -->
 			<u-cell-item icon="weixin-fill" title="打开微信小程序" @click="goToWxMiniInApp"></u-cell-item>
+			<u-cell-item icon="star" title="检查更新" @click="getVersion">
+				<text>当前版本:{{appVersion}}</text>
+			</u-cell-item>
 			<!-- #endif -->
 			<!-- 
 			<u-cell-item icon="photo" title="选择图片" @click="chooseImage"></u-cell-item>
@@ -43,6 +46,7 @@
 
 <script>
 	var _this;
+	import appUpdate from "@/uni_modules/uni-upgrade-center-app/utils/check-update.js"
 	import {
 		tabbars
 	} from "@/common/common.js"
@@ -62,6 +66,26 @@
 		},
 		onLoad() {
 			_this = this
+			// #ifdef APP-PLUS
+			this.appid = plus.runtime.appid
+			this.appVersion = plus.runtime.version
+			plus.runtime.getProperty(plus.runtime.appid, function(widgetInfo) {
+				uniCloud.callFunction({
+					name: 'check-version',
+					data: {
+						appid: plus.runtime.appid,
+						appVersion: plus.runtime.version,
+						wgtVersion: widgetInfo.version
+					},
+					success: (e) => {
+						this.wgtVersion = widgetInfo.version
+					},
+					fail: (error) => {
+			
+					}
+				})
+			})
+			// #endif
 		},
 		onShow() {
 			// console.log('onShow')
@@ -233,6 +257,11 @@
 					type
 				})
 			},
+			getVersion() {
+				// #ifdef APP-PLUS
+				appUpdate(); // 调用方法检查版本更新
+				// #endif
+			},
 			goToWxMiniInApp() {
 				// 如果是ios 需要先login 然后在 执行下面的代码 isIOS 这个方法根据你项目中的来定义 即可
 				if (uni.getSystemInfoSync().platform == 'ios') {
@@ -251,7 +280,7 @@
 								if (sweixin) {
 									sweixin.launchMiniProgram({
 										id: 'gh_82e48c06a20d',
-										path: 'pages/index/index',
+										path: 'pages/main/index/index',
 										type: 0
 									});
 								}
@@ -273,7 +302,7 @@
 						if (sweixin) {
 							sweixin.launchMiniProgram({
 								id: 'gh_82e48c06a20d',
-								path: 'pages/index/index',
+								path: 'pages/main/index/index',
 								type: 0
 							});
 						}
