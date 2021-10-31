@@ -197,6 +197,11 @@
 				})
 			},
 			loginWXApp() {
+				uni.showToast({
+					title: '暂时不支持',
+					duration: 500
+				});
+				return
 				uni.login({
 					provider: 'weixin',
 					// #ifdef MP-ALIPAY
