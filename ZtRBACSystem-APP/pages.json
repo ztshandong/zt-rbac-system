@@ -10,6 +10,18 @@
         "navigationBarTitleText": "首页"
       }
     },
+	{
+	  "path": "pages/tabbar/index/framework",
+	  "style": {
+	    "navigationBarTitleText": "框架"
+	  }
+	},
+	{
+	  "path": "pages/tabbar/index/youku",
+	  "style": {
+	    "navigationBarTitleText": "优酷视频"
+	  }
+	},
     {
       "path": "pages/tabbar/center/center",
       "style": {
@@ -17,6 +29,13 @@
         "enablePullDownRefresh": false
       }
     },
+	{
+	  "path": "pages/tabbar/center/detail",
+	  "style": {
+	    "navigationBarTitleText": "详情",
+	    "enablePullDownRefresh": false
+	  }
+	},
     {
       "path": "pages/tabbar/user/user",
       "style": {

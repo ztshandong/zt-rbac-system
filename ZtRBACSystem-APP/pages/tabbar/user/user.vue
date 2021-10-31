@@ -10,7 +10,7 @@
 					<view class="u-m-l-24">{{ userInfo2.userNickName }}</view>
 				</view>
 			</u-cell-item>
-			<u-cell-item icon="chat" title="消息提示" @click="showToast('我是一条随机消息提示', toastType[$u.random(0, 2)])">
+			<u-cell-item icon="chat" title="消息提示" @click="showToast('我是一条消息提示', toastType[$u.random(0, 2)])">
 			</u-cell-item>
 			<u-cell-item icon="map" title="获取当前位置" @click="getLocation">
 				<view class="u-flex u-row-right" v-if="location">
@@ -18,12 +18,23 @@
 					<view class="u-m-l-24">纬度:{{ location.latitude.toFixed(6) }}</view>
 				</view>
 			</u-cell-item>
-			<u-cell-item icon="pushpin" title="打开当前位置(导航)" @click="openLocation"></u-cell-item>
+			<u-cell-item icon="pushpin" title="打开当前位置(导航)" @click="chooseLocation">
+				<view class="u-flex u-row-right" v-if="location2">
+					<view>经度:{{ location2.longitude.toFixed(6) }}</view>
+					<view class="u-m-l-24">纬度:{{ location2.latitude.toFixed(6) }}</view>
+				</view>
+			</u-cell-item>
+			<u-cell-item icon="scan" title="扫码" @click="scan"></u-cell-item>
+			<u-cell-item icon="phone" title="打电话" @click="makePhoneCall"></u-cell-item>
+			<!-- #ifdef APP-PLUS -->
+			<u-cell-item icon="weixin-fill" title="打开微信小程序" @click="goToWxMiniInApp"></u-cell-item>
+			<!-- #endif -->
+			<!-- 
 			<u-cell-item icon="photo" title="选择图片" @click="chooseImage"></u-cell-item>
 			<u-cell-item icon="shopping-cart" title="选择收货地址" @click="chooseAddress"></u-cell-item>
 			<u-cell-item icon="share" title="设置自定义分享" @click="share"></u-cell-item>
 			<u-cell-item icon="rmb-circle" title="微信支付" @click="wxpay"></u-cell-item>
-			<u-cell-item icon="scan" title="扫码" @click="scanQRCode"></u-cell-item>
+			 -->
 		</u-cell-group>
 		<v-toast ref="vToast"></v-toast>
 		<u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar>
@@ -31,9 +42,11 @@
 </template>
 
 <script>
+	var _this;
 	import {
 		tabbars
 	} from "@/common/common.js"
+	import permision from "@/common/permission.js"
 	export default {
 		data() {
 			return {
@@ -41,13 +54,14 @@
 				current: 3,
 				tabbar: tabbars,
 				location: null,
+				location2: null,
 				toastType: ['success', 'warning', 'error'],
 				isLogin2: false,
 				userInfo2: {}
 			}
 		},
 		onLoad() {
-
+			_this = this
 		},
 		onShow() {
 			// console.log('onShow')
@@ -71,6 +85,14 @@
 				uni.navigateTo({
 					url: '/pages/user/login/login'
 				});
+			},
+			makePhoneCall: function() {
+				uni.makePhoneCall({
+					phoneNumber: '17091648421',
+					success: () => {
+						console.log("成功拨打电话")
+					}
+				})
 			},
 			getLocation() {
 				uni.getLocation({
@@ -102,6 +124,25 @@
 				// 	latitude: this.location.latitude,
 				// 	longitude: this.location.longitude
 				// })
+			},
+			chooseLocation: function() {
+				uni.getLocation({
+					type: 'wgs84',
+					success: function(res1) {
+						console.log(res1)
+						// console.log('当前位置的经度：' + res1.longitude);
+						// console.log('当前位置的纬度：' + res1.latitude);
+						uni.chooseLocation({
+							latitude: res1.latitude,
+							longitude: res1.longitude,
+							success: (res) => {
+								console.log(res)
+								_this.location2 = res
+							}
+						})
+					}
+				});
+
 			},
 			chooseImage() {
 				this.$u.wx.chooseImage(res => {
@@ -148,15 +189,112 @@
 					}
 				})
 			},
-			scanQRCode() {
-				this.$u.wx.scanQRCode()
+			async scan() {
+					// #ifdef APP-PLUS
+					let status = await this.checkPermission();
+					if (status !== 1) {
+						return;
+					}
+					// #endif
+					uni.scanCode({
+						success: (res) => {
+							this.showToast(res.result)
+						},
+						fail: (err) => {
+							// 需要注意的是小程序扫码不需要申请相机权限
+						}
+					});
+				}
+				// #ifdef APP-PLUS
+				,
+			async checkPermission(code) {
+				let status = permision.isIOS ? await permision.requestIOS('camera') :
+					await permision.requestAndroid('android.permission.CAMERA');
+
+				if (status === null || status === 1) {
+					status = 1;
+				} else {
+					uni.showModal({
+						content: "需要相机权限",
+						confirmText: "设置",
+						success: function(res) {
+							if (res.confirm) {
+								permision.gotoAppSetting();
+							}
+						}
+					})
+				}
+				return status;
 			},
+			// #endif
 			showToast(title, type = 'success') {
 				this.$refs.vToast.show({
 					title,
 					type
 				})
-			}
+			},
+			goToWxMiniInApp() {
+				// 如果是ios 需要先login 然后在 执行下面的代码 isIOS 这个方法根据你项目中的来定义 即可
+				if (uni.getSystemInfoSync().platform == 'ios') {
+					uni.login({
+						provider: 'weixin',
+						success: function(loginRes1) {
+							plus.share.getServices(function(res) {
+								var sweixin = null;
+								for (var i = 0; i < res.length; i++) {
+									var t = res[i];
+									if (t.id == 'weixin') {
+										sweixin = t;
+									}
+								}
+
+								if (sweixin) {
+									sweixin.launchMiniProgram({
+										id: 'gh_82e48c06a20d',
+										path: 'pages/index/index',
+										type: 0
+									});
+								}
+							}, function(res) {
+								// console.log(res);
+							});
+						}
+					});
+				} else {
+					plus.share.getServices(function(res) {
+						var sweixin = null;
+						for (var i = 0; i < res.length; i++) {
+							var t = res[i];
+							if (t.id == 'weixin') {
+								sweixin = t;
+							}
+						}
+
+						if (sweixin) {
+							sweixin.launchMiniProgram({
+								id: 'gh_82e48c06a20d',
+								path: 'pages/index/index',
+								type: 0
+							});
+						}
+					}, function(res) {
+						// console.log(res);
+					});
+				}
+
+				//小程序内互相跳转
+				// uni.navigateToMiniProgram({
+				//   appId: '',
+				//   path: 'pages/index/index',
+				//   extraData: {
+				//     'data1': 'test'
+				//   },
+				//   success(res) {
+				//     // 打开成功
+				//   }
+				// })
+
+			},
 		}
 	}
 </script>

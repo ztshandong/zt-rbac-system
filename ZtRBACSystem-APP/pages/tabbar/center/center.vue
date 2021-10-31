@@ -9,19 +9,33 @@
 		<!-- shape="circle" type="primary" -->
 		<!-- <u-button :custom-style="customStyle" plain shape="circle" class="t-zhangtao t-zhangtao-word2 ali">
 		</u-button> -->
+		<!-- 
 		<text class="t-zhangtao t-zhangtao-word2 ali">
-			<!-- <u-button :plain="true" :custom-style="customStyle" shape="circle" @click="test"></u-button> -->
-		</text>bbb
-		<view class="container">
-			<text class="t-zhangtao t-zhangtao-ppt2 ali"></text>
+			<u-button :plain="true" :custom-style="customStyle" shape="circle" @click="test"></u-button>
+		</text>
+		 -->
+		<view>
+			<!-- <text class="t-zhangtao t-zhangtao-ppt2 ali"></text> -->
 			<!-- <u-button type="primary" @click="login">登录</u-button> -->
-			<u-button @click="query">查询</u-button>
+			<view class="container">
+				<u-button type="primary" size="mini" @click="query">查询角色信息</u-button>
+			</view>
+			<view class="list-wrap">
+				<u-cell-group title-bg-color="rgb(243, 244, 246)" title="角色信息">
+					<u-cell-item :titleStyle="{fontWeight: 500}" @click="gotoDetail(item1)"
+						:title="getFieldTitle(item1)" v-for="(item1, index1) in list" :key="index1">
+						<!-- <image slot="icon" class="u-cell-icon" :src="getIcon(item1.icon)" mode="widthFix"></image> -->
+					</u-cell-item>
+				</u-cell-group>
+			</view>
+			<u-gap height="70"></u-gap>
 			<u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar>
 		</view>
 	</view>
 </template>
 
 <script>
+	var _this;
 	// import resize from '@/common/resize.js'
 	import {
 		tabbars
@@ -41,19 +55,32 @@
 					backgroundColor: '#ffffff',
 					width: '100rpx',
 					height: '100rpx',
-				}
+				},
+				list: []
 			}
 		},
-		onLoad() {},
+		onLoad() {
+			_this = this
+		},
 		methods: {
 			test() {
 				console.log('click')
+			},
+			gotoDetail(item) {
+				// console.log(item)
+				uni.navigateTo({
+					url: 'detail?item=' + encodeURIComponent(JSON.stringify(item))
+				});
+			},
+			getFieldTitle(item) {
+				return item.thisName
 			},
 			query() {
 				// console.log(this.$api)
 				this.$u.post('/ZtRoleInfo/selectSimple', null)
 					.then(r => {
 						// console.log(r)
+						_this.list = r.data.results
 					})
 					.catch(err => {
 						console.log(err)

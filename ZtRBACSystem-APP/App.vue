@@ -46,6 +46,8 @@
 	/*iconfont*/
 	@import './static/iconfont/iconfont-weapp-icon.css';
 	
+	@import "common/demo.scss";
+	
 	.rowcontainer {
 		display: flex;
 		// flex-direction: column;

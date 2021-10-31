@@ -241,8 +241,8 @@
 					title: '正在登录'
 				});
 				let user = {
-					userName: 'zhangtao',
-					userPwd: '123456'
+					userName: this.userName,
+					userPwd: this.userPwd
 				}
 				this.$u.post('ZtIndex/login', user)
 					.then(res => {
@@ -261,7 +261,8 @@
 						}
 					})
 					.catch(err => {
-						console.log('login err' + err)
+						console.log('login err')
+						console.log(err)
 						// console.log(JSON.stringify(err))
 					})
 					.finally(t => {

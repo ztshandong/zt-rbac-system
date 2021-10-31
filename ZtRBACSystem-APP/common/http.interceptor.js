@@ -24,7 +24,8 @@ const install = (Vue, vm) => {
 	*/
 	let realDevUrl = devUrl;
 	if (process.env.VUE_APP_PLATFORM != 'h5') {
-		realDevUrl = 'http://192.168.1.2:8080'
+		// realDevUrl = 'http://192.168.1.2:8080'
+		realDevUrl = 'https://zt.zhangzhuorui.com:442/dev'
 	}
 	// 此为自定义配置参数，具体参数见上方说明
 	Vue.prototype.$u.http.setConfig({

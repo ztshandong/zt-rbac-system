@@ -49,7 +49,8 @@ module.exports = {
 				// 	}
 				// },
 				['/' + process.env.NODE_ENV]: {
-					target: `http://localhost:8080`,
+					// target: `http://localhost:8080`,
+					target: `https://zt.zhangzhuorui.com:442/dev`,
 					changeOrigin: true,
 					pathRewrite: {
 						['^/' + process.env.NODE_ENV]: '/'
