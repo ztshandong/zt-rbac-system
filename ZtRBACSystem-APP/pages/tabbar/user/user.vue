@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<u-cell-group>
-			<u-cell-item icon="fingerprint" title="登录" @click="gotToLogin">
+			<u-cell-item icon="fingerprint" :title="loginOrOut" @click="gotToLoginOrLogout">
 				<!-- v-if="isLogin" -->
 				<view class="u-flex u-row-right" v-if="isLogin2">
 					<!-- <u-avatar :src="userInfo2.avatarUrl"></u-avatar> -->
@@ -24,7 +24,9 @@
 					<view class="u-m-l-24">纬度:{{ location2.latitude.toFixed(6) }}</view>
 				</view>
 			</u-cell-item>
-			<u-cell-item icon="scan" title="扫码" @click="scan"></u-cell-item>
+			<u-cell-item icon="scan" title="扫码" @click="scan">
+				<text>{{scanRes}}</text>
+			</u-cell-item>
 			<u-cell-item icon="phone" title="打电话" @click="makePhoneCall"></u-cell-item>
 			<!-- #ifdef APP-PLUS -->
 			<u-cell-item icon="weixin-fill" title="打开微信小程序" @click="goToWxMiniInApp"></u-cell-item>
@@ -61,7 +63,9 @@
 				location2: null,
 				toastType: ['success', 'warning', 'error'],
 				isLogin2: false,
-				userInfo2: {}
+				userInfo2: {},
+				scanRes: '',
+				loginOrOut: '登录'
 			}
 		},
 		onLoad() {
@@ -88,27 +92,38 @@
 			// #endif
 		},
 		onShow() {
-			// console.log('onShow')
+			console.log('onShow')
 			// console.log(this)
 			// console.log(this.lifeData)
 			// console.log(this.userInfo)
 			// console.log(uni.getStorageSync('lifeData'))
 			if (uni.getStorageSync('lifeData').userInfo) {
 				this.userInfo2 = uni.getStorageSync('lifeData').userInfo
+			} else {
+				this.userInfo2 = {}
 			}
 			if (uni.getStorageSync('lifeData').isLogin) {
 				this.isLogin2 = uni.getStorageSync('lifeData').isLogin
+				this.loginOrOut = '登出'
+			} else {
+				this.isLogin2 = false
+				this.loginOrOut = '登录'
 			}
+			console.log(this.userInfo2)
 		},
 		methods: {
-			gotToLogin() {
-				// this.$u.route({
-				// 	url: 'pages/user/login/login'
-				// })
-				// this.$u.route('pages/user/login/login')
-				uni.navigateTo({
-					url: '/pages/user/login/login'
-				});
+			gotToLoginOrLogout() {
+				if (this.isLogin2) {
+					uni.setStorageSync('lifeData', {});
+					uni.removeStorageSync('token')
+					uni.reLaunch({
+						url: '/pages/tabbar/user/user',
+					});
+				} else {
+					uni.navigateTo({
+						url: '/pages/user/login/login'
+					});
+				}
 			},
 			makePhoneCall: function() {
 				uni.makePhoneCall({
@@ -222,7 +237,8 @@
 				// #endif
 				uni.scanCode({
 					success: (res) => {
-						this.showToast(res.result)
+						_this.scanRes = res.result
+						// this.showToast(res.result)
 					},
 					fail: (err) => {
 						// 需要注意的是小程序扫码不需要申请相机权限

@@ -73,6 +73,8 @@ const install = (Vue, vm) => {
 			vm.$u.func.showToast({
 				title: '验证失败，请重新登录',
 				success: () => {
+					uni.setStorageSync('lifeData', {});
+					uni.removeStorageSync('token')
 					// 此为uView的方法，详见路由相关文档
 					vm.$u.route('/pages/user/login/login')
 				}
