@@ -4,10 +4,8 @@
 			<u-cell-item icon="fingerprint" :title="loginOrOut" @click="gotToLoginOrLogout">
 				<!-- v-if="isLogin" -->
 				<view class="u-flex u-row-right" v-if="isLogin2">
-					<!-- <u-avatar :src="userInfo2.avatarUrl"></u-avatar> -->
-					<!-- <view class="u-m-l-24">{{ userInfo2.nickname }}</view> -->
-					<u-avatar :src="userInfo2.avatar"></u-avatar>
-					<view class="u-m-l-24">{{ userInfo2.userNickName }}</view>
+					<u-avatar :src="userInfo2.avatarUrl"></u-avatar>
+					<view class="u-m-l-24">{{ userInfo2.nickname }}</view>
 				</view>
 			</u-cell-item>
 			<u-cell-item icon="chat" title="消息提示" @click="showToast('我是一条消息提示', toastType[$u.random(0, 2)])">
@@ -313,7 +311,8 @@
 								sweixin = t;
 							}
 						}
-
+						
+						//可取值： 0-正式版； 1-测试版； 2-体验版。 默认值为0。
 						if (sweixin) {
 							sweixin.launchMiniProgram({
 								id: 'gh_82e48c06a20d',

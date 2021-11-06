@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhangzhuorui.framework.core.ZtResBeanEx;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,11 +70,20 @@ public class ZtIndexController {
     @Autowired
     IZtUserInfoService iZtUserInfoService;
 
-    @Value("${wx.appId}")
-    String appId;
+    @Value("${wx.miniAppId}")
+    String miniAppId;
 
-    @Value("${wx.secret}")
-    String secret;
+    @Value("${wx.miniSecret}")
+    String miniSecret;
+
+    @Value("${unicloud.domain}")
+    String cloudFunctionDomain;
+
+    @Value("${unicloud.path}")
+    String cloudFunctionPath;
+
+    @Value("${unicloud.appid}")
+    String cloudFunctionAppId;
 
     @SneakyThrows
     @ResponseBody
@@ -147,9 +158,9 @@ public class ZtIndexController {
         if (StringUtils.isEmpty(access_token)) {
             //获取access_token
             String tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="
-                    + appId
+                    + miniAppId
                     + "&secret="
-                    + secret;
+                    + miniSecret;
 
             CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -216,7 +227,7 @@ public class ZtIndexController {
         object.put("noncestr", noncestr);
         object.put("timestamp", timestamp);
         object.put("signature", signature);
-        object.put("appId", appId);
+        object.put("appId", miniAppId);
         object.put("jsapi_ticket", jsapi_ticket);
         log.info("jsapi_ticket=" + jsapi_ticket);
         log.info("noncestr=" + noncestr);
@@ -255,7 +266,7 @@ public class ZtIndexController {
     public ZtResBeanEx<JSONObject> getOpenIdInXiaoChengXu(@RequestParam String code) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code";
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + miniAppId + "&secret=" + miniSecret + "&js_code=" + code + "&grant_type=authorization_code";
         System.out.println("url==========" + url);
         HttpGet httpGet = new HttpGet(url);
         CloseableHttpResponse response = null;
@@ -280,6 +291,21 @@ public class ZtIndexController {
             log.error("close error", e);
         }
         return ZtResBeanEx.ok(jsonObject);
+    }
+
+    @ApiOperation(value = "一键登录")
+    @PostMapping("getPhoneNumberByAccessToken")
+    @ResponseBody
+    public ZtResBeanEx<String> getPhoneNumberByAccessToken(@RequestBody JSONObject obj) {
+        log.info(JSON.toJSONString(obj));
+        String openId = obj.getString("openid");
+        String accessToken = obj.getString("access_token");
+        String signStr = "signStr";
+        String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=getPhoneNumberByAccessToken&appid=" + cloudFunctionAppId + "&access_token=" + accessToken + "&openid=" + openId + "&sign=" + signStr;
+        String s = HttpUtil.get(url);
+        System.out.println(s);
+        //{"code":0,"success":true,"phoneNumber":"13812345678"}
+        return ZtResBeanEx.ok(s);
     }
 }
 

@@ -35,7 +35,7 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
      * 昵称
      */
     @ApiModelProperty(value = "昵称")
-    private String userNickName;
+    private String nickName;
 
     /**
      * 密码
@@ -53,7 +53,7 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
      * 头像
      */
     @ApiModelProperty(value = "头像")
-    private String avatar;
+    private String avatarUrl;
 
     /**
      * 是否是管理员
@@ -95,12 +95,12 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         this.userName = userName;
     }
 
-    public String getUserNickName() {
-        return userNickName;
+    public String getNickName() {
+        return nickName;
     }
 
-    public void setUserNickName(String userNickName) {
-        this.userNickName = userNickName;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public String getUserPwd() {
@@ -119,12 +119,12 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         this.userMobile = userMobile;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     public Boolean getAdminFlag() {
@@ -168,10 +168,10 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         sb.append(", id=").append(this.getId());
         sb.append(", userCode=").append(userCode);
         sb.append(", userName=").append(userName);
-        sb.append(", userNickName=").append(userNickName);
+        sb.append(", userNickName=").append(nickName);
         sb.append(", userPwd=").append(userPwd);
         sb.append(", userMobile=").append(userMobile);
-        sb.append(", avatar=").append(avatar);
+        sb.append(", avatar=").append(avatarUrl);
         sb.append(", adminFlag=").append(adminFlag);
         sb.append(", blockFlag=").append(blockFlag);
         sb.append(", defaultDeptCode=").append(defaultDeptCode);
@@ -202,10 +202,10 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getUserCode() == null ? other.getUserCode() == null : this.getUserCode().equals(other.getUserCode()))
                 && (this.getUserName() == null ? other.getUserName() == null : this.getUserName().equals(other.getUserName()))
-                && (this.getUserNickName() == null ? other.getUserNickName() == null : this.getUserNickName().equals(other.getUserNickName()))
+                && (this.getNickName() == null ? other.getNickName() == null : this.getNickName().equals(other.getNickName()))
                 && (this.getUserPwd() == null ? other.getUserPwd() == null : this.getUserPwd().equals(other.getUserPwd()))
                 && (this.getUserMobile() == null ? other.getUserMobile() == null : this.getUserMobile().equals(other.getUserMobile()))
-                && (this.getAvatar() == null ? other.getAvatar() == null : this.getAvatar().equals(other.getAvatar()))
+                && (this.getAvatarUrl() == null ? other.getAvatarUrl() == null : this.getAvatarUrl().equals(other.getAvatarUrl()))
                 && (this.getAdminFlag() == null ? other.getAdminFlag() == null : this.getAdminFlag().equals(other.getAdminFlag()))
                 && (this.getBlockFlag() == null ? other.getBlockFlag() == null : this.getBlockFlag().equals(other.getBlockFlag()))
                 && (this.getDefaultDeptCode() == null ? other.getDefaultDeptCode() == null : this.getDefaultDeptCode().equals(other.getDefaultDeptCode()))
@@ -226,10 +226,10 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getUserCode() == null) ? 0 : getUserCode().hashCode());
         result = prime * result + ((getUserName() == null) ? 0 : getUserName().hashCode());
-        result = prime * result + ((getUserNickName() == null) ? 0 : getUserNickName().hashCode());
+        result = prime * result + ((getNickName() == null) ? 0 : getNickName().hashCode());
         result = prime * result + ((getUserPwd() == null) ? 0 : getUserPwd().hashCode());
         result = prime * result + ((getUserMobile() == null) ? 0 : getUserMobile().hashCode());
-        result = prime * result + ((getAvatar() == null) ? 0 : getAvatar().hashCode());
+        result = prime * result + ((getAvatarUrl() == null) ? 0 : getAvatarUrl().hashCode());
         result = prime * result + ((getAdminFlag() == null) ? 0 : getAdminFlag().hashCode());
         result = prime * result + ((getBlockFlag() == null) ? 0 : getBlockFlag().hashCode());
         result = prime * result + ((getDefaultDeptCode() == null) ? 0 : getDefaultDeptCode().hashCode());

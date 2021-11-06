@@ -34,25 +34,33 @@
 			<navigator url="reg" open-type="navigate">注册账户</navigator>
 		</view>
 
+
 		<view class="buttom">
 			<view class="loginType">
 				<view class="wechat item">
 
-					<!-- #ifdef APP-PLUS || MP-ALIPAY || MP-TOUTIAO -->
-					<u-button type="primary" size="mini" @click="loginWXApp" :custom-style="customStyle" shape="circle"
-						class="t-zhangtao t-zhangtao-weixin"></u-button>
-					微信登录
+					<!-- #ifdef APP-PLUS -->
+					<u-button type="primary" size="mini" @click="openWXMini4Login" :custom-style="customStyle"
+						shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button>
+					微信小程序登录
+					<!-- <button type="primary" @click="openWXMini4Login" withCredentials="true">微信小程序登录</button> -->
 					<!-- #endif -->
 
-					<!-- #ifdef MP-BAIDU || MP-QQ -->
-					<button type="primary" open-type="getUserInfo" @getuserinfo="mpGetUserInfo">用户登录</button>
+					<!-- #ifdef MP-BAIDU || MP-QQ || MP-ALIPAY || MP-TOUTIAO -->
+					<!-- <button type="primary" open-type="getUserInfo" @getuserinfo="mpGetUserInfo">用户登录</button> -->
 					<!-- <button type="primary" @click="mpGetUserInfo">获取用户信息</button> -->
 					<!-- #endif -->
 
 					<!-- #ifdef MP-WEIXIN-->
-					<button type="primary" @click="mpGetUserInfoWx">微信登录</button>
-					<!-- <u-button type="primary" size="mini" @click="mpGetUserInfoWx" :custom-style="customStyle"
-						shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button> -->
+					<!-- <button type="primary" @click="mpGetUserInfoWx">微信登录</button> -->
+					<!-- <button type="primary" @click="gotoWXMiniLogin">微信小程序登录页</button> -->
+					<!-- <u-button type="primary" plain @click="mpGetUserInfoWx" :custom-style="customStyle"
+						shape="circle" class="t-zhangtao t-zhangtao-weixin ali"></u-button> -->
+					<view class="icon">
+						<u-icon size="70" name="weixin-fill" color="rgb(83,194,64)" @click.once="mpGetUserInfoWx()">
+						</u-icon>
+					</view>
+					微信登录
 					<!-- #endif -->
 
 
@@ -83,18 +91,115 @@
 				userName: '',
 				userPwd: '',
 				customStyle: {
-					marginTop: '20rpx', // 注意驼峰命名，并且值必须用引号包括，因为这是对象
+					// marginTop: '20rpx', // 注意驼峰命名，并且值必须用引号包括，因为这是对象
 					// color: 'red',
 					// maxWidth: '500rpx',
 					// minWidth: '400rpx',
-					backgroundColor: '#ffffff',
+					// backgroundColor: '#ffffff',
 					width: '100rpx',
 					height: '100rpx',
 				}
 			};
 		},
-		onLoad() {},
+		onShow() {
+			// console.log(this)
+			this.getArguments()
+		},
 		methods: {
+			gotoWXMiniLogin() {
+				this.$u.route('pages/user/login/weixinminilogin')
+			},
+			getArguments: function() {
+				// 处理第三方传入的参数
+				// #ifdef APP-PLUS
+				var param = plus.runtime.arguments;
+				console.log('getArguments')
+				uni.showModal({
+					content: JSON.stringify(param),
+				})
+				if (param != '') {
+					try {
+						console.log("1")
+						console.log(param);
+						console.log("2");
+						var userInfo = JSON.parse(param); //获取小程序传输到app的数据方法
+
+						uni.showModal({
+							content: JSON.stringify(userInfo),
+						})
+
+						plus.runtime.arguments = "";
+						console.log("清除plus.runtime.arguments数据成功")
+
+					} catch (e) {
+						// 若传入的参数不是JSON格式字符，需处理异常情况
+						console.error(e);
+						console.log('若传入的参数不是JSON格式字符，需处理异常情况。');
+					}
+				}
+				// #endif
+			},
+			openWXMini4Login() {
+				// 如果是ios 需要先login 然后在 执行下面的代码 isIOS 这个方法根据你项目中的来定义 即可
+				if (uni.getSystemInfoSync().platform == 'ios') {
+					uni.login({
+						provider: 'weixin',
+						success: function(loginRes1) {
+							plus.share.getServices(function(res) {
+								var sweixin = null;
+								for (var i = 0; i < res.length; i++) {
+									var t = res[i];
+									if (t.id == 'weixin') {
+										sweixin = t;
+									}
+								}
+
+								if (sweixin) {
+									sweixin.launchMiniProgram({
+										id: 'gh_82e48c06a20d',
+										path: 'pages/user/login/weixinminilogin',
+										type: 1
+									});
+								}
+							}, function(res) {
+								// console.log(res);
+							});
+						}
+					});
+				} else {
+					plus.share.getServices(function(res) {
+						var sweixin = null;
+						for (var i = 0; i < res.length; i++) {
+							var t = res[i];
+							if (t.id == 'weixin') {
+								sweixin = t;
+							}
+						}
+
+						//可取值： 0-正式版； 1-测试版； 2-体验版。 默认值为0。
+						if (sweixin) {
+							sweixin.launchMiniProgram({
+								id: 'gh_82e48c06a20d',
+								path: 'pages/user/login/weixinminilogin',
+								type: 1
+							});
+						}
+					}, function(res) {
+						// console.log(res);
+					});
+				}
+			},
+			//小程序内互相跳转
+			// uni.navigateToMiniProgram({
+			//   appId: '',
+			//   path: 'pages/index/index',
+			//   extraData: {
+			//     'data1': 'test'
+			//   },
+			//   success(res) {
+			//     // 打开成功
+			//   }
+			// })
 			mpGetUserInfo(result) {
 				console.log('mpGetUserInfo:', JSON.stringify(result));
 				if (result.detail.errMsg !== 'getUserInfo:ok') {

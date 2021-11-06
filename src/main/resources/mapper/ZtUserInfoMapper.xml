@@ -9,10 +9,10 @@
 
         <result column="user_code" jdbcType="VARCHAR" property="userCode"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
-        <result column="user_nick_name" jdbcType="VARCHAR" property="userNickName"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
         <result column="user_pwd" jdbcType="VARCHAR" property="userPwd"/>
         <result column="user_mobile" jdbcType="VARCHAR" property="userMobile"/>
-        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl"/>
         <result column="admin_flag" jdbcType="INTEGER" property="adminFlag"/>
         <result column="block_flag" jdbcType="INTEGER" property="blockFlag"/>
         <result column="default_dept_code" jdbcType="VARCHAR" property="defaultDeptCode"/>
@@ -20,7 +20,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, user_code, user_name, user_nick_name, user_pwd, user_mobile, avatar, admin_flag,
+        id, user_code, user_name, nick_name, user_pwd, user_mobile, avatar_url, admin_flag,
         block_flag, default_dept_code, default_post_code, gmt_create, gmt_update, created_by, updated_by, remark,
         created_by_name, updated_by_name
     </sql>
