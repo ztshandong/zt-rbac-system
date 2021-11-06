@@ -9,14 +9,20 @@ export const tabbars = [{
     {
         iconPath: "/static/tabbar/user.png",
         selectedIconPath: "/static/tabbar/user-active.png",
-        text: '中心',
+        text: '我的',
         midButton: true,
-        pagePath: "/pages/tabbar/center/center"
+        pagePath: "/pages/tabbar/user/user"
     },
+    // {
+    // 	iconPath: "/static/tabbar/user.png",
+    // 	selectedIconPath: "/static/tabbar/user-active.png",
+    // 	text: '其他',
+    // 	pagePath: "/pages/tabbar/center/center"
+    // },
     {
         iconPath: "/static/tabbar/user.png",
         selectedIconPath: "/static/tabbar/user-active.png",
-        text: '我的',
-        pagePath: "/pages/tabbar/user/user"
-    },
+        text: '消息',
+        pagePath: "/pages/tabbar/msg-center/msg-center"
+    }
 ]

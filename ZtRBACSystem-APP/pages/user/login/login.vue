@@ -187,7 +187,7 @@
 				// 处理第三方传入的参数
 				// #ifdef APP-PLUS
 				var param = plus.runtime.arguments;
-				console.log('getArguments')
+				console.log('getArguments---')
 				// uni.showModal({
 				// 	content: JSON.stringify(param),
 				// })

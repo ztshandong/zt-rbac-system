@@ -7,14 +7,18 @@
 		</view> -->
 		<!-- <view class="t-zhangtao t-zhangtao-word2 ali"></view>aaa -->
 		<!-- <text class="t-zhangtao t-zhangtao-ppt2 ali"></text> -->
+		<scroll-view :bounce="false" @scrolltolower="scrolltolower" scroll-y
+			style="width: 750rpx;height: 200px;background-color: #C0C0C0;">
+			<view style="height: 999px;width:750rpx;background-color: #007AFF;">{{msg}}</view>
+		</scroll-view>
 		<view class="u-demo">
 			<view class="u-demo-wrap">
 				<view class="u-demo-title">最新公告</view>
 				<view class="u-demo-area">
 					<u-toast :type="type" ref="uToast"></u-toast>
-					<u-notice-bar :autoplay="autoplay" :playState="playState" :speed="speed" 
-						:mode="mode"  @click="click" :show="show" :type="type" :list="list"
-						:moreIcon="moreIcon" :volumeIcon="volumeIcon" :duration="duration" :isCircular="isCircular">
+					<u-notice-bar :autoplay="autoplay" :playState="playState" :speed="speed" :mode="mode" @click="click"
+						:show="show" :type="type" :list="list" :moreIcon="moreIcon" :volumeIcon="volumeIcon"
+						:duration="duration" :isCircular="isCircular">
 					</u-notice-bar>
 				</view>
 			</view>
@@ -83,6 +87,7 @@
 	export default {
 		data() {
 			return {
+				msg: [],
 				title: '首页',
 				currentTab: 1,
 				tabbar: tabbars,
@@ -121,33 +126,41 @@
 				}
 			}
 		},
-
-		onLoad() {
-			// #ifdef H5
-			// this.$u.route('../../wxDemo/wxDemo')
-			// #endif
-
-			return
-			// #ifdef APP
-			console.log(this.$scope)
-			var height = 0; //定义动态的高度变量，如高度为定值，可以直接写
-			uni.getSystemInfo({
-				//成功获取的回调函数，返回值为系统信息
-				success: (sysinfo) => {
-					height = sysinfo.windowHeight - 47; //自行修改，自己需要的高度
-					console.log(height);
-				},
-				complete: () => {}
-			});
-			var currentWebview = this.$scope.$getAppWebview(); //获取当前web-view
-			setTimeout(function() {
-				var wv = currentWebview.children()[0];
-				console.log(wv);
-				wv.setStyle({ //设置web-view距离顶部的距离以及自己的高度，单位为px
-					top: 68,
-					height: height
+		onReady() {
+			// #ifdef APP-PLUS
+			console.log(
+				plus.push.getClientInfo().clientid 
+			);
+			console.log(
+				plus.push.getClientInfo().token
+			);
+			plus.push.addEventListener('receive', e => {
+				this.msg.push(e)
+				uni.showToast({
+					title: JSON.stringify(e),
+					icon: 'none'
 				})
-			}, 1000); //如页面初始化调用需要写延迟
+			})
+
+
+			// var height = 0; //定义动态的高度变量，如高度为定值，可以直接写
+			// uni.getSystemInfo({
+			// 	//成功获取的回调函数，返回值为系统信息
+			// 	success: (sysinfo) => {
+			// 		height = sysinfo.windowHeight - 47; //自行修改，自己需要的高度
+			// 		console.log(height);
+			// 	},
+			// 	complete: () => {}
+			// });
+			// var currentWebview = this.$scope.$getAppWebview(); //获取当前web-view
+			// setTimeout(function() {
+			// 	var wv = currentWebview.children()[0];
+			// 	console.log(wv);
+			// 	wv.setStyle({ //设置web-view距离顶部的距离以及自己的高度，单位为px
+			// 		top: 68,
+			// 		height: height
+			// 	})
+			// }, 1000); //如页面初始化调用需要写延迟
 			// #endif
 		},
 		methods: {
@@ -218,6 +231,9 @@
 		},
 		end() {
 			// console.log('end');
+		},
+		scrolltolower(e) {
+			console.log(e);
 		}
 	}
 </script>

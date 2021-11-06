@@ -51,6 +51,28 @@
       }
     },
     {
+      "path": "pages/tabbar/msg-center/msg-center",
+      "style": {
+        "navigationBarTitleText": "消息中心",
+        "enablePullDownRefresh": true,
+        "app-plus": {
+          "titleNView": {
+            "buttons": [
+              {
+                "float": "right",
+                "text": "清除未读",
+                "fontSize": "14px",
+                "iconWidth": "100px",
+                "color": "#999999",
+                "colorPressed": "#007AFF",
+                "width": "90px"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
       "path": "pages/user/login/weixinminilogin",
       "style": {
         "navigationBarTitleText": "小程序登录",
@@ -123,16 +145,22 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/tabbar/center/center",
-        "iconPath": "static/tabbar/home.png",
-        "selectedIconPath": "static/tabbar/home-active.png",
-        "text": "中心"
-      },
-      {
         "pagePath": "pages/tabbar/user/user",
         "iconPath": "static/tabbar/user.png",
         "selectedIconPath": "static/tabbar/user-active.png",
         "text": "我的"
+      },
+      // {
+      // 	"pagePath": "pages/tabbar/center/center",
+      // 	"iconPath": "static/tabbar/home.png",
+      // 	"selectedIconPath": "static/tabbar/home-active.png",
+      // 	"text": "其他"
+      // },
+      {
+        "pagePath": "pages/tabbar/msg-center/msg-center",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png",
+        "text": "消息"
       }
     ]
   }

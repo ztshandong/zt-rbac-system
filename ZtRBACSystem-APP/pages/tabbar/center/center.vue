@@ -62,6 +62,17 @@
 		onLoad() {
 			_this = this
 		},
+		onShow() {
+			// #ifdef APP-PLUS
+			console.log('-----------center plus.push.getClientInfo().clientid')
+			console.log(
+				plus.push.getClientInfo().clientid 
+			);
+			console.log(
+				plus.push.getClientInfo().token
+			);
+			// #endif
+		},
 		methods: {
 			test() {
 				console.log('click')
