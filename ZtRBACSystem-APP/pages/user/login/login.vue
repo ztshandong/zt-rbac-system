@@ -50,6 +50,12 @@
 						</u-icon>
 					</view>
 					手机号一键登录
+					
+					<view class="icon">
+						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="uniLogin()">
+						</u-icon>
+					</view>
+					uni登录
 					<!-- <button type="primary" @click="openWXMini4Login" withCredentials="true">微信小程序登录</button> -->
 					<!-- #endif -->
 
@@ -113,6 +119,33 @@
 			this.getArguments()
 		},
 		methods: {
+			uniLogin() {
+				uniCloud.callFunction({
+					name: 'user-center',
+					data: {
+						action: 'login',
+						params: {
+							username: this.userName,
+							password: this.userPwd
+						}
+					},
+					success(e) {
+						console.log('uniLogin success')
+						console.log(e)
+						uni.showModal({
+							showCancel: false,
+							content: JSON.stringify(e.result)
+						})
+					},
+					fail(e) {
+						console.error(e)
+						uni.showModal({
+							showCancel: false,
+							content: '登录失败，请稍后再试'
+						})
+					}
+				})
+			},
 			oneKeyLogin() {
 				uni.login({
 					provider: 'univerify',

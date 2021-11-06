@@ -84,6 +84,24 @@ exports.main = async (event, context) => {
         if (queryStringParameters.action == 'getPhoneNumberByAccessToken') {
             res = await getPhoneNumberByAccessToken(queryStringParameters)
             return res
+        } else if (queryStringParameters.action == 'login') {
+            let passed = false;
+            let needCaptcha = await getNeedCaptcha();
+            if (needCaptcha) {
+                res = await uniCaptcha.verify(queryStringParameters)
+                if (res.code === 0) passed = true;
+            }
+            if (!needCaptcha || passed) {
+                res = await uniID.login({
+                    username: queryStringParameters.username,
+                    password: queryStringParameters.password,
+                    queryField: ['username', 'email', 'mobile']
+                });
+                await loginLog(res);
+                needCaptcha = await getNeedCaptcha();
+            }
+            res.needCaptcha = needCaptcha;
+            return res
         }
     } else {
         if (noCheckAction.indexOf(event.action) === -1) {
