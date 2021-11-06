@@ -305,7 +305,8 @@ public class ZtIndexController {
         String s = HttpUtil.get(url);
         System.out.println(s);
         //{"code":0,"success":true,"phoneNumber":"13812345678"}
-        return ZtResBeanEx.ok(s);
+        JSONObject jsonObject = JSON.parseObject(s);
+        return ZtResBeanEx.ok(jsonObject.getString("phoneNumber"));
     }
 }
 
