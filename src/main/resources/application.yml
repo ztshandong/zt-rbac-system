@@ -9,6 +9,8 @@ spring:
       url: jdbc:mysql://localhost:3306/zt_user_center?useUnicode=true&characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
       username: root
       password: 12345678
+  profiles:
+    active: local
 
 mybatis:
   mapper-locations: classpath*:/mapper/**.xml
@@ -20,5 +22,10 @@ logging:
         framework: trace
 
 wx:
-  appId: xxx
-  secret: xxx
+  miniAppId: xxx
+  miniSecret: yyy
+
+unicloud:
+  domain: aaa
+  path: bbb
+  appid: ccc
