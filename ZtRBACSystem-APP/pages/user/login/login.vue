@@ -43,6 +43,13 @@
 					<u-button type="primary" size="mini" @click="openWXMini4Login" :custom-style="customStyle"
 						shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button>
 					微信小程序登录
+
+					<!-- <u-button type="primary" size="mini" @click="oneKeyLogin" :custom-style="customStyle" shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button> -->
+					<view class="icon">
+						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="oneKeyLogin()">
+						</u-icon>
+					</view>
+					手机号一键登录
 					<!-- <button type="primary" @click="openWXMini4Login" withCredentials="true">微信小程序登录</button> -->
 					<!-- #endif -->
 
@@ -95,7 +102,7 @@
 					// color: 'red',
 					// maxWidth: '500rpx',
 					// minWidth: '400rpx',
-					// backgroundColor: '#ffffff',
+					backgroundColor: '#ffffff',
 					width: '100rpx',
 					height: '100rpx',
 				}
@@ -106,6 +113,73 @@
 			this.getArguments()
 		},
 		methods: {
+			oneKeyLogin() {
+				uni.login({
+					provider: 'univerify',
+					success: (res) => {
+						console.log('准备登录:', JSON.stringify(res));
+						//一键登录res
+						//{"authResult":{"openid":"aaa","access_token":"bbb=="},"errMsg":"login:ok"}
+
+						this.$u.post('ZtIndex/getPhoneNumberByAccessToken', res.authResult)
+							.then(res => {
+								console.log('一键登录成功:' + JSON.stringify(res));
+								//{"data":{"code":"200","data":"13812345678","success":true,"message":"操作成功"},"statusCode":200,"header":{"Content-Type":"application/json","Date":"Sat, 06 Nov 2021 03:26:08 GMT","Transfer-Encoding":"chunked","Connection":"keep-alive","Keep-Alive":"timeout=60"},"errMsg":"request:ok","cookies":[]}
+								uni.showModal({
+									title: '结果',
+									content: '手机号为:' + res.data.data,
+									success: function(res) {
+										if (res.confirm) {
+											uni.hideLoading()
+											uni.closeAuthView();
+										} else if (res.cancel) {
+											uni.hideLoading()
+											uni.closeAuthView();
+										}
+									}
+								});
+							})
+							.catch(err => {
+								console.log('login err')
+								console.log(err)
+								// console.log(JSON.stringify(err))
+							})
+							.finally(t => {
+								// uni.hideLoading();
+							})
+
+						// uni.request({
+						// 	url: 'http://192.168.1.7:8080/ZtIndex/getPhoneNumberByAccessToken',
+						// 	method: 'POST',
+						// 	data: res.authResult,
+						// 	success(res) {
+						// 		console.log('一键登录成功:' + JSON.stringify(res));
+
+						// 		uni.showModal({
+						// 			title: '结果',
+						// 			content: '手机号为:' + res.data.data,
+						// 			success: function(res) {
+						// 				if (res.confirm) {
+						// 					uni.hideLoading()
+						// 					uni.closeAuthView();
+						// 				} else if (res.cancel) {
+						// 					uni.hideLoading()
+						// 					uni.closeAuthView();
+						// 				}
+						// 			}
+						// 		});
+						// 	},
+						// 	fail(err) {
+						// 		console.log('获取登录信息失败：', err);
+						// 	},
+						// 	complete: () => {
+						// 		// uni.hideLoading()
+						// 		// uni.closeAuthView();
+						// 	}
+						// })
+					}
+				});
+			},
 			gotoWXMiniLogin() {
 				this.$u.route('pages/user/login/weixinminilogin')
 			},
@@ -114,14 +188,14 @@
 				// #ifdef APP-PLUS
 				var param = plus.runtime.arguments;
 				console.log('getArguments')
-				uni.showModal({
-					content: JSON.stringify(param),
-				})
+				// uni.showModal({
+				// 	content: JSON.stringify(param),
+				// })
 				if (param != '') {
 					try {
-						console.log("1")
+						console.log("param")
 						console.log(param);
-						console.log("2");
+						// console.log("2");
 						var userInfo = JSON.parse(param); //获取小程序传输到app的数据方法
 
 						uni.showModal({

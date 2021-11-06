@@ -302,11 +302,12 @@ public class ZtIndexController {
         String accessToken = obj.getString("access_token");
         String signStr = "signStr";
         String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=getPhoneNumberByAccessToken&appid=" + cloudFunctionAppId + "&access_token=" + accessToken + "&openid=" + openId + "&sign=" + signStr;
+        System.out.println(url);
         String s = HttpUtil.get(url);
         System.out.println(s);
         //{"code":0,"success":true,"phoneNumber":"13812345678"}
         JSONObject jsonObject = JSON.parseObject(s);
-        return ZtResBeanEx.ok(jsonObject.getString("phoneNumber"));
+        return ZtResBeanEx.ok(jsonObject.get("phoneNumber"));
     }
 }
 

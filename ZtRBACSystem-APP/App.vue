@@ -7,6 +7,18 @@
 			// #ifdef MP-WEIXIN
 			this.checkUpdataWxapp()
 			// #endif
+			
+			// #ifdef APP-PLUS
+			uni.preLogin({
+				provider: 'univerify',
+				success: (res) => {
+					console.log("preLogin success: ", res);
+				},
+				fail: (err) => {
+					console.log("preLogin fail: ", err);
+				}
+			})
+			// #endif
 		},
 		onShow: function() {},
 		onHide: function() {},
