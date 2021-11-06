@@ -127,7 +127,7 @@
 								//{"data":{"code":"200","data":"13812345678","success":true,"message":"操作成功"},"statusCode":200,"header":{"Content-Type":"application/json","Date":"Sat, 06 Nov 2021 03:26:08 GMT","Transfer-Encoding":"chunked","Connection":"keep-alive","Keep-Alive":"timeout=60"},"errMsg":"request:ok","cookies":[]}
 								uni.showModal({
 									title: '结果',
-									content: '手机号为:' + res.data.data,
+									content: '手机号为:' + res.data,
 									success: function(res) {
 										if (res.confirm) {
 											uni.hideLoading()
