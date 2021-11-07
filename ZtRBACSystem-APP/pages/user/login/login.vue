@@ -21,6 +21,14 @@
 				<!-- <input class="sl-input" v-model="userPwd" type="text" maxlength="32" placeholder="输入密码" password="true" /> -->
 			</view>
 
+			<view class="list-call img" v-if="srcs!=''">
+				<img :src="srcs" @click="refreshCode()" />
+			</view>
+
+			<view class="list-call" v-if="srcs!=''">
+				<u-icon size="50" name="code" color="rgb(255, 165, 85)"></u-icon>
+				<u-input class="sl-input" v-model="code" type="text" maxlength="32" placeholder="输入验证码" />
+			</view>
 		</view>
 
 		<!-- <view class="button-login" hover-class="button-hover" @tap="accountLogin()"> -->
@@ -104,6 +112,8 @@
 			return {
 				userName: '',
 				userPwd: '',
+				code: '',
+				srcs: '',
 				customStyle: {
 					// marginTop: '20rpx', // 注意驼峰命名，并且值必须用引号包括，因为这是对象
 					// color: 'red',
@@ -130,37 +140,61 @@
 						action: 'login',
 						apiUrl: this.$u.http.config.baseUrl + '/ZtIndex/login',
 						params: {
+							scene: "login",
+							captcha: this.code,
 							username: this.userName,
 							password: this.userPwd
 						}
 					},
 					success(e) {
-						console.log('uniLogin success')
 						console.log(e)
-						uni.setStorageSync('uid', e.result.uid)
-						uni.setStorageSync('uni_id_token', e.result.token)
-						uni.setStorageSync('uni_id_token_expired', e.result.tokenExpired)
+						// e.result.needCaptcha
+						if (e.result.uid) {
+							console.log('uniLogin success')
+							uni.setStorageSync('uid', e.result.uid)
+							uni.setStorageSync('uni_id_token', e.result.token)
+							uni.setStorageSync('uni_id_token_expired', e.result.tokenExpired)
 
-						// uni.setStorageSync('apiToken', e.result.apiRes.data.data)
-						// uni.setStorageSync('apiUserInfo', e.result.apiRes.data.user)
+							// uni.setStorageSync('apiToken', e.result.apiRes.data.data)
+							// uni.setStorageSync('apiUserInfo', e.result.apiRes.data.user)
 
-						_this.$u.vuex('token', e.result.apiRes.data.data)
-						uni.setStorageSync('token', e.result.apiRes.data.data)
-						_this.$u.vuex('userInfo', e.result.apiRes.data.user)
-						_this.$u.vuex('isLogin', true)
-						
-						console.log(uni.getStorageSync('lifeData'))
-						console.log(_this.userInfo)
-						console.log(_this.token)
-						console.log(_this.isLogin)
+							_this.$u.vuex('token', e.result.apiRes.data.data)
+							uni.setStorageSync('token', e.result.apiRes.data.data)
+							_this.$u.vuex('userInfo', e.result.apiRes.data.user)
+							_this.$u.vuex('isLogin', true)
 
-						// { "user": {},"roles": [],"permissions": [] }
+							console.log(uni.getStorageSync('lifeData'))
+							console.log(_this.userInfo)
+							console.log(_this.token)
+							console.log(_this.isLogin)
 
-						uni.showModal({
-							showCancel: false,
-							content: e.result.username+'登录成功'
-						})
-						uni.navigateBack({})
+							// { "user": {},"roles": [],"permissions": [] }
+
+							uni.showModal({
+								showCancel: false,
+								content: e.result.username + '登录成功'
+							})
+							uni.navigateBack({})
+						} else {
+							if (e.result.needCaptcha) {
+								uniCloud.callFunction({
+									name: 'user-center',
+									data: {
+										action: 'createCaptcha',
+										params: {
+											scene: "login"
+										}
+									},
+									success(res) {
+										_this.srcs = res.result.captchaBase64
+									}
+								})
+							}
+							uni.showModal({
+								showCancel: false,
+								content: '登录失败，请稍后再试'
+							})
+						}
 					},
 					fail(e) {
 						console.error(e)
@@ -168,6 +202,20 @@
 							showCancel: false,
 							content: '登录失败，请稍后再试'
 						})
+					}
+				})
+			},
+			refreshCode() {
+				uniCloud.callFunction({
+					name: 'user-center',
+					data: {
+						action: 'refreshCaptcha',
+						params: {
+							scene: "login"
+						}
+					},
+					success(res) {
+						_this.srcs = res.result.captchaBase64
 					}
 				})
 			},

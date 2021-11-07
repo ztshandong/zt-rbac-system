@@ -325,5 +325,12 @@ public class ZtIndexController {
         JSONObject jsonObject = JSON.parseObject(s);
         return ZtResBeanEx.ok(jsonObject);
     }
+
+    @PostMapping("aliPayCallback")
+    @ResponseBody
+    public String aliPayCallback(@RequestBody JSONObject obj) {
+        log.info(JSON.toJSONString(obj));
+        return "1success";
+    }
 }
 
