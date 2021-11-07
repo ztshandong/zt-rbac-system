@@ -2,6 +2,7 @@ package com.zhangzhuorui.framework.rbacsystem.aspects;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -45,7 +46,13 @@ public class ZtLogAspect {
         Object[] args = joinPoint.getArgs();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        log.info("{}.{} : 请求参数:{}", joinPoint.getTarget().getClass(), joinPoint.getSignature().getName(), JSON.toJSONString(args));
+        String s1 = StringUtils.join(args, " ; ");
+        try {
+            s1 = JSON.toJSONString(args);
+        } catch (Exception e) {
+        }
+
+        log.info("{}.{} : 请求参数:{}", joinPoint.getTarget().getClass(), joinPoint.getSignature().getName(), s1);
 
         Enumeration<String> enu = request.getParameterNames();
         while (enu.hasMoreElements()) {
