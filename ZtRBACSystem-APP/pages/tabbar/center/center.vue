@@ -29,7 +29,7 @@
 				</u-cell-group>
 			</view>
 			<u-gap height="70"></u-gap>
-			<u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar>
+			<!-- <u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar> -->
 		</view>
 	</view>
 </template>

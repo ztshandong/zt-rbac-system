@@ -10,6 +10,10 @@
 			</u-cell-item>
 			<u-cell-item icon="chat" title="消息提示" @click="showToast('我是一条消息提示', toastType[$u.random(0, 2)])">
 			</u-cell-item>
+			
+			<u-cell-item icon="chat" title="其他" @click="gotoCenter">
+			</u-cell-item>
+			
 			<u-cell-item icon="map" title="获取当前位置" @click="getLocation">
 				<view class="u-flex u-row-right" v-if="location">
 					<view>经度:{{ location.longitude.toFixed(6) }}</view>
@@ -110,10 +114,17 @@
 			console.log(this.userInfo2)
 		},
 		methods: {
+			gotoCenter(){
+				this.$u.route('pages/tabbar/center/center')
+			},
 			gotToLoginOrLogout() {
 				if (this.isLogin2) {
 					uni.setStorageSync('lifeData', {});
 					uni.removeStorageSync('token')
+					uni.removeStorageSync('uid')
+					uni.removeStorageSync('uni_id_token')
+					uni.removeStorageSync('uni_id_token_expired')
+					
 					uni.reLaunch({
 						url: '/pages/tabbar/user/user',
 					});

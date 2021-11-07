@@ -50,12 +50,12 @@
 						</u-icon>
 					</view>
 					手机号一键登录
-					
+
 					<view class="icon">
 						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="uniLogin()">
 						</u-icon>
 					</view>
-					uni登录
+					uni云登录
 					<!-- <button type="primary" @click="openWXMini4Login" withCredentials="true">微信小程序登录</button> -->
 					<!-- #endif -->
 
@@ -98,6 +98,7 @@
 </template>
 
 <script>
+	var _this;
 	export default {
 		data() {
 			return {
@@ -118,12 +119,16 @@
 			// console.log(this)
 			this.getArguments()
 		},
+		onLoad() {
+			_this = this
+		},
 		methods: {
 			uniLogin() {
 				uniCloud.callFunction({
 					name: 'user-center',
 					data: {
 						action: 'login',
+						apiUrl: this.$u.http.config.baseUrl + '/ZtIndex/login',
 						params: {
 							username: this.userName,
 							password: this.userPwd
@@ -132,10 +137,30 @@
 					success(e) {
 						console.log('uniLogin success')
 						console.log(e)
+						uni.setStorageSync('uid', e.result.uid)
+						uni.setStorageSync('uni_id_token', e.result.token)
+						uni.setStorageSync('uni_id_token_expired', e.result.tokenExpired)
+
+						// uni.setStorageSync('apiToken', e.result.apiRes.data.data)
+						// uni.setStorageSync('apiUserInfo', e.result.apiRes.data.user)
+
+						_this.$u.vuex('token', e.result.apiRes.data.data)
+						uni.setStorageSync('token', e.result.apiRes.data.data)
+						_this.$u.vuex('userInfo', e.result.apiRes.data.user)
+						_this.$u.vuex('isLogin', true)
+						
+						console.log(uni.getStorageSync('lifeData'))
+						console.log(_this.userInfo)
+						console.log(_this.token)
+						console.log(_this.isLogin)
+
+						// { "user": {},"roles": [],"permissions": [] }
+
 						uni.showModal({
 							showCancel: false,
-							content: JSON.stringify(e.result)
+							content: e.result.username+'登录成功'
 						})
+						uni.navigateBack({})
 					},
 					fail(e) {
 						console.error(e)

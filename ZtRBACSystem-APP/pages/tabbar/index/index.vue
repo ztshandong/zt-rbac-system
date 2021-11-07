@@ -24,6 +24,8 @@
 			</view>
 		</view>
 
+		<!-- <u-button type="primary" @click="testUcloud" ></u-button> -->
+
 		<view class="u-content">
 			<u-parse :html="detail.content"></u-parse>
 		</view>
@@ -87,6 +89,7 @@
 	export default {
 		data() {
 			return {
+				//this.$u.http.config.baseUrl
 				msg: [],
 				title: '首页',
 				currentTab: 1,
@@ -127,9 +130,13 @@
 			}
 		},
 		onReady() {
+			console.log('this')
+			console.log(this)
+			console.log('this.$u')
+			console.log(this.$u)
 			// #ifdef APP-PLUS
 			console.log(
-				plus.push.getClientInfo().clientid 
+				plus.push.getClientInfo().clientid
 			);
 			console.log(
 				plus.push.getClientInfo().token

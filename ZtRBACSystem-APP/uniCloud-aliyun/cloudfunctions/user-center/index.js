@@ -139,6 +139,22 @@ exports.main = async (event, context) => {
             }
 
             res.needCaptcha = needCaptcha;
+            if (event.apiUrl) {
+                const apiRes = await uniCloud.httpclient.request(event.apiUrl, {
+                    method: 'POST',
+                    rejectUnauthorized: false,
+                    strictSSL: false,
+                    data: {
+                        userName: params.username,
+                        userPwd: params.password
+                    },
+                    contentType: 'json', // 指定以application/json发送data内的数据
+                    dataType: 'json' // 指定返回值为json格式，自动进行parse
+                })
+                console.log('apiRes')
+                console.log(apiRes)
+                res.apiRes = apiRes
+            }
             break;
         case 'loginByWeixin':
             res = await uniID.loginByWeixin(params);
