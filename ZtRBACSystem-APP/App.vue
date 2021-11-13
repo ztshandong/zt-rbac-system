@@ -1,6 +1,26 @@
 <script>
 	export default {
+		globalData: {
+			searchText: '',
+			appVersion: {},
+			config: {},
+			$i18n: {},
+			$t: {}
+		},
 		onLaunch: function() {
+			
+			uniCloud.callFunction({
+				name: 'user-center',
+				data: {
+					action: 'getClientInfo'
+				},
+				success(res) {
+					console.log('getClientInfo');
+					console.log(res);
+					uni.setStorageSync('clientInfo', res.result.clientInfo)
+				}
+			})
+			
 			// #ifdef H5
 			// this.$u.wx.wxOauth()
 			// #endif
