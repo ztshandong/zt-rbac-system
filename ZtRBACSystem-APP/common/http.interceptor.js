@@ -13,7 +13,7 @@ import {
 
 // 这里的vm，就是我们在vue文件里面的this，所以我们能在这里获取vuex的变量，比如存放在里面的token变量
 const install = (Vue, vm) => {
-    console.log(process.env)
+    // console.log(process.env)
     /*
     BASE_URL: "/"
     NODE_ENV: "development"
@@ -47,11 +47,21 @@ const install = (Vue, vm) => {
 
     // 请求拦截，配置Token等参数
     Vue.prototype.$u.http.interceptor.request = (config) => {
+        console.log('config')
+        console.log(config)
         // 引用token
         // 由于使用了vuex统一管理，此处可以用vm.直接取vuex中的值
         // config.header[headerTokenName] = vm.userInfo?. [userTokenName] || '';
         const token = uni.getStorageSync('token');
         config.header.token = token;
+
+        const clientInfo = uni.getStorageSync('clientInfo')
+        config.data.clientInfo = clientInfo
+
+        const uniIdToken = uni.getStorageSync('uni_id_token')
+        if (uniIdToken) {
+            config.data.uniIdToken = clientInfo
+        }
 
         // 可以对某个url进行特别处理，此url参数为this.$u.get(url)中的url值
         // if(config.url == '/user/login') config.header.noToken = true;

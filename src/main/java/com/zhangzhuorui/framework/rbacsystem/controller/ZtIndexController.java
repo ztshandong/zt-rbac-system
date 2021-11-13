@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -312,19 +313,25 @@ public class ZtIndexController {
         return ZtResBeanEx.ok(jsonObject.get("phoneNumber"));
     }
 
-    @ApiOperation(value = "uni账号登录")
-    @PostMapping("uniAccountLogin")
+    @ApiOperation(value = "uni登录")
+    @PostMapping("uniLogin")
     @ResponseBody
     public ZtResBeanEx<String> uniLogin(@RequestBody JSONObject obj) {
+        obj.put("appid", cloudFunctionAppId);
         log.info(JSON.toJSONString(obj));
-        String username = obj.getString("username");
-        String password = obj.getString("password");
-        String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=login&appid=" + cloudFunctionAppId + "&username=" + username + "&password=" + password;
-        System.out.println(url);
-        String s = HttpUtil.get(url);
-        System.out.println(s);
+        String url = cloudFunctionDomain + cloudFunctionPath;
+        String result2 = HttpRequest.post(url)
+                .body(JSON.toJSONString(obj))
+                .execute().body();
+        System.out.println(result2);
+        // String username = obj.getString("username");
+        // String password = obj.getString("password");
+        // String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=login&appid=" + cloudFunctionAppId + "&username=" + username + "&password=" + password;
+        // System.out.println(url);
+        // String s = HttpUtil.get(url);
+        // System.out.println(s);
         //{"code":0,"msg":"","token":"bbb","uid":"fff","username":"name","type":"login","userInfo":{"_id":"fff","username":"name","password":"aaa","role":["admin"],"register_date":1636175395497,"register_ip":"116.224.234.97","token":["bbb","bbb"],"last_login_date":1636199523185,"last_login_ip":"116.224.234.97","login_ip_limit":[]},"tokenExpired":1636206723185,"errCode":0,"errMsg":"","message":"","needCaptcha":false}
-        JSONObject jsonObject = JSON.parseObject(s);
+        JSONObject jsonObject = JSON.parseObject(result2);
         return ZtResBeanEx.ok(jsonObject);
     }
 

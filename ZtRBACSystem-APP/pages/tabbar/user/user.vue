@@ -32,8 +32,10 @@
 			<u-cell-item icon="phone" title="打电话" @click="makePhoneCall"></u-cell-item>
 			<!-- #ifdef APP-PLUS -->
 			<u-cell-item icon="weixin-fill" title="打开微信小程序" @click="goToWxMiniInApp"></u-cell-item>
-			<u-cell-item icon="star" title="检查更新" @click="getVersion">
-				<text>当前版本:{{appVersion}}</text>
+			<u-cell-item icon="star" title="手机号">
+				<u-input class="sl-input" v-model="mobile" type="text" maxlength="32" placeholder="输入手机号" />
+			</u-cell-item>
+			<u-cell-item icon="star" title="绑定手机" @click="bindMobile">
 			</u-cell-item>
 			<!-- #endif -->
 			<!-- 
@@ -67,7 +69,8 @@
 				isLogin2: false,
 				userInfo2: {},
 				scanRes: '',
-				loginOrOut: '登录'
+				loginOrOut: '登录',
+				mobile:''
 			}
 		},
 		onLoad() {
@@ -111,9 +114,39 @@
 				this.isLogin2 = false
 				this.loginOrOut = '登录'
 			}
-			console.log(this.userInfo2)
+			// console.log(this.userInfo2)
 		},
 		methods: {
+			bindMobile() {
+				uniCloud.callFunction({
+					name: 'user-center',
+					data: {
+						action: 'bindMobile',
+						params: {
+							mobile: this.mobile
+						}
+					},
+					success(res) {
+						console.log('绑定成功')
+						console.log(JSON.stringify(res.result))
+						//{"code":60101,"errCode":"uni-id-account-already-bound","errMsg":"此手机号已绑定","msg":"此手机号已绑定","message":"此手机号已绑定"}
+						//{"code":0,"msg":"","mobile":"18655654121","errCode":0,"errMsg":"","message":""}
+						
+						// uniCloud.logger.info(JSON.stringify(res.result))
+						// uni.showModal({
+						// 	showCancel: false,
+						// 	content: JSON.stringify(res.result)
+						// })
+					},
+					fail(e) {
+						console.error(e)
+						// uni.showModal({
+						// 	showCancel: false,
+						// 	content: '绑定失败，请稍后再试'
+						// })
+					}
+				})
+			},
 			gotoCenter(){
 				this.$u.route('pages/tabbar/center/center')
 			},

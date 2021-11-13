@@ -32,7 +32,7 @@
 		</view>
 
 		<!-- <view class="button-login" hover-class="button-hover" @tap="accountLogin()"> -->
-		<view class="button-login" hover-class="button-hover" @click.once="accountLogin()">
+		<view class="button-login" hover-class="button-hover" @click="accountLogin()">
 			<text>账号登录</text>
 		</view>
 
@@ -52,18 +52,14 @@
 						shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button>
 					微信小程序登录
 
-					<!-- <u-button type="primary" size="mini" @click="oneKeyLogin" :custom-style="customStyle" shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button> -->
 					<view class="icon">
 						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="oneKeyLogin()">
 						</u-icon>
 					</view>
 					手机号一键登录
 
-					<view class="icon">
-						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="uniLogin()">
-						</u-icon>
-					</view>
-					uni云登录
+					<!-- <u-button type="primary" size="mini" @click="oneKeyLogin" :custom-style="customStyle" shape="circle" class="t-zhangtao t-zhangtao-weixin"></u-button> -->
+
 					<!-- <button type="primary" @click="openWXMini4Login" withCredentials="true">微信小程序登录</button> -->
 					<!-- #endif -->
 
@@ -84,6 +80,11 @@
 					微信登录
 					<!-- #endif -->
 
+					<!-- <view class="icon">
+						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="uniLogin()">
+						</u-icon>
+					</view>
+					uni云登录 -->
 
 					<!-- 
 					<view class="icon">
@@ -112,7 +113,7 @@
 			return {
 				userName: '',
 				userPwd: '',
-				code: '',
+				code: null,
 				srcs: '',
 				customStyle: {
 					// marginTop: '20rpx', // 注意驼峰命名，并且值必须用引号包括，因为这是对象
@@ -133,12 +134,99 @@
 			_this = this
 		},
 		methods: {
+			accountLogin() {
+				console.log('accountLogin')
+				// return
+				uni.showLoading({
+					title: '正在登录'
+				});
+				// let user = {
+				// 	userName: this.userName,
+				// 	userPwd: this.userPwd
+				// }
+				let user = {
+					action: 'login',
+					params: {
+						scene: "login",
+						captcha: this.code,
+						username: this.userName,
+						password: this.userPwd
+					}
+				}
+				this.$u.post('ZtIndex/uniLogin', user)
+					.then(res => {
+						if (res.data && res.data.uid) {
+							console.log('uniLogin success')
+							uni.setStorageSync('uid', res.data.uid)
+							uni.setStorageSync('uni_id_token', res.data.token)
+							uni.setStorageSync('uni_id_token_expired', res.data.tokenExpired)
+
+							// uni.setStorageSync('apiToken', e.result.apiRes.data.data)
+							// uni.setStorageSync('apiUserInfo', e.result.apiRes.data.user)
+
+							_this.$u.vuex('userInfo', res.data.userInfo)
+							_this.$u.vuex('isLogin', true)
+
+							console.log(uni.getStorageSync('lifeData'))
+							console.log(_this.userInfo)
+							console.log(_this.token)
+							console.log(_this.isLogin)
+
+							uni.showModal({
+								showCancel: false,
+								content: res.data.username + '登录成功'
+							})
+							uni.navigateBack({})
+						} else {
+							if (res.data.needCaptcha) {
+								uniCloud.callFunction({
+									name: 'user-center',
+									data: {
+										action: 'createCaptcha',
+										params: {
+											scene: "login"
+										}
+									},
+									success(res) {
+										_this.srcs = res.result.captchaBase64
+									}
+								})
+							}
+							uni.showModal({
+								showCancel: false,
+								content: '登录失败，请稍后再试'
+							})
+						}
+
+						// if (res.data.msg != 'fail') {
+						// 	this.$u.vuex('token', res.data)
+						// 	uni.setStorageSync('token', res.data)
+						// 	// this.isLogin = true;
+						// 	// this.hasUserInfo = true;
+						// 	this.$u.vuex('userInfo', res.user.user)
+						// 	// console.log(this.$u.userInfo)
+						// 	this.$u.vuex('isLogin', true)
+						// 	// this.userInfo = result.userInfo;
+						// 	uni.navigateBack({})
+						// } else {
+						// 	console.log('login fail' + JSON.stringify(res));
+						// }
+					})
+					.catch(err => {
+						console.log('login err')
+						console.log(err)
+						// console.log(JSON.stringify(err))
+					})
+					.finally(t => {
+						uni.hideLoading();
+					})
+			},
 			uniLogin() {
 				uniCloud.callFunction({
 					name: 'user-center',
 					data: {
 						action: 'login',
-						apiUrl: this.$u.http.config.baseUrl + '/ZtIndex/login',
+						// apiUrl: this.$u.http.config.baseUrl + '/ZtIndex/login',
 						params: {
 							scene: "login",
 							captcha: this.code,
@@ -158,14 +246,16 @@
 							// uni.setStorageSync('apiToken', e.result.apiRes.data.data)
 							// uni.setStorageSync('apiUserInfo', e.result.apiRes.data.user)
 
-							_this.$u.vuex('token', e.result.apiRes.data.data)
-							uni.setStorageSync('token', e.result.apiRes.data.data)
-							_this.$u.vuex('userInfo', e.result.apiRes.data.user)
+							if (e.result.apiRes) {
+								_this.$u.vuex('token', e.result.apiRes.data.data)
+								uni.setStorageSync('token', e.result.apiRes.data.data)
+								_this.$u.vuex('userInfo', e.result.apiRes.data.user)
+							}
 							_this.$u.vuex('isLogin', true)
 
 							console.log(uni.getStorageSync('lifeData'))
 							console.log(_this.userInfo)
-							console.log(_this.token)
+							// console.log(_this.token)
 							console.log(_this.isLogin)
 
 							// { "user": {},"roles": [],"permissions": [] }
@@ -226,6 +316,24 @@
 						console.log('准备登录:', JSON.stringify(res));
 						//一键登录res
 						//{"authResult":{"openid":"aaa","access_token":"bbb=="},"errMsg":"login:ok"}
+
+						// uniCloud.callFunction({
+						// 	name: 'user-center',
+						// 	data: {
+						// 		action: 'loginByUniverify',
+						// 		params: res.authResult
+						// 	},
+						// 	success(res2) {
+						// 		console.log('cloud一键登录成功:', JSON.stringify(res2.result));
+						// 		//{"code":0,"msg":"","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzcyNywiZXhwIjoxNjM5MTE1NzI3fQ.OK6t6pRZ0j0IoNxjLCOBxEcK8QNN9Y4aD-jXJ-Dg2l4","uid":"618b5955808fdd0001eb6f6e","type":"login","userInfo":{"_id":"618b5955808fdd0001eb6f6e","mobile":"18655654121","mobile_confirmed":1,"dcloud_appid":["__UNI__C036DA1"],"register_date":1636522325845,"register_ip":"222.67.244.53","token":["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMjMyNSwiZXhwIjoxNjM5MTE0MzI1fQ.pA4FQTDltsYH9nOzYRxmwAQdpPnX8MRCfG18X4-VHO4","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMjg1OSwiZXhwIjoxNjM5MTE0ODU5fQ.ULysRJ0YFBcId7eMtFyI_iW2XcwyZUh9Li5_9YbrmoI","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzMxMiwiZXhwIjoxNjM5MTE1MzEyfQ.eru_HHfwF784lzr1g-3mTWQvvkV7CUwgjY3nzeF3sV4","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzUzMSwiZXhwIjoxNjM5MTE1NTMxfQ.Fv3u92reUPTiCMHJOSfppW7O1NKAJsjbdaJsKzZko_k","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzY3MSwiZXhwIjoxNjM5MTE1NjcxfQ.sj6tXlNAT4ez3gbwqw8p4qdbaIO-QpPniwGURfO1lcE","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzY5NSwiZXhwIjoxNjM5MTE1Njk1fQ.Fm-mvcLEnjF7Vi8ZLwzGnxmURs5qNtkK4PBOEiN27zU","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzcyNywiZXhwIjoxNjM5MTE1NzI3fQ.OK6t6pRZ0j0IoNxjLCOBxEcK8QNN9Y4aD-jXJ-Dg2l4"],"last_login_date":1636523727344,"last_login_ip":"222.67.244.53"},"tokenExpired":1639115727344,"mobile":"18655654121","errCode":0,"errMsg":"","message":""}
+						// 		uni.hideLoading()
+						// 		uni.closeAuthView();
+						// 	},
+						// 	fail(e) {
+						// 		console.error(e)
+						// 	}
+						// })
+						// return
 
 						this.$u.post('ZtIndex/getPhoneNumberByAccessToken', res.authResult)
 							.then(res => {
@@ -524,41 +632,7 @@
 					}
 				});
 			},
-			accountLogin() {
-				console.log('accountLogin')
-				// return
-				uni.showLoading({
-					title: '正在登录'
-				});
-				let user = {
-					userName: this.userName,
-					userPwd: this.userPwd
-				}
-				this.$u.post('ZtIndex/login', user)
-					.then(res => {
-						if (res.data.msg != 'fail') {
-							this.$u.vuex('token', res.data)
-							uni.setStorageSync('token', res.data)
-							// this.isLogin = true;
-							// this.hasUserInfo = true;
-							this.$u.vuex('userInfo', res.user.user)
-							// console.log(this.$u.userInfo)
-							this.$u.vuex('isLogin', true)
-							// this.userInfo = result.userInfo;
-							uni.navigateBack({})
-						} else {
-							console.log('login fail' + JSON.stringify(res));
-						}
-					})
-					.catch(err => {
-						console.log('login err')
-						console.log(err)
-						// console.log(JSON.stringify(err))
-					})
-					.finally(t => {
-						uni.hideLoading();
-					})
-			}
+
 		}
 	}
 </script>

@@ -130,10 +130,50 @@
 			}
 		},
 		onReady() {
-			console.log('this')
-			console.log(this)
-			console.log('this.$u')
-			console.log(this.$u)
+			// console.log('this')
+			// console.log(this)
+			// console.log('this.$u')
+			// console.log(this.$u)
+			// console.log('getApp()')
+			// console.log(getApp());
+
+			console.log(Object.prototype.toString.call(null) == '[object Null]'); //”[object Null]”
+
+			console.log(Object.prototype.toString.call(undefined)); //”[object Undefined]”
+
+			console.log(Object.prototype.toString.call('abc')); //”[object String]”
+
+			console.log(Object.prototype.toString.call(123)); //”[object Number]”
+
+			console.log(Object.prototype.toString.call(true)); //”[object Boolean]”
+
+			let date = new Date();
+
+			console.log(Object.prototype.toString.call(date)); //”[object Date]”
+
+			let arr = [1, '2', {
+				"name": "zhangsan"
+			}, '{"name":"zhangsan"}'];
+
+			console.log(Object.prototype.toString.call(arr)); //”[object Array]”
+			arr.forEach(t => {
+				console.log(Object.prototype.toString.call(t))
+			})
+
+			let person = {
+				"name": "zhangsan",
+				"id": 2,
+				"child": {
+					"age": 12,
+					"name": "houdai"
+				}
+			};
+
+			console.log(Object.prototype.toString.call(person)); //”[object Object]”
+
+			let signStr = this.getSignStr(person)
+			console.log(signStr)
+
 			// #ifdef APP-PLUS
 			console.log(
 				plus.push.getClientInfo().clientid
@@ -171,6 +211,17 @@
 			// #endif
 		},
 		methods: {
+			getSignStr(obj) {
+				let signStr = Object.keys(obj).sort().map(key => {
+					if (Object.prototype.toString.call(obj[key]) != '[object Object]') {
+						return `${key}=${obj[key]}`
+					} else {
+						let objSign = this.getSignStr(obj[key])
+						return `${key}=` + objSign
+					}
+				}).join('&')
+				return signStr
+			},
 			typeChange(index) {
 				let type = ['primary', 'success', 'error', 'warning', 'none'];
 				this.type = type[index];
