@@ -4,7 +4,6 @@
 		<view class="header">
 			<image src="/static/shilu-login/logo.png"></image>
 		</view>
-
 		<view class="list">
 			<view class="list-call">
 				<!-- account -->
@@ -80,11 +79,11 @@
 					微信登录
 					<!-- #endif -->
 
-					<!-- <view class="icon">
+					<view class="icon">
 						<u-icon size="70" name="phone" color="rgb(83,194,64)" @click="uniLogin()">
 						</u-icon>
 					</view>
-					uni云登录 -->
+					uni云登录
 
 					<!-- 
 					<view class="icon">
@@ -235,7 +234,9 @@
 						}
 					},
 					success(e) {
-						console.log(e)
+						console.log(JSON.stringify(e))
+						//{"success":true,"header":{"transfer-encoding":"chunked","x-fc-code-checksum":"14931192961446868056","access-control-expose-headers":"Date,x-fc-request-id,x-fc-error-type,x-fc-code-checksum,x-fc-invocation-duration,x-fc-max-memory-usage,x-fc-log-result,x-fc-invocation-code-version","x-fc-invocation-service-version":"LATEST","content-disposition":"attachment","x-serverless-request-id":"ac1423131637291564611150710","x-serverless-runtime-version":"1.2.1","date":"Fri, 19 Nov 2021 03:12:44 GMT","x-fc-request-id":"9ebd47cf-646d-4bc8-93b6-f6bc4ee762ba","x-fc-invocation-duration":"104","x-fc-max-memory-usage":"28.41","content-type":"application/json"},"result":{"code":0,"msg":"","token":"jwttoken","uid":"xxx","username":"ztshandong","type":"login","userInfo":{"_id":"xxx","username":"ztshandong","password":"ooo","role":["admin"],"register_date":1636175395497,"register_ip":"xx","token":["jwttoken"],"last_login_date":1637291564686,"last_login_ip":"xx.xx.xx.xx","login_ip_limit":[],"mobile":"13812345678","mobile_confirmed":1},"tokenExpired":1637298764686,"errCode":0,"errMsg":"","message":"","needCaptcha":false},"requestId":"ac1423131637291564611150710"}
+						//jwt信息：Header{alg=HS256,typ=JWT},Claim{uid=xxxx,role=[],permission=[],iat=xx,exp=xx}
 						// e.result.needCaptcha
 						if (e.result.uid) {
 							console.log('uniLogin success')
@@ -264,7 +265,7 @@
 								showCancel: false,
 								content: e.result.username + '登录成功'
 							})
-							uni.navigateBack({})
+							// uni.navigateBack({})
 						} else {
 							if (e.result.needCaptcha) {
 								uniCloud.callFunction({
@@ -325,7 +326,7 @@
 						// 	},
 						// 	success(res2) {
 						// 		console.log('cloud一键登录成功:', JSON.stringify(res2.result));
-						// 		//{"code":0,"msg":"","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzcyNywiZXhwIjoxNjM5MTE1NzI3fQ.OK6t6pRZ0j0IoNxjLCOBxEcK8QNN9Y4aD-jXJ-Dg2l4","uid":"618b5955808fdd0001eb6f6e","type":"login","userInfo":{"_id":"618b5955808fdd0001eb6f6e","mobile":"18655654121","mobile_confirmed":1,"dcloud_appid":["__UNI__C036DA1"],"register_date":1636522325845,"register_ip":"222.67.244.53","token":["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMjMyNSwiZXhwIjoxNjM5MTE0MzI1fQ.pA4FQTDltsYH9nOzYRxmwAQdpPnX8MRCfG18X4-VHO4","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMjg1OSwiZXhwIjoxNjM5MTE0ODU5fQ.ULysRJ0YFBcId7eMtFyI_iW2XcwyZUh9Li5_9YbrmoI","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzMxMiwiZXhwIjoxNjM5MTE1MzEyfQ.eru_HHfwF784lzr1g-3mTWQvvkV7CUwgjY3nzeF3sV4","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzUzMSwiZXhwIjoxNjM5MTE1NTMxfQ.Fv3u92reUPTiCMHJOSfppW7O1NKAJsjbdaJsKzZko_k","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzY3MSwiZXhwIjoxNjM5MTE1NjcxfQ.sj6tXlNAT4ez3gbwqw8p4qdbaIO-QpPniwGURfO1lcE","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzY5NSwiZXhwIjoxNjM5MTE1Njk1fQ.Fm-mvcLEnjF7Vi8ZLwzGnxmURs5qNtkK4PBOEiN27zU","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2MThiNTk1NTgwOGZkZDAwMDFlYjZmNmUiLCJyb2xlIjpbXSwicGVybWlzc2lvbiI6W10sImlhdCI6MTYzNjUyMzcyNywiZXhwIjoxNjM5MTE1NzI3fQ.OK6t6pRZ0j0IoNxjLCOBxEcK8QNN9Y4aD-jXJ-Dg2l4"],"last_login_date":1636523727344,"last_login_ip":"222.67.244.53"},"tokenExpired":1639115727344,"mobile":"18655654121","errCode":0,"errMsg":"","message":""}
+						// 		//{"code":0,"msg":"","token":"jwttoken","uid":"aaa","type":"login","userInfo":{"_id":"aaa","mobile":"13812345678","mobile_confirmed":1,"dcloud_appid":["appid"],"register_date":1636522325845,"register_ip":"xx.xx.xx.xx","token":["jwttoken],"last_login_date":1636523727344,"last_login_ip":"xx.xx.xx.xx"},"tokenExpired":1639115727344,"mobile":"13812345678","errCode":0,"errMsg":"","message":""}
 						// 		uni.hideLoading()
 						// 		uni.closeAuthView();
 						// 	},
@@ -505,7 +506,7 @@
 				// 	provider: 'weixin',
 				// 	success: (result) => {
 				// 		console.log('getUserInfo:' + JSON.stringify(result))
-				// 		//{"errMsg":"getUserInfo:ok","userInfo":{"openId":"oRrdQt5dH0O_AzFGGei3BvU0Vj-0","nickName":"张涛","gender":0,"city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIwOQibbpkkOM73M0buZYvgqrkZgyQZpYsLt8oSkqanh6Nm3smic5iaHgsictSBQSQt9j6HzRwZhRtPkg/132","unionId":"oU5Yyt_gy8WAXiAeJaGVNBHqaKAc"}}
+				// 		//{"errMsg":"getUserInfo:ok","userInfo":{"openId":"oRrdQU0Vj-0","nickName":"张涛","gender":0,"city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIwOQibbpkkOM73M0buZYvgqrkZgyQZpYsLt8oSkqanh6Nm3smic5iaHgsictSBQSQt9j6HzRwZhRtPkg/132","unionId":"oU5Yyt_qaKAc"}}
 				// 		this.isLogin = true;
 				// 		this.hasUserInfo = true;
 				// 		this.userInfo = result.userInfo;
@@ -526,7 +527,7 @@
 					lang: 'zh_CN',
 					success: res => {
 						console.log("用户信息", res)
-						//{"cloudID":"50_ok3XQmqOENVW8Y2FlgncR1lpt7_nbEzCAXM8O4ZLm3kAKh_AAImjWPRNhIU","encryptedData":"vSVfzSkPIMamW/ydxYaUfNo+taFgs2T8VWpLNLeoFN0G7EnxINIA3g5BmECKq2DXXmCudzEy1pCwWLP37qqNGlg87GeW8h8txHHZPX7ZsjqX5tGVGTkpCxXKEqr8sEyAgsY2gQppbExuSzNJ8qVo6hfExqWQIBwHzMKbqojS1ugZSwsClKCGvGkHsMda6EaY4srXCX2uU1DiDKpioZ3Z8dIq2YRMYJTDoPi1I+jDQgnkfDSruLYDZvqLlV03i0w60usZP4zyyxhNDKrKnfejIDcBE8qnaXoXI/H1pEU6oh2Cm3j4WFjxvQapXbx353TGUqTr+nxarWJS+1/D7trj+XGYypoOiPVxpX3sC0gB6QzrH5tBe1MG6VFIk33iG6D+FItgbI7v4s1V5ovWFVA7Kw==","iv":"CPpfglun7S4r/40HjIo9vg==","signature":"2cd55a5e5c6cea47e66b26293d7cc9663df79e64","userInfo":{"nickName":"张涛","gender":0,"language":"zh_CN","city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKWIMFQhvLVe1rW7hAWQpgicvayDBIKl6Qm1oG8U1cwzk8E049zX7gRAkAWAG5oQNsGTV7vOSAf3NA/132"},"rawData":"{\"nickName\":\"张涛\",\"gender\":0,\"language\":\"zh_CN\",\"city\":\"\",\"province\":\"\",\"country\":\"\",\"avatarUrl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKWIMFQhvLVe1rW7hAWQpgicvayDBIKl6Qm1oG8U1cwzk8E049zX7gRAkAWAG5oQNsGTV7vOSAf3NA/132\"}","errMsg":"getUserProfile:ok"}
+						//{"cloudID":"50_ok3RNhIU","encryptedData":"vSVfzSkPIMaV5ovWFVA7Kw==","iv":"CPpfglun7S4r/40HjIo9vg==","signature":"2cd55a5e5c6cec9663df79e64","userInfo":{"nickName":"张涛","gender":0,"language":"zh_CN","city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKWIMFQhvLVe1rW7hAWQpgicvayDBIKl6Qm1oG8U1cwzk8E049zX7gRAkAWAG5oQNsGTV7vOSAf3NA/132"},"rawData":"{\"nickName\":\"张涛\",\"gender\":0,\"language\":\"zh_CN\",\"city\":\"\",\"province\":\"\",\"country\":\"\",\"avatarUrl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKWIMFQhvLVe1rW7hAWQpgicvayDBIKl6Qm1oG8U1cwzk8E049zX7gRAkAWAG5oQNsGTV7vOSAf3NA/132\"}","errMsg":"getUserProfile:ok"}
 						// this.isLogin = true;
 						// this.hasUserInfo = true;
 						// this.userInfo = res.userInfo;
@@ -564,7 +565,7 @@
 								// 	},
 								// 	success(res2) {
 								// 		console.log('getOpenIdInXiaoChengXu:' + res2);
-								// 		//{"data":{"unionid":"oumM8wq8TCU-brqH7dkf8sc7LAAU","openid":"ol3XN4uW7125_XoGTyfq07Tna3LA","session_key":"8EWyicU1zghTvx9H7NjV3Q=="},"profile":{"transportRttEstimate":33,"domainLookUpStart":1635039991975,"responseEnd":1635039993523,"sendBytesCount":581,"redirectStart":0,"connectEnd":1635039992077,"protocol":"unknown","peerIP":"192.168.1.6","requestStart":1635039991974,"socketReused":false,"fetchStart":1635039991973,"SSLconnectionStart":1635039991978,"estimate_nettype":5,"httpRttEstimate":115,"throughputKbps":0,"SSLconnectionEnd":1635039991978,"downstreamThroughputKbpsEstimate":1961,"domainLookUpEnd":1635039991975,"responseStart":1635039993520,"redirectEnd":0,"rtt":33,"connectStart":1635039991975,"port":8080,"receivedBytedCount":296,"requestEnd":1635039993523},"header":{"Transfer-Encoding":"chunked","Keep-Alive":"timeout=60","Connection":"keep-alive","Date":"Sun, 24 Oct 2021 01:46:36 GMT","Content-Type":"application/json"},"statusCode":200,"cookies":[],"errMsg":"request:ok"}
+								// 		//{"data":{"unionid":"oumM8wq8sc7LAAU","openid":"ol3XN4uW77Tna3LA","session_key":"8EWyic7NjV3Q=="},"profile":{"transportRttEstimate":33,"domainLookUpStart":1635039991975,"responseEnd":1635039993523,"sendBytesCount":581,"redirectStart":0,"connectEnd":1635039992077,"protocol":"unknown","peerIP":"192.168.1.6","requestStart":1635039991974,"socketReused":false,"fetchStart":1635039991973,"SSLconnectionStart":1635039991978,"estimate_nettype":5,"httpRttEstimate":115,"throughputKbps":0,"SSLconnectionEnd":1635039991978,"downstreamThroughputKbpsEstimate":1961,"domainLookUpEnd":1635039991975,"responseStart":1635039993520,"redirectEnd":0,"rtt":33,"connectStart":1635039991975,"port":8080,"receivedBytedCount":296,"requestEnd":1635039993523},"header":{"Transfer-Encoding":"chunked","Keep-Alive":"timeout=60","Connection":"keep-alive","Date":"Sun, 24 Oct 2021 01:46:36 GMT","Content-Type":"application/json"},"statusCode":200,"cookies":[],"errMsg":"request:ok"}
 
 								// 		// this.$refs.xiaoChengXuGetPhoneNumber.$el.click();
 								// 		// if (res.data.code !== 0) {
@@ -602,12 +603,12 @@
 					// #endif
 					success: (res) => {
 						console.log('loginWXApp:', JSON.stringify(res));
-						//loginWXApp:, {"authResult":{"access_token":"50__InbYuEPBOO4glIAR3Xc6M-MGCXhsUawzgXFoRCh4U9JrMYH9FMMqi89fUXApJcvF8XFwGeOFwhaS6KHLS-Jh_1wO1HUlzq_ZGSN_OACFwA","expires_in":7200,"refresh_token":"50_EBKrij1t_axNXUNmZCM_OG3iap5pCw8Y6zAczVDeoIpfCt53jkOSe8dYWDP2pGOD8hBxuv_tdIAscBaqBb_69C0ISQcukWOQi-nCc4TuKDs","openid":"oRrdQt5dH0O_AzFGGei3BvU0Vj-0","scope":"snsapi_userinfo","unionid":"oU5Yyt_gy8WAXiAeJaGVNBHqaKAc"},"errMsg":"login:ok"} 
+						//loginWXApp:, {"authResult":{"access_token":"50__InbYuEPwO1HUlzq_ZGSN_OACFwA","expires_in":7200,"refresh_token":"50_EBKrij1t_axNXUNmZCM_OWOQi-nCc4TuKDs","openid":"oRrdQt5dBvU0Vj-0","scope":"snsapi_userinfo","unionid":"oU5Yyt_gyHqaKAc"},"errMsg":"login:ok"} 
 						uni.getUserProfile({
 							desc: 'Wexin', // 这个参数是必须的
 							success: res => {
 								console.log("用户信息", res)
-								//{"errMsg":"getUserProfile:ok","userInfo":{"openId":"oRrdQt5dH0O_AzFGGei3BvU0Vj-0","nickName":"张涛","gender":0,"city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIwOQibbpkkOM73M0buZYvgqrkZgyQZpYsLt8oSkqanh6Nm3smic5iaHgsictSBQSQt9j6HzRwZhRtPkg/132","unionId":"oU5Yyt_gy8WAXiAeJaGVNBHqaKAc"}}
+								//{"errMsg":"getUserProfile:ok","userInfo":{"openId":"oRrdQt5dHU0Vj-0","nickName":"张涛","gender":0,"city":"","province":"","country":"","avatarUrl":"https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIwOQibbpkkOM73M0buZYvgqrkZgyQZpYsLt8oSkqanh6Nm3smic5iaHgsictSBQSQt9j6HzRwZhRtPkg/132","unionId":"oU5Yyt_VNBHqaKAc"}}
 								// this.isLogin = true;
 								// this.hasUserInfo = true;
 								// this.userInfo = res.userInfo;

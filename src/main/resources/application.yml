@@ -29,3 +29,11 @@ unicloud:
   domain: aaa
   path: bbb
   appid: ccc
+
+password:
+  secret:
+    list:
+      - version: 1
+        value: xxx
+      - version: 2
+        value: yyy

@@ -3,15 +3,15 @@
     :class="{background1: random==1, background2: random==2, background3:random==3 }">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h1 class="title">卓睿管理系统</h1>
-      <el-form-item prop="userName">
-        <el-input v-model="loginForm.userName" type="text" auto-complete="off" placeholder="账号">
+      <el-form-item prop="username">
+        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="userPwd">
-        <el-input v-model="loginForm.userPwd" type="password" auto-complete="off" placeholder="密码"
+      <el-form-item prop="password">
+        <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码"
           @keyup.enter.native="handleLogin">
-          <svg-icon slot="prefix" icon-class="userPwd" class="el-input__icon input-icon" />
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
 
@@ -42,21 +42,21 @@
     name: "Login",
     data() {
       return {
-        cookieuserPwd: "",
+        cookiepassword: "",
         loginForm: {
-          userName: "zhangtao",
-          userPwd: "123456",
+          username: "zhangtao",
+          password: "123456",
           rememberMe: false,
           code: "",
           uuid: ""
         },
         loginRules: {
-          userName: [{
+          username: [{
             required: true,
             trigger: "blur",
             message: "用户名不能为空"
           }],
-          userPwd: [{
+          password: [{
             required: true,
             trigger: "blur",
             message: "密码不能为空"
@@ -95,32 +95,33 @@
         });
       },
       getCookie() {
-        const userName = Cookies.get("userName");
-        const userPwd = Cookies.get("userPwd");
+        const username = Cookies.get("username");
+        const password = Cookies.get("password");
         const rememberMe = Cookies.get('rememberMe')
         this.loginForm = {
-          userName: userName === undefined ? this.loginForm.userName : userName,
-          userPwd: userPwd === undefined ? this.loginForm.userPwd : decrypt(userPwd),
+          username: username === undefined ? this.loginForm.username : username,
+          password: password === undefined ? this.loginForm.password : decrypt(password),
           rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
         };
       },
       handleLogin() {
+        // console.log(this.loginForm)
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true;
             if (this.loginForm.rememberMe) {
-              Cookies.set("userName", this.loginForm.userName, {
+              Cookies.set("username", this.loginForm.username, {
                 expires: 30
               });
-              Cookies.set("userPwd", encrypt(this.loginForm.userPwd), {
+              Cookies.set("password", encrypt(this.loginForm.password), {
                 expires: 30
               });
               Cookies.set('rememberMe', this.loginForm.rememberMe, {
                 expires: 30
               });
             } else {
-              Cookies.remove("userName");
-              Cookies.remove("userPwd");
+              Cookies.remove("username");
+              Cookies.remove("password");
               Cookies.remove('rememberMe');
             }
             // src/store/modules/user.js

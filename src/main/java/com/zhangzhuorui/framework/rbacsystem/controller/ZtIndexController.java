@@ -5,11 +5,15 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhangzhuorui.framework.core.ZtResBeanEx;
+import com.zhangzhuorui.framework.core.ZtUtils;
+import com.zhangzhuorui.framework.rbacsystem.config.PasswordSecretConfig;
+import com.zhangzhuorui.framework.rbacsystem.config.PasswordSecretEntity;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtComponentInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserRolePermissionVo;
+import com.zhangzhuorui.framework.rbacsystem.exception.ZtPreAuthorizeException;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import io.swagger.annotations.Api;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -88,17 +93,32 @@ public class ZtIndexController {
     @Value("${unicloud.appid}")
     String cloudFunctionAppId;
 
+    @Autowired
+    PasswordSecretConfig passwordSecretConfig;
+
+    @PostConstruct
+    void init() {
+        List<PasswordSecretEntity> list = passwordSecretConfig.getList();
+        if (!ZtUtils.isEmptyList(list)) {
+            list.sort((o1, o2) -> o2.getVersion().compareTo(o1.getVersion()));
+        }
+    }
+
     @SneakyThrows
     @ResponseBody
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ZtResBeanEx login(@RequestBody ZtUserInfo ztUserInfo) {
+        if (StringUtils.isEmpty(ztUserInfo.getUsername()) || StringUtils.isEmpty(ztUserInfo.getPassword())) {
+            throw new ZtPreAuthorizeException("用户名或密码错误");
+        }
         List<ZtUserInfo> ztUserInfos = iZtUserInfoService.ztSimpleGetList(ztUserInfo);
         ZtUserInfo ztUserInfo1 = ztUserInfos.get(0);
         String token = ztJwtTokenUtil.generateToken(ztUserInfo1);
         ztCacheUtil.refreshCacheByCurUserId(ztUserInfo1.getId());
-        // iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
+        // ztUserInfo1 = iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
         ZtResBeanEx ok = ZtResBeanEx.ok();
         ok.setData(token);
+        ok.put("userinfo", ztUserInfo1);
         ZtResBeanEx<List<ZtComponentInfo>> curUserRouteAfterLogin = getCurUserRouteAfterLogin(ztUserInfo1);
         ZtResBeanEx<ZtUserRolePermissionVo> userInfoAfterLogin = getUserInfoAfterLogin(ztUserInfo1);
         ok.put("route", curUserRouteAfterLogin.getData());

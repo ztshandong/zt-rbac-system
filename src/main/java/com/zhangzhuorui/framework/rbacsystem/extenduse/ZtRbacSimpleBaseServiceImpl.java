@@ -8,6 +8,7 @@ import com.zhangzhuorui.framework.core.ZtQueryWrapperEnum;
 import com.zhangzhuorui.framework.core.ZtUtils;
 import com.zhangzhuorui.framework.mybatis.core.ZtParamEntity;
 import com.zhangzhuorui.framework.mybatis.core.ZtQueryWrapper;
+import com.zhangzhuorui.framework.mybatis.simplebaseservice.IZtSimpleBaseService;
 import com.zhangzhuorui.framework.mybatis.simplebaseservice.ZtSimpleBaseServiceImpl;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtJwtTokenUtil;
@@ -25,6 +26,7 @@ import lombok.SneakyThrows;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -60,6 +62,17 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
     IZtUserInfoService iZtUserInfoService;
 
     @Override
+    public String getUnionInfo(IZtSimpleBaseService<T> thisService) {
+        String unionInfo = "no";
+        String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
+        if (!StringUtils.isEmpty(token)) {
+            ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
+            unionInfo = userInfoFromToken.getUserCode();
+        }
+        return unionInfo;
+    }
+
+    @Override
     public ZtUserInfo getSimpleUserInfoFromToken() {
         String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
         ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
@@ -89,7 +102,7 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();
         T entity = ztParamEntity.getEntity();
         entity.setUpdatedBy(userInfo.getUserCode());
-        entity.setUpdatedByName(userInfo.getUserName());
+        entity.setUpdatedByName(userInfo.getUsername());
         return super.ztBeforeSimpleUpdateByPrimaryKey(ztParamEntity);
     }
 
@@ -112,8 +125,8 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         T entity = ztParamEntity.getEntity();
         entity.setCreatedBy(userInfo.getUserCode());
         entity.setUpdatedBy(userInfo.getUserCode());
-        entity.setCreatedByName(userInfo.getUserName());
-        entity.setUpdatedByName(userInfo.getUserName());
+        entity.setCreatedByName(userInfo.getUsername());
+        entity.setUpdatedByName(userInfo.getUsername());
         return super.ztBeforeSimpleInsert(ztParamEntity);
     }
 
@@ -125,8 +138,8 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
         for (T entity : entityList) {
             entity.setCreatedBy(userInfo.getUserCode());
             entity.setUpdatedBy(userInfo.getUserCode());
-            entity.setCreatedByName(userInfo.getUserName());
-            entity.setUpdatedByName(userInfo.getUserName());
+            entity.setCreatedByName(userInfo.getUsername());
+            entity.setUpdatedByName(userInfo.getUsername());
         }
         return super.ztBeforeSimpleInsertBatch(ztParamEntity);
     }

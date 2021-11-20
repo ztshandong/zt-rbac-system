@@ -2,10 +2,10 @@ import request from '@/utils/request'
 import api from './index.js'
 
 // 登录方法
-export function login(userName, userPwd, code, uuid) {
+export function login(username, password, code, uuid) {
   var data = {
-    userName,
-    userPwd
+    username,
+    password
   }
   return api.post('/ZtIndex/login', data)
 }

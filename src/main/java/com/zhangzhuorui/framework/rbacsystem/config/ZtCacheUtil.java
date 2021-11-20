@@ -81,7 +81,7 @@ public class ZtCacheUtil {
     @Autowired
     CacheManager cacheManager;
 
-    public void refreshCacheByCurUserId(Long userId) {
+    public void refreshCacheByCurUserId(String userId) {
         Collection<String> cacheNames = cacheManager.getCacheNames();
         for (String name : cacheNames) {
             if (name.startsWith("curUser")) {

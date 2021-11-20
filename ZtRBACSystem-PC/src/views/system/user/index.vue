@@ -46,10 +46,10 @@
         thisData: {
           id: null,
           userCode: null,
-          userName: null,
-          userNickName: null,
-          userPwd: null,
-          userMobile: null,
+          username: null,
+          nickname: null,
+          password: null,
+          mobile: null,
           avatar: null,
           adminFlag: null,
           blockFlag: null,
@@ -74,7 +74,7 @@
           index: 10,
           alicon: 'excel',
           textFirst: true,
-          field: 'userName',
+          field: 'username',
           resetValue: null,
           title: '用户名称',
           span: 12,
@@ -134,7 +134,7 @@
           }
         }, {
           index: 110,
-          field: 'userNickName',
+          field: 'nickname',
           resetValue: null,
           title: '用户昵称',
           span: 8,
@@ -152,7 +152,7 @@
           }
         }, {
           index: 120,
-          field: 'userMobile',
+          field: 'mobile',
           resetValue: null,
           title: '用户手机',
           span: 8,
@@ -174,7 +174,7 @@
           index: 105,
           alicon: 'excel',
           textFirst: true,
-          field: 'userPwd',
+          field: 'password',
           resetValue: null,
           title: '用户密码',
           span: 12,
@@ -200,7 +200,7 @@
         },
         //新增编辑表单校验规则
         saveFormRoles: {
-          userMobile: [{
+          mobile: [{
               required: true,
               message: '请输入手机号',
               validator: checkPhone
@@ -239,7 +239,7 @@
             }
           },
           {
-            field: 'userName',
+            field: 'username',
             title: '用户名称',
           },
           {

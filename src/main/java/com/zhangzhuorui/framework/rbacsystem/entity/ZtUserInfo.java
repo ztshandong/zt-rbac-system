@@ -18,42 +18,84 @@ import io.swagger.annotations.ApiModelProperty;
  * 用户信息表
  */
 @ApiModel(value = "ZtUserInfo")
-public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
+public class ZtUserInfo extends ZtRbacBasicEntity<String> {
     /**
-     * 用户编号（唯一，不可修改，作为其他表外键）
+     * 用户编号（唯一，不可修改，作为其他表外键，与id相同）
      */
-    @ApiModelProperty(value = "用户编号（唯一，不可修改，作为其他表外键）")
+    @ApiModelProperty(value = "用户编号（唯一，不可修改，作为其他表外键，与id相同）")
     private String userCode;
 
     /**
      * 用户名（唯一，暂定不可修改）
      */
     @ApiModelProperty(value = "用户名（唯一，暂定不可修改）")
-    private String userName;
+    private String username;
 
     /**
      * 昵称
      */
     @ApiModelProperty(value = "昵称")
-    private String nickName;
+    private String nickname;
 
     /**
      * 密码
      */
     @ApiModelProperty(value = "密码")
-    private String userPwd;
+    private String password;
+
+    /**
+     * 用户性别：0 未知 1 男性 2 女性
+     */
+    @ApiModelProperty(value = "用户性别：0 未知 1 男性 2 女性")
+    private Integer gender;
+
+    /**
+     * 用户状态：0 正常，1 禁用，2 审核中，3 审核拒绝，4 已注销
+     */
+    @ApiModelProperty(value = "用户状态：0 正常，1 禁用，2 审核中，3 审核拒绝，4 已注销")
+    private Integer status;
 
     /**
      * 手机号（唯一，可修改）
      */
     @ApiModelProperty(value = "手机号（唯一，可修改）")
-    private String userMobile;
+    private String mobile;
+
+    /**
+     * 手机号验证状态：0 未验证 1 已验证，未验证用户不可登录
+     */
+    @ApiModelProperty(value = "手机号验证状态：0 未验证 1 已验证，未验证用户不可登录")
+    private Integer mobile_confirmed;
+
+    /**
+     * 邮箱地址
+     */
+    @ApiModelProperty(value = "邮箱地址")
+    private String email;
+
+    /**
+     * 邮箱验证状态：0 未验证 1 已验证，未验证用户不可登录
+     */
+    @ApiModelProperty(value = "邮箱验证状态：0 未验证 1 已验证，未验证用户不可登录")
+    private Integer email_confirmed;
 
     /**
      * 头像
      */
     @ApiModelProperty(value = "头像")
-    private String avatarUrl;
+    private String avatar;
+
+    /**
+     * 头像
+     */
+    @ApiModelProperty(value = "头像")
+    private String wx_unionid;
+
+    /**
+     * 微信各个平台openid
+     */
+    @ApiModelProperty(value = "微信各个平台openid")
+    private String wx_openid;
 
     /**
      * 是否是管理员
@@ -87,44 +129,100 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         this.userCode = userCode;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public String getUserPwd() {
-        return userPwd;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserPwd(String userPwd) {
-        this.userPwd = userPwd;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getUserMobile() {
-        return userMobile;
+    public Integer getGender() {
+        return gender;
     }
 
-    public void setUserMobile(String userMobile) {
-        this.userMobile = userMobile;
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public Integer getMobile_confirmed() {
+        return mobile_confirmed;
+    }
+
+    public void setMobile_confirmed(Integer mobile_confirmed) {
+        this.mobile_confirmed = mobile_confirmed;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Integer getEmail_confirmed() {
+        return email_confirmed;
+    }
+
+    public void setEmail_confirmed(Integer email_confirmed) {
+        this.email_confirmed = email_confirmed;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getWx_unionid() {
+        return wx_unionid;
+    }
+
+    public void setWx_unionid(String wx_unionid) {
+        this.wx_unionid = wx_unionid;
+    }
+
+    public String getWx_openid() {
+        return wx_openid;
+    }
+
+    public void setWx_openid(String wx_openid) {
+        this.wx_openid = wx_openid;
     }
 
     public Boolean getAdminFlag() {
@@ -167,11 +265,11 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(this.getId());
         sb.append(", userCode=").append(userCode);
-        sb.append(", userName=").append(userName);
-        sb.append(", userNickName=").append(nickName);
-        sb.append(", userPwd=").append(userPwd);
-        sb.append(", userMobile=").append(userMobile);
-        sb.append(", avatar=").append(avatarUrl);
+        sb.append(", userName=").append(username);
+        sb.append(", userNickName=").append(nickname);
+        sb.append(", userPwd=").append(password);
+        sb.append(", userMobile=").append(mobile);
+        sb.append(", avatar=").append(avatar);
         sb.append(", adminFlag=").append(adminFlag);
         sb.append(", blockFlag=").append(blockFlag);
         sb.append(", defaultDeptCode=").append(defaultDeptCode);
@@ -201,11 +299,11 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         ZtUserInfo other = (ZtUserInfo) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getUserCode() == null ? other.getUserCode() == null : this.getUserCode().equals(other.getUserCode()))
-                && (this.getUserName() == null ? other.getUserName() == null : this.getUserName().equals(other.getUserName()))
-                && (this.getNickName() == null ? other.getNickName() == null : this.getNickName().equals(other.getNickName()))
-                && (this.getUserPwd() == null ? other.getUserPwd() == null : this.getUserPwd().equals(other.getUserPwd()))
-                && (this.getUserMobile() == null ? other.getUserMobile() == null : this.getUserMobile().equals(other.getUserMobile()))
-                && (this.getAvatarUrl() == null ? other.getAvatarUrl() == null : this.getAvatarUrl().equals(other.getAvatarUrl()))
+                && (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
+                && (this.getNickname() == null ? other.getNickname() == null : this.getNickname().equals(other.getNickname()))
+                && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
+                && (this.getMobile() == null ? other.getMobile() == null : this.getMobile().equals(other.getMobile()))
+                && (this.getAvatar() == null ? other.getAvatar() == null : this.getAvatar().equals(other.getAvatar()))
                 && (this.getAdminFlag() == null ? other.getAdminFlag() == null : this.getAdminFlag().equals(other.getAdminFlag()))
                 && (this.getBlockFlag() == null ? other.getBlockFlag() == null : this.getBlockFlag().equals(other.getBlockFlag()))
                 && (this.getDefaultDeptCode() == null ? other.getDefaultDeptCode() == null : this.getDefaultDeptCode().equals(other.getDefaultDeptCode()))
@@ -225,11 +323,11 @@ public class ZtUserInfo extends ZtRbacBasicEntity<Long> {
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getUserCode() == null) ? 0 : getUserCode().hashCode());
-        result = prime * result + ((getUserName() == null) ? 0 : getUserName().hashCode());
-        result = prime * result + ((getNickName() == null) ? 0 : getNickName().hashCode());
-        result = prime * result + ((getUserPwd() == null) ? 0 : getUserPwd().hashCode());
-        result = prime * result + ((getUserMobile() == null) ? 0 : getUserMobile().hashCode());
-        result = prime * result + ((getAvatarUrl() == null) ? 0 : getAvatarUrl().hashCode());
+        result = prime * result + ((getUsername() == null) ? 0 : getUsername().hashCode());
+        result = prime * result + ((getNickname() == null) ? 0 : getNickname().hashCode());
+        result = prime * result + ((getPassword() == null) ? 0 : getPassword().hashCode());
+        result = prime * result + ((getMobile() == null) ? 0 : getMobile().hashCode());
+        result = prime * result + ((getAvatar() == null) ? 0 : getAvatar().hashCode());
         result = prime * result + ((getAdminFlag() == null) ? 0 : getAdminFlag().hashCode());
         result = prime * result + ((getBlockFlag() == null) ? 0 : getBlockFlag().hashCode());
         result = prime * result + ((getDefaultDeptCode() == null) ? 0 : getDefaultDeptCode().hashCode());

@@ -87,14 +87,16 @@ public class ZtSelectColumnServiceImpl implements IZtSelectColumnService {
     @Override
     @SneakyThrows
     public ZtSelectColumnHelper calCanSelect(ZtSelectColumnHelper ztSelectColumnHelper) {
-        if (ZtJwtTokenUtil.IGNORE_URLS.contains(this.getRequest().getRequestURI())) {
-            ztSelectColumnHelper.setCanSelect(true);
-            return ztSelectColumnHelper;
-        }
+
         ResultMapping resultMapping = ztSelectColumnHelper.getResultMapping();
         ZtQueryWrapper qw = ztSelectColumnHelper.getQw();
         String fieldName = resultMapping.getProperty();
         String tableName = qw.getTableName();
+
+        if (ZtJwtTokenUtil.IGNORE_URLS.contains(this.getRequest().getRequestURI())) {
+            ztSelectColumnHelper.setCanSelect(true);
+            return ztSelectColumnHelper;
+        }
 
         if (IGNORE_TABLE.contains(tableName)) {
             ztSelectColumnHelper.setCanSelect(true);

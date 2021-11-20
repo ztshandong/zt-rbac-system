@@ -46,7 +46,7 @@
 			 -->
 		</u-cell-group>
 		<v-toast ref="vToast"></v-toast>
-		<u-tabbar v-model="current" :list="tabbar" :mid-button="true"></u-tabbar>
+		<u-tabbar v-model="current" :list="tabbar" :mid-button="true" @change="onTabItemTap2"></u-tabbar>
 	</view>
 </template>
 
@@ -117,6 +117,9 @@
 			// console.log(this.userInfo2)
 		},
 		methods: {
+			onTabItemTap2(e) {
+				console.log(e)
+			},
 			bindMobile() {
 				uniCloud.callFunction({
 					name: 'user-center',

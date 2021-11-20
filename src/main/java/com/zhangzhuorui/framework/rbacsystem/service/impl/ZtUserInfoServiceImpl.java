@@ -32,6 +32,11 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
         return "zt_user_info";
     }
 
+    @Override
+    public Boolean getManualId() {
+        return true;
+    }
+
     @Autowired
     ZtCacheUtil ztCacheUtil;
 

@@ -37,13 +37,13 @@ const user = {
             commit
           }, userInfo) {
       console.log('登录信息commit:' + JSON.stringify(commit))
-      const userName = userInfo.userName.trim()
-      const userPwd = userInfo.userPwd
+      const username = userInfo.username.trim()
+      const password = userInfo.password
       const code = userInfo.code
       const uuid = userInfo.uuid
       return new Promise((resolve, reject) => {
         console.log('登录信息resolve:' + JSON.stringify(resolve))
-        login(userName, userPwd, code, uuid).then(res => {
+        login(username, password, code, uuid).then(res => {
           console.log('登录成功:' + JSON.stringify(res))
           let zttoken = res.data
           setToken(zttoken)
@@ -76,7 +76,7 @@ const user = {
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
-          commit('SET_NAME', user.userName)
+          commit('SET_NAME', user.username)
           commit('SET_AVATAR', avatar)
           resolve(res)
         }).catch(error => {

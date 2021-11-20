@@ -12,7 +12,7 @@
 				</cell>
 			</list>
 		</unicloud-db>
-		<u-tabbar v-model="currentTab" :list="tabbar" :mid-button="true"></u-tabbar>
+		<u-tabbar v-model="currentTab" :list="tabbar" :mid-button="true" @change="onTabItemTap2"></u-tabbar>
 	</view>
 </template>
 
@@ -90,6 +90,9 @@
 			})
 		},
 		methods: {
+			onTabItemTap2(e) {
+				console.log(e)
+			},
 			loadMore() {
 			  this.$refs.lists.loadMore()
 			},

@@ -1,11 +1,11 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
-import com.alibaba.fastjson.JSON;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
         IGNORE_URLS.add("/ZtIndex/getUserInfoAfterLogin/");
     }
 
-    private final static String CLAIMS_USER_ID = "userId";
+    private final static String CLAIMS_USER_ID = "uid";
 
     private final static String CLAIMS_ISSUER = "ZtFramework";
 
@@ -108,38 +107,53 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
     }
 
     public String generateToken(ZtUserInfo ztUserInfo) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIMS_USER_ID, ztUserInfo.getId());
-        ZtUserInfo subject = new ZtUserInfo();
-        subject.setId(ztUserInfo.getId());
-        subject.setUserCode(ztUserInfo.getUserCode());
-        subject.setAscFlag(null);
-        return doGenerateToken(claims, JSON.toJSONString(subject));
+        // Map<String, Object> claims = new HashMap<>();
+        // claims.put(CLAIMS_USER_ID, ztUserInfo.getId());
+        // ZtUserInfo subject = new ZtUserInfo();
+        // subject.setId(ztUserInfo.getId());
+        // subject.setUserCode(ztUserInfo.getUserCode());
+        // subject.setAscFlag(null);
+
+        final Date createdDate = new Date();
+        final Date expirationDate = calculateExpirationDate(createdDate);
+
+        DefaultClaims defaultClaims = new DefaultClaims();
+        defaultClaims.setId(ztUserInfo.getId().toString());
+        defaultClaims.put(CLAIMS_USER_ID, ztUserInfo.getId());
+        defaultClaims.setAudience("user");
+        defaultClaims.setIssuer(CLAIMS_ISSUER);
+        defaultClaims.setIssuedAt(createdDate);
+        defaultClaims.setNotBefore(createdDate);
+        defaultClaims.setExpiration(expirationDate);
+
+        return doGenerateToken(defaultClaims);
     }
 
     public ZtUserInfo getUserInfoFromToken(String token) {
         Claims allClaimsFromToken = getAllClaimsFromToken(token);
-        String subject = allClaimsFromToken.getSubject();
+        // String subject = allClaimsFromToken.getSubject();
         //这个类是个通用类，可以放在通用的模块里，这里不要注入查询数据库的service，只能用缓存
-        ZtUserInfo ztUserInfo = JSON.parseObject(subject, ZtUserInfo.class);
+        ZtUserInfo ztUserInfo = new ZtUserInfo();
+        ztUserInfo.setId(allClaimsFromToken.get(CLAIMS_USER_ID).toString());
+        ztUserInfo.setUserCode(allClaimsFromToken.get(CLAIMS_USER_ID).toString());
         return ztUserInfo;
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        final Date createdDate = new Date();
-        final Date expirationDate = calculateExpirationDate(createdDate);
+    private String doGenerateToken(Map<String, Object> claims) {
+        // final Date createdDate = new Date();
+        // final Date expirationDate = calculateExpirationDate(createdDate);
 
         return Jwts.builder()
-                .setId(String.valueOf(claims.get(CLAIMS_USER_ID)))
-                .setAudience("user")
-                // 建议不要修改默认的claims
-                // .setClaims(claims)
-                .setSubject(subject)
-                .setIssuer(CLAIMS_ISSUER)
-                .setIssuedAt(createdDate)
-                .setNotBefore(createdDate)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS512, getSecret())
+                .setClaims(claims)
+                // .setId(String.valueOf(claims.get(CLAIMS_USER_ID)))
+                // .setAudience("user")
+                // .setSubject(subject)
+                // .setIssuer(CLAIMS_ISSUER)
+                // .setIssuedAt(createdDate)
+                // .setNotBefore(createdDate)
+                // .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS256, getSecret())
+                .setHeaderParam("typ", "JWT")
                 .compact();
     }
 

@@ -26,7 +26,7 @@
 
 		<!-- <u-button type="primary" @click="testUcloud" ></u-button> -->
 
-		<view class="u-content">
+		<view class="u-content box">
 			<u-parse :html="detail.content"></u-parse>
 		</view>
 		<!-- 
@@ -78,7 +78,7 @@
 			
 		</view>
  -->
-		<u-tabbar v-model="currentTab" :list="tabbar" :mid-button="true"></u-tabbar>
+		<u-tabbar v-model="currentTab" :list="tabbar" :mid-button="true" @change="onTabItemTap2"></u-tabbar>
 	</view>
 </template>
 
@@ -211,6 +211,9 @@
 			// #endif
 		},
 		methods: {
+			onTabItemTap2(e) {
+				console.log(e)
+			},
 			getSignStr(obj) {
 				let signStr = Object.keys(obj).sort().map(key => {
 					if (Object.prototype.toString.call(obj[key]) != '[object Object]') {
@@ -299,7 +302,7 @@
 <style lang="scss">
 	// @import 'http://172.16.1.217/iconfont/iconfont-weapp-icon.wxss';
 	// @import url('http://172.16.1.217/iconfont/iconfont-weapp-icon.css');
-
+	$width : 200rpx;
 	.container {
 		display: flex;
 		flex-direction: column;
@@ -308,9 +311,9 @@
 	}
 
 	.logo {
-		height: 200rpx;
-		width: 200rpx;
-		margin-top: 200rpx;
+		height: $width;
+		width: $width;
+		margin-top: $width;
 		margin-left: auto;
 		margin-right: auto;
 		margin-bottom: 50rpx;
@@ -331,5 +334,9 @@
 		font-size: 32rpx;
 		color: $u-content-color;
 		line-height: 1.6;
+		// &代表父级，就是class里同级
+		&.box {
+			border: 1px red solid
+		}
 	}
 </style>
