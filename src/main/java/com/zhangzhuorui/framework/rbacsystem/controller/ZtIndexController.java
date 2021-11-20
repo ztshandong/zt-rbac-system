@@ -118,11 +118,11 @@ public class ZtIndexController {
         // ztUserInfo1 = iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
         ZtResBeanEx ok = ZtResBeanEx.ok();
         ok.setData(token);
-        ok.put("userinfo", ztUserInfo1);
+        ok.getResult().put("userinfo", ztUserInfo1);
         ZtResBeanEx<List<ZtComponentInfo>> curUserRouteAfterLogin = getCurUserRouteAfterLogin(ztUserInfo1);
         ZtResBeanEx<ZtUserRolePermissionVo> userInfoAfterLogin = getUserInfoAfterLogin(ztUserInfo1);
-        ok.put("route", curUserRouteAfterLogin.getData());
-        ok.put("user", userInfoAfterLogin.getData());
+        ok.getResult().put("route", curUserRouteAfterLogin.getData());
+        ok.getResult().put("user", userInfoAfterLogin.getData());
         return ok;
     }
 

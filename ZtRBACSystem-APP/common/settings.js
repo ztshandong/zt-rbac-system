@@ -16,7 +16,7 @@ module.exports = {
     // 配后端数据的接收方式application/json;charset=UTF-8或者application/x-www-form-urlencoded;charset=UTF-8
     contentType: 'application/json;charset=UTF-8',
     // 后端返回状态码，如code,status
-    codeName: 'code',
+    codeName: 'errCode',
     // 是否显示请求中loading
     showLoading: true,
     // 请求loading的文字提示
@@ -28,7 +28,7 @@ module.exports = {
     // 在此时间内，请求还没回来的话，就显示加载中动画，单位ms
     loadingTime: 800,
     // 操作正常code
-    successCode: "200",
+    successCode: "0",
     // 登录失效code
     invalidCode: "-1",
     // 公众号appid

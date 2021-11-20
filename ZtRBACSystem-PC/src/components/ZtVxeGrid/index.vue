@@ -521,6 +521,7 @@
         if (!this.queryFormConfig.useSpecialQuery) {
           this.$api.post(this.apiPre + '/' + this.thisName + '/selectSimple', queryData)
             .then(r => {
+              // console.log('r:' ,r)
               var res = r.data.results;
               // console.log('r:' + JSON.stringify(r))
               this.tablePage.total = r.data.total

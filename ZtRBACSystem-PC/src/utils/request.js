@@ -2,7 +2,6 @@ import axios from 'axios'
 import {Message, MessageBox, Notification} from 'element-ui'
 import store from '@/store'
 import {getToken, setToken} from '@/utils/auth'
-import errorCode from '@/utils/errorCode'
 import {tansParams} from "@/utils/zhuorui";
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
@@ -52,16 +51,16 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(res => {
-    // console.log('PromiseRes:' + JSON.stringify(res))
+    // console.log('PromiseRes:', res)
     // 未设置状态码则默认成功状态
-    const code = res.data.code || '200';
+    // const code = res.data.result.errCode || '0' || 0;
     // 获取错误信息
-    const msg = errorCode[code] || res.data.msg || errorCode['default']
+    // const msg = errorCode[code] || res.data.result.msg || errorCode['default']
     // console.log(msg)
-    if (res.data.newToken) {
-      setToken(res.data.newToken)
+    if (res.data.result.newToken) {
+      setToken(res.data.result.newToken)
     }
-    if (code === '401') {
+    if (res.data.result.errCode === '401') {
       MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
         confirmButtonText: '重新登录',
         cancelButtonText: '取消',
@@ -71,19 +70,19 @@ service.interceptors.response.use(res => {
           location.href = '/index';
         })
       })
-    } else if (code === '500') {
+    } else if (res.data.result.errCode === '500') {
       Message({
-        message: msg,
+        message: res.data.result.errMsg,
         type: 'error'
       })
-      return Promise.reject(new Error(msg))
-    } else if (code !== '200') {
+      return Promise.reject(new Error(res.data.result.errMsg))
+    } else if (res.data.result.errCode !== '0' && res.data.result.errCode !== 0) {
       Notification.error({
-        title: msg
+        title: res.data.result.errMsg
       })
       return Promise.reject('error')
     } else {
-      return res.data
+      return res.data.result
     }
   },
   error => {
