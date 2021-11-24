@@ -8,6 +8,10 @@ import httpInterceptor from '@/common/http.interceptor.js'
 import httpApi from '@/common/http.api.js'
 // 公共函数
 import globalFunc from '@/utils/common.js'
+import {deepClone, getUUID} from "@/common/util.js";
+// 微信SDK
+// #ifdef H5
+import weixin from '@/utils/jwx.js'
 
 Vue.use(uView);
 Vue.config.productionTip = false
@@ -34,9 +38,9 @@ Vue.use(httpApi, app)
 
 Vue.use(globalFunc, app)
 
-// 微信SDK
-// #ifdef H5
-import weixin from '@/utils/jwx.js'
+Vue.prototype.getUUID = getUUID
+Vue.prototype.deepClone = deepClone
+
 Vue.use(weixin, app)
 // #endif
 

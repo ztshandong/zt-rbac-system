@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "特殊显示字段", description = "ZtSpecShowController")
 @RestController
 @RequestMapping(value = "/ZtSpecShow")
 public class ZtSpecShowController extends ZtRbacSimpleBaseController<ZtSpecShow> {

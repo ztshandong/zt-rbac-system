@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "角色用户关联", description = "ZtRoleUserInfoController")
 @RestController
 @RequestMapping(value = "/ZtRoleUserInfo")
 public class ZtRoleUserInfoController extends ZtRbacSimpleBaseController<ZtRoleUserInfo> {

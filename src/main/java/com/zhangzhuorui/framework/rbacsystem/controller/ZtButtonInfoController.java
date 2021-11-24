@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "按钮", description = "ZtButtonInfoController")
 @RestController
 @RequestMapping(value = "/ZtButtonInfo")
 public class ZtButtonInfoController extends ZtRbacSimpleBaseController<ZtButtonInfo> {

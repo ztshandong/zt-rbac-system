@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "排除的权限", description = "ZtExcludeInfoController")
 @RestController
 @RequestMapping(value = "/ZtExcludeInfo")
 public class ZtExcludeInfoController extends ZtRbacSimpleBaseController<ZtExcludeInfo> {

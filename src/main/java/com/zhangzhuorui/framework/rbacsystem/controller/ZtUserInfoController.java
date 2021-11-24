@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "用户", description = "ZtUserInfoController")
 @RestController
 @RequestMapping(value = "/ZtUserInfo")
 @ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.USER_MANAGE_CODE})

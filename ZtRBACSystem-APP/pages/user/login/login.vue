@@ -106,6 +106,7 @@
 </template>
 
 <script>
+	import CryptoJS from '@/common/crypto-js/crypto-js.js'
 	var _this;
 	export default {
 		data() {
@@ -128,11 +129,22 @@
 		onShow() {
 			// console.log(this)
 			this.getArguments()
+			// console.log(this.getUUID(16, 16))
+			// console.log(this.sha1Hash('123456', 3))
 		},
 		onLoad() {
 			_this = this
 		},
 		methods: {
+			sha1Hash(passwd, times) {
+				var p = passwd.toString()
+				for (var i = 0; i < times; i++) {
+					p = CryptoJS.SHA1(p).toString();
+					// console.log(p.toString())
+					//java: DigestUtils.sha1Hex(s.getBytes("UTF-8"));
+				}
+				return p.toString();
+			},
 			accountLogin() {
 				console.log('accountLogin')
 				// return

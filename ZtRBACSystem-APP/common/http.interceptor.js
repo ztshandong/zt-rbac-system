@@ -59,7 +59,7 @@ const install = (Vue, vm) => {
 
         const uniIdToken = uni.getStorageSync('uni_id_token')
         if (uniIdToken) {
-            config.data.uniIdToken = clientInfo
+            config.data.uniIdToken = uniIdToken
         }
 
         // 可以对某个url进行特别处理，此url参数为this.$u.get(url)中的url值

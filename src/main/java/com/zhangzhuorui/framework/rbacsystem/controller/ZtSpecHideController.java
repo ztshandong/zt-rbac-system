@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "特殊隐藏字段", description = "ZtSpecHideController")
 @RestController
 @RequestMapping(value = "/ZtSpecHide")
 public class ZtSpecHideController extends ZtRbacSimpleBaseController<ZtSpecHide> {

@@ -5,6 +5,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhangzhuorui.framework.core.ZtResBeanEx;
+import com.zhangzhuorui.framework.core.ZtStrUtils;
 import com.zhangzhuorui.framework.core.ZtUtils;
 import com.zhangzhuorui.framework.rbacsystem.config.PasswordSecretConfig;
 import com.zhangzhuorui.framework.rbacsystem.config.PasswordSecretEntity;
@@ -60,7 +61,7 @@ import java.util.UUID;
  * @updateDate :
  * @updateRemark :
  */
-@Api
+@Api(tags = "登录及首页", description = "ZtIndexController")
 @RestController
 @RequestMapping(value = "/ZtIndex")
 @Slf4j
@@ -119,8 +120,8 @@ public class ZtIndexController {
         ZtResBeanEx ok = ZtResBeanEx.ok();
         ok.setData(token);
         ok.getResult().put("userinfo", ztUserInfo1);
-        ZtResBeanEx<List<ZtComponentInfo>> curUserRouteAfterLogin = getCurUserRouteAfterLogin(ztUserInfo1);
         ZtResBeanEx<ZtUserRolePermissionVo> userInfoAfterLogin = getUserInfoAfterLogin(ztUserInfo1);
+        ZtResBeanEx<List<ZtComponentInfo>> curUserRouteAfterLogin = getCurUserRouteAfterLogin(ztUserInfo1);
         ok.getResult().put("route", curUserRouteAfterLogin.getData());
         ok.getResult().put("user", userInfoAfterLogin.getData());
         return ok;
@@ -316,7 +317,7 @@ public class ZtIndexController {
         return ZtResBeanEx.ok(jsonObject);
     }
 
-    @ApiOperation(value = "一键登录")
+    @ApiOperation(value = "一键登录接口获取手机号")
     @PostMapping("getPhoneNumberByAccessToken")
     @ResponseBody
     public ZtResBeanEx<String> getPhoneNumberByAccessToken(@RequestBody JSONObject obj) {
@@ -336,14 +337,21 @@ public class ZtIndexController {
     @ApiOperation(value = "uni登录")
     @PostMapping("uniLogin")
     @ResponseBody
-    public ZtResBeanEx<String> uniLogin(@RequestBody JSONObject obj) {
+    public ZtResBeanEx uniLogin(@RequestBody JSONObject obj) {
         obj.put("appid", cloudFunctionAppId);
+        //{"appid":"ggg","action":"login","clientInfo":{"CLIENTIP":"xx.xx.xx.xx","OS":"ios","PLATFORM":"h5","DEVICEID":"aaa"},"params":{"scene":"login","username":"testuser","password":"12345678"},"uniIdToken":"xxx"}
         log.info(JSON.toJSONString(obj));
         String url = cloudFunctionDomain + cloudFunctionPath;
         String result2 = HttpRequest.post(url)
                 .body(JSON.toJSONString(obj))
                 .execute().body();
         System.out.println(result2);
+        Object params = obj.get("params");
+        JSONObject paramsJsonObject = JSONObject.parseObject(JSON.toJSONString(params));
+        StringBuilder signOriStr = ZtStrUtils.getSignOriStr(paramsJsonObject);
+        String action = obj.getString("action");
+        //password12345678sceneloginusernametestuser
+        System.out.println(signOriStr);
         // String username = obj.getString("username");
         // String password = obj.getString("password");
         // String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=login&appid=" + cloudFunctionAppId + "&username=" + username + "&password=" + password;
@@ -376,5 +384,6 @@ public class ZtIndexController {
         }
         return "1success";
     }
+
 }
 

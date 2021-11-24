@@ -168,8 +168,12 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     public List<ZtComponentInfo> getCurUserRouteAfterLogin(ZtUserInfo userInfo) {
         ZtParamEntity<ZtComponentInfo> ztComponentInfoZtParamEntity = iZtComponentInfoService.ztSimpleSelectAll();
         List<ZtComponentInfo> allComponent = iZtComponentInfoService.getList(ztComponentInfoZtParamEntity);
-        List<String> curUserAllComponentCodes = iZtComponentInfoService.getCurUserAllComponentCodes(userInfo);
-        List<ZtComponentInfo> curUserAllComponentListWithoutButton = allComponent.stream().filter(t -> !ZtComponentTypeEnum.BUTTON.equals(t.getMenuType()) && curUserAllComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
+        List<ZtComponentInfo> curUserAllComponentListWithoutButton = allComponent.stream().filter(t -> !ZtComponentTypeEnum.BUTTON.equals(t.getMenuType())).collect(Collectors.toList());
+        Boolean curUserAdminFlag = getThisService().getCurUserAdminFlag(userInfo);
+        if (!curUserAdminFlag) {
+            List<String> curUserAllComponentCodes = iZtComponentInfoService.getCurUserAllComponentCodes(userInfo);
+            curUserAllComponentListWithoutButton = curUserAllComponentListWithoutButton.stream().filter(t -> curUserAllComponentCodes.contains(t.getThisCode())).collect(Collectors.toList());
+        }
         curUserAllComponentListWithoutButton = JSON.parseArray(JSON.toJSONString(curUserAllComponentListWithoutButton), ZtComponentInfo.class);
         Collections.sort(curUserAllComponentListWithoutButton);
         for (ZtComponentInfo ztComponentInfo : curUserAllComponentListWithoutButton) {
@@ -506,6 +510,9 @@ public class ZtRoleInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtRoleInf
     )
     public Boolean getCurUserAdminFlag(ZtUserInfo userInfo) {
         userInfo = iZtUserInfoService.getFullUserInfoFromToken(userInfo);
+        if (null == userInfo.getAdminFlag()) {
+            return false;
+        }
         if (userInfo.getAdminFlag()) {
             return true;
         }

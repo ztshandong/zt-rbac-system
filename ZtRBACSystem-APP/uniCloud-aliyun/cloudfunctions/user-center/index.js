@@ -167,7 +167,8 @@ exports.main = async (event, context) => {
         'login', 'logout', 'sendSmsCode',
         'loginBySms', 'inviteLogin', 'loginByUniverify',
         'loginByApple', 'createCaptcha', 'verifyCaptcha',
-        'refreshCaptcha', 'getPhoneNumberByAccessToken', 'getClientInfo'
+        'refreshCaptcha', 'getPhoneNumberByAccessToken', 'getClientInfo',
+        'getSearchhistory'
     ]
 
     let res = {}
@@ -211,6 +212,13 @@ exports.main = async (event, context) => {
     // }
 
     switch (action) {
+        case 'getSearchhistory': {
+            const {
+                uid
+            } = params
+            res = await db.collection('searchhistory').where({uid}).get()
+            break;
+        }
         case 'bindMobile': {
             const {
                 uid,

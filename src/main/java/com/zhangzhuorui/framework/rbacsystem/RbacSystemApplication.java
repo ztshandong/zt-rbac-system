@@ -1,5 +1,6 @@
 package com.zhangzhuorui.framework.rbacsystem;
 
+import lombok.SneakyThrows;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
@@ -24,8 +25,15 @@ import java.util.Map;
 @EnableAspectJAutoProxy(proxyTargetClass = false, exposeProxy = true)
 public class RbacSystemApplication {
 
+    @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(RbacSystemApplication.class, args);
+
+        // String s = "123456";
+        // for (int i = 0; i < 3; i++) {
+        //     s = DigestUtils.sha1Hex(s.getBytes("UTF-8"));
+        // }
+        // System.out.println(s);
     }
 
     public static void codeGen(String[] args) throws Exception {
