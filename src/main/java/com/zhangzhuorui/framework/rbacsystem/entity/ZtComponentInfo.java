@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * 组件信息表（模块，菜单，按钮）
  */
-@ApiModel(value = "ZtComponentInfo")
+@ApiModel(value = "组件信息表", description = "（模块，菜单，按钮）")
 public class ZtComponentInfo extends ZtRbacBasicEntity<Long> implements Comparable<ZtComponentInfo> {
     /**
      * 菜单编号（唯一，不可修改）

@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 排除的权限-只针对到用户
  */
-@ApiModel(value = "ZtExcludeInfo")
+@ApiModel(value = "排除的权限", description = "只针对到用户")
 public class ZtExcludeInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 用户编号

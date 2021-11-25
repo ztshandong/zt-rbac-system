@@ -18,6 +18,8 @@ public interface IZtUserInfoService extends IZtRbacSimpleBaseService<ZtUserInfo>
 
     ZtUserInfo getFullUserInfoFromToken(ZtUserInfo userInfoFromToken);
 
+    ZtUserInfo login(ZtUserInfo userInfo);
+
 }
 
 

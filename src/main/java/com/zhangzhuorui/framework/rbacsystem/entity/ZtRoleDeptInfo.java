@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 部门角色关联表
  */
-@ApiModel(value = "ZtRoleDeptInfo")
+@ApiModel(value = "部门角色关联表")
 public class ZtRoleDeptInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 角色编号

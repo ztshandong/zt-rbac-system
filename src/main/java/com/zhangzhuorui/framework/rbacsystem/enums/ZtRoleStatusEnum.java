@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("角色种类")
+// @ModuleName("角色种类")
+@ApiModel(value = "角色种类", description = "角色种类")
 public enum ZtRoleStatusEnum implements IZtBaseEnum<ZtRoleStatusEnum> {
     COMPONENT(1, "组件"),
     DEPT(2, "部门"),

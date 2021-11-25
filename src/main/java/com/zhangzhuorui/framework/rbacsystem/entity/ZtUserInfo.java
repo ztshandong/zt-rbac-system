@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 用户信息表
  */
-@ApiModel(value = "ZtUserInfo")
+@ApiModel(value = "用户信息表")
 public class ZtUserInfo extends ZtRbacBasicEntity<String> {
     /**
      * 用户编号（唯一，不可修改，作为其他表外键，与id相同）

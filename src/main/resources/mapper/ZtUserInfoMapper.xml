@@ -25,4 +25,18 @@
         <result column="default_dept_code" jdbcType="VARCHAR" property="defaultDeptCode"/>
         <result column="default_post_code" jdbcType="VARCHAR" property="defaultPostCode"/>
     </resultMap>
+
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, user_code, username, nickname, password, gender, status, mobile, mobile_confirmed, email, email_confirmed,
+        avatar, wx_unionid, wx_openid, admin_flag, block_flag, default_dept_code, default_post_code, gmt_create,
+        gmt_update, created_by, updated_by, remark, created_by_name, updated_by_name
+    </sql>
+
+    <select id="login" resultMap="BaseResultMap">
+        SELECT *
+        FROM zt_user_info
+        WHERE username = #{username}
+          AND password = #{password};
+    </select>
 </mapper>

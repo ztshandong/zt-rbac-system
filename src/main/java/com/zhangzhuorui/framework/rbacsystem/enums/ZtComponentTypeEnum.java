@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("组件类型")
+// @ModuleName("组件类型")
+@ApiModel(value = "组件类型", description = "组件类型")
 public enum ZtComponentTypeEnum implements IZtBaseEnum<ZtComponentTypeEnum> {
     MODEL(1, "模块"),
     MENU(2, "菜单"),

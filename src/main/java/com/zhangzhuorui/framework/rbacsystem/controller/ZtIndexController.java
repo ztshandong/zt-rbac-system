@@ -5,6 +5,7 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zhangzhuorui.framework.core.ZtResBeanEx;
+import com.zhangzhuorui.framework.core.ZtResBeanExConfig;
 import com.zhangzhuorui.framework.core.ZtStrUtils;
 import com.zhangzhuorui.framework.core.ZtUtils;
 import com.zhangzhuorui.framework.rbacsystem.config.PasswordSecretConfig;
@@ -97,6 +98,9 @@ public class ZtIndexController {
     @Autowired
     PasswordSecretConfig passwordSecretConfig;
 
+    @Autowired
+    ZtResBeanExConfig ztResBeanExConfig;
+
     @PostConstruct
     void init() {
         List<PasswordSecretEntity> list = passwordSecretConfig.getList();
@@ -108,15 +112,18 @@ public class ZtIndexController {
     @SneakyThrows
     @ResponseBody
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public ZtResBeanEx login(@RequestBody ZtUserInfo ztUserInfo) {
+    public ZtResBeanEx login(@RequestBody ZtUserInfo ztUserInfo, HttpServletRequest request) {
         if (StringUtils.isEmpty(ztUserInfo.getUsername()) || StringUtils.isEmpty(ztUserInfo.getPassword())) {
             throw new ZtPreAuthorizeException("用户名或密码错误");
         }
-        List<ZtUserInfo> ztUserInfos = iZtUserInfoService.ztSimpleGetList(ztUserInfo);
-        ZtUserInfo ztUserInfo1 = ztUserInfos.get(0);
+        ZtUserInfo ztUserInfo1 = iZtUserInfoService.login(ztUserInfo);
+        if (null == ztUserInfo1) {
+            throw new ZtPreAuthorizeException("用户名或密码错误");
+        }
+        //TODO 黑名单，锁定用户之类
         String token = ztJwtTokenUtil.generateToken(ztUserInfo1);
+        request.setAttribute(ztJwtTokenUtil.getTokenHeader(), token);
         ztCacheUtil.refreshCacheByCurUserId(ztUserInfo1.getId());
-        // ztUserInfo1 = iZtUserInfoService.getFullUserInfoFromToken(ztUserInfo);
         ZtResBeanEx ok = ZtResBeanEx.ok();
         ok.setData(token);
         ok.getResult().put("userinfo", ztUserInfo1);

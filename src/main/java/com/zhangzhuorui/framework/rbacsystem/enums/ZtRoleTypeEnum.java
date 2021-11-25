@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("角色权限类型")
+// @ModuleName("角色权限类型")
+@ApiModel(value = "角色权限类型", description = "角色权限类型")
 public enum ZtRoleTypeEnum implements IZtBaseEnum<ZtRoleTypeEnum> {
     COMPONENT(1, "菜单角色"),//-读取zt_role_component_info表，控制页面
     DATA(2, "数据角色"),//-读取data_scope_type字段，配合ZtDataScopeTypeEnum，控制数据

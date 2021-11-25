@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 用户职位关联表
  */
-@ApiModel(value = "ZtUserPostInfo")
+@ApiModel(value = "用户职位关联表")
 public class ZtUserPostInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 用户编号

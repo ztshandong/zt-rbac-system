@@ -1,0 +1,14 @@
+// 在本文件中可配置云数据库初始化，数据格式见：https://uniapp.dcloud.io/uniCloud/cf-database?id=db_init
+// 编写完毕后对本文件点右键，可按配置规则创建表和添加数据
+{
+  "searchhistory": {
+    // 集合（表名）
+    "data": [
+      // 数据
+      {
+        "uid": "61860e2309d6d10001f341e0",
+        "history": "aaa,bbb"
+      }
+    ]
+  }
+}

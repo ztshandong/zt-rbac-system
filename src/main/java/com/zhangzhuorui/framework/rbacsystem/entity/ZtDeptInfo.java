@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * 部门信息表
  */
-@ApiModel(value = "ZtDeptInfo")
+@ApiModel(value = "部门信息表")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ZtDeptInfo extends ZtRbacBasicEntity<Long> {
     /**

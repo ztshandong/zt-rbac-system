@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 特殊隐藏的字段。这个表中记录的字段默认所有人都可见，只有指定的用户（或者角色，部门等）不可查看
  */
-@ApiModel(value = "ZtSpecHide")
+@ApiModel(value = "特殊隐藏的字段", description = "这个表中记录的字段默认所有人都可见，只有指定的用户（或者角色，部门等）不可查看")
 public class ZtSpecHide extends ZtRbacBasicEntity<Long> {
     /**
      * 表名

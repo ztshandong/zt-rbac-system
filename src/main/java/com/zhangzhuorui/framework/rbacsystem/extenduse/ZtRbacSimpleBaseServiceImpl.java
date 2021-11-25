@@ -74,9 +74,7 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
 
     @Override
     public ZtUserInfo getSimpleUserInfoFromToken() {
-        String token = getRequest().getHeader(ztJwtTokenUtil.getTokenHeader());
-        ZtUserInfo userInfoFromToken = ztJwtTokenUtil.getUserInfoFromToken(token);
-        return userInfoFromToken;
+        return ztJwtTokenUtil.getSimpleUserInfoFromToken();
     }
 
     @Override
@@ -92,7 +90,7 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
 
     @Override
     public ZtParamEntity<T> ztBeforeSimpleSelectProvider(ZtParamEntity<T> ztParamEntity) throws Exception {
-        // ztParamEntity = setUserInfo(ztParamEntity);
+        ztParamEntity = setUserInfo(ztParamEntity);
         return super.ztBeforeSimpleSelectProvider(ztParamEntity);
     }
 
@@ -237,7 +235,8 @@ public abstract class ZtRbacSimpleBaseServiceImpl<T extends ZtRbacBasicEntity> e
                 //服务器重启导致缓存失效，防止死循环
                 throw new ZtPreAuthorizeException("当前登录信息已失效，请重新登录");
             }
-            if (entity.getDataScopeFlag() == null || entity.getDataScopeFlag()) {
+            //说明要启用数据权限
+            if (entity.getDataScopeFlag() != null && entity.getDataScopeFlag()) {
                 ZtQueryWrapper<T> ztQueryWrapper = ztParamEntity.getZtQueryWrapper();
                 if (dataScopeDeptFlag() || dataScopeUserFlag()) {
                     ZtUserInfo userInfo = (ZtUserInfo) ztParamEntity.getUserInfo();

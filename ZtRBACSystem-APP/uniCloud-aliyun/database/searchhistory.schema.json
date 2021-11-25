@@ -1,0 +1,29 @@
+{
+  "bsonType": "object",
+  "permission": {
+    "read": true,
+    //演示项目，真实项目需要自己设置权限
+    "create": true,
+    //演示项目，真实项目需要自己设置权限
+    "update": true,
+    //演示项目，真实项目需要自己设置权限
+    "delete": true
+    //演示项目，真实项目需要自己设置权限
+  },
+  "required": [
+    "uid"
+  ],
+  "properties": {
+    "_id": {
+      "description": "存储文档 ID（用户 ID），系统自动生成"
+    },
+    "uid": {
+      "bsonType": "string",
+      "description": "已登录为用户id，未登录为设备id"
+    },
+    "history": {
+      "bsonType": "string",
+      "description": "搜索历史记录"
+    }
+  }
+}

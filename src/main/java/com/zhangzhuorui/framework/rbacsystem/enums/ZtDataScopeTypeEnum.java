@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("数据权限类型DATA_SCOPE")
+// @ModuleName("数据权限类型DATA_SCOPE")
+@ApiModel(value = "数据权限类型DATA_SCOPE", description = "数据权限类型DATA_SCOPE")
 public enum ZtDataScopeTypeEnum implements IZtBaseEnum<ZtDataScopeTypeEnum> {
     SELF(-2, "只能查看自己的数据"),//。如果有这个，并且是AND，就会忽略其他条件，优先级最高
     ALL(-1, "可以查看所有人的数据"),//。没有AND的SELF的前提下，如果有这个，并且是OR，会忽略其他条件，优先级次高

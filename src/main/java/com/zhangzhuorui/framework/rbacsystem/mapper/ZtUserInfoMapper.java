@@ -18,4 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ZtUserInfoMapper extends ZtRbacSimpleBaseMapper<ZtUserInfo> {
 
+    ZtUserInfo login(ZtUserInfo userInfo);
+
 }

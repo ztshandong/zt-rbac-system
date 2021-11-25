@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * 按钮信息表-code就是权限
  */
-@ApiModel(value = "ZtButtonInfo")
+@ApiModel(value = "按钮信息表")
 public class ZtButtonInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 按钮编号（唯一，不可修改）

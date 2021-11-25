@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -102,10 +103,25 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
 
     public ZtUserInfo getSimpleUserInfoFromToken() {
         String token = getRequest().getHeader(getTokenHeader());
+        if (StringUtils.isEmpty(token)) {
+            token = getRequest().getAttribute(getTokenHeader()).toString();
+        }
         ZtUserInfo userInfoFromToken = getUserInfoFromToken(token);
         return userInfoFromToken;
     }
 
+    /**
+     * 使用unicloud的token格式
+     *
+     * @param ztUserInfo :
+     * @return :  java.lang.String
+     * @author :  zhangtao
+     * @createDate :  2017-01-01
+     * @description :
+     * @updateUser :
+     * @updateDate :
+     * @updateRemark :
+     */
     public String generateToken(ZtUserInfo ztUserInfo) {
         // Map<String, Object> claims = new HashMap<>();
         // claims.put(CLAIMS_USER_ID, ztUserInfo.getId());
@@ -130,10 +146,10 @@ public class ZtJwtTokenUtil implements Serializable, BeanPostProcessor {
     }
 
     public ZtUserInfo getUserInfoFromToken(String token) {
+        ZtUserInfo ztUserInfo = new ZtUserInfo();
         Claims allClaimsFromToken = getAllClaimsFromToken(token);
         // String subject = allClaimsFromToken.getSubject();
         //这个类是个通用类，可以放在通用的模块里，这里不要注入查询数据库的service，只能用缓存
-        ZtUserInfo ztUserInfo = new ZtUserInfo();
         ztUserInfo.setId(allClaimsFromToken.get(CLAIMS_USER_ID).toString());
         ztUserInfo.setUserCode(allClaimsFromToken.get(CLAIMS_USER_ID).toString());
         return ztUserInfo;

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * 角色信息表
  */
-@ApiModel(value = "ZtRoleInfo")
+@ApiModel(value = "角色信息表")
 public class ZtRoleInfo extends ZtRbacBasicEntity<Long> {
     /**
      * 角色编号（唯一，不可修改）

@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("菜单权限")
+// @ModuleName("菜单权限")
+@ApiModel(value = "菜单权限", description = "菜单权限")
 public enum ZtMenuCodeEnum implements IZtBaseEnum<ZtMenuCodeEnum> {
 
     //region

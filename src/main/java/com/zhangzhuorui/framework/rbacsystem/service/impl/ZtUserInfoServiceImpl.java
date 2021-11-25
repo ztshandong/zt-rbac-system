@@ -5,6 +5,7 @@ import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheManager;
 import com.zhangzhuorui.framework.rbacsystem.config.ZtCacheUtil;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseServiceImpl;
+import com.zhangzhuorui.framework.rbacsystem.mapper.ZtUserInfoMapper;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,18 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
         return true;
     }
 
+    @Override
+    public ZtUserInfoMapper getZtSimpleBaseMapper() {
+        return (ZtUserInfoMapper) super.getZtSimpleBaseMapper();
+    }
+
     @Autowired
     ZtCacheUtil ztCacheUtil;
+
+    @Override
+    public ZtUserInfo login(ZtUserInfo userInfo) {
+        return getZtSimpleBaseMapper().login(userInfo);
+    }
 
     @Override
     @Caching(evict =

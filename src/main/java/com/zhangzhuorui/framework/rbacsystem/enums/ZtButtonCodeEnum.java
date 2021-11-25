@@ -1,7 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.enums;
 
-import com.sun.tracing.dtrace.ModuleName;
 import com.zhangzhuorui.framework.core.IZtBaseEnum;
+import io.swagger.annotations.ApiModel;
 
 /**
  * @author :  张涛 zhangtao
@@ -12,7 +12,8 @@ import com.zhangzhuorui.framework.core.IZtBaseEnum;
  * @updateDate :
  * @updateRemark :
  */
-@ModuleName("按钮功能")
+// @ModuleName("按钮功能")
+@ApiModel(value = "按钮功能", description = "按钮功能")
 public enum ZtButtonCodeEnum implements IZtBaseEnum<ZtButtonCodeEnum> {
     QUERY(1, "查询"),
     ADD(2, "新增"),

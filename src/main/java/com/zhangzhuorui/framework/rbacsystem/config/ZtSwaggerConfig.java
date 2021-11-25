@@ -1,7 +1,9 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
+import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.zhangzhuorui.framework.core.ZtBasicNumberIdEntity4Swagger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * @author :  zhangtao
  * @version :  1.0
- * @createDate :  2021/8/16 18:55
+ * @createDate :  2017-01-01
  * @description :
  * @updateUser :
  * @updateDate :
@@ -46,7 +48,7 @@ public class ZtSwaggerConfig {
     Boolean enable;
 
     @Bean
-    public Docket createRestApi() {
+    public Docket createRestApi(TypeResolver resolver) {
 
         Predicate<RequestHandler> predicate = RequestHandlerSelectors.withClassAnnotation(Api.class);
         predicate = Predicates.or(predicate, RequestHandlerSelectors.withClassAnnotation(ApiModel.class));
@@ -55,14 +57,15 @@ public class ZtSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(predicate)
-                .apis(RequestHandlerSelectors.basePackage("com.zhangzhuorui.framework"))
+                // .apis(RequestHandlerSelectors.basePackage("com.zhangzhuorui.framework"))
                 .paths(Predicates.not(PathSelectors.regex("/error.*")))
                 .paths(PathSelectors.regex("/.*"))
                 .build()
-                .pathMapping("/")
                 .apiInfo(apiInfo())
                 .securitySchemes(securitySchemas())
                 .securityContexts(securityContexts())
+                .additionalModels(resolver.resolve(ZtBasicNumberIdEntity4Swagger.class))
+                .pathMapping("/")
                 .enable(enable);
     }
 
