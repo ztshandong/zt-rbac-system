@@ -201,7 +201,12 @@
             asciidoctorj-pdf-1.5.0-alpha.10.1.jar\gems\asciidoctor-pdf-1.5.0.alpha.10\data\fonts  添加字体文件
             修改asciidoctorj-pdf-1.5.0-alpha.10.1.jar\gems\asciidoctor-pdf-1.5.0.alpha.10\data\themes下面的default-theme.yml配置文件Noto Serif的四个字体
              -->
+
             <!--            mvn generate-resources-->
+
+            <!--            默认使用HTML的swagger字符串，在swagger中也可显示颜色，如果使用PDF字符串也可正常显示，只是没有颜色-->
+            <!--            生成html时要使用HTML的swagger字符串 修改生成的all.html，替换 < &lt;    > &gt;  的转义符，可使用颜色，修改完后将html换个地方保存-->
+            <!--            生成pdf时要使用PDF的swagger字符串 搜索替换all.adoc中 a-a-a-a-   不可使用字体颜色-->
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>

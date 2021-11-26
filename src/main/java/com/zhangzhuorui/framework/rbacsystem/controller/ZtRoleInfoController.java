@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "角色", description = "ZtRoleInfoController")
+@Api(tags = "角色", value = "角色", description = "ZtRoleInfoController")
 @RestController
 @RequestMapping(value = "/ZtRoleInfo")
 @ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.ROLE_MANAGE_CODE})

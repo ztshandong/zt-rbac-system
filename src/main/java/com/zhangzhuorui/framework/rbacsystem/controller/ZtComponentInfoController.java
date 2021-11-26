@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "组件", description = "ZtComponentInfoController")
+@Api(tags = "组件", value = "组件", description = "ZtComponentInfoController")
 @RestController
 @RequestMapping(value = "/ZtComponentInfo")
 @ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.COMPONENT_MANAGE_CODE})

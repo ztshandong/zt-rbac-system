@@ -62,7 +62,7 @@ import java.util.UUID;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "登录及首页", description = "ZtIndexController")
+@Api(tags = "登录及首页", value = "登录及首页", description = "ZtIndexController")
 @RestController
 @RequestMapping(value = "/ZtIndex")
 @Slf4j

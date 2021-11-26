@@ -44,7 +44,7 @@ public class Swagger2Html {
         Swagger2MarkupConverter.from(new URL("http://localhost:8080/v2/api-docs"))
                 .withConfig(config)
                 .build()
-                .toFolder(Paths.get("./docs/asciidoc/generated"));
+                .toFolder(Paths.get("src/docs/asciidoc/generated"));
     }
 
     /**
@@ -66,7 +66,7 @@ public class Swagger2Html {
         Swagger2MarkupConverter.from(new URL("http://localhost:8080/v2/api-docs"))
                 .withConfig(config)
                 .build()
-                .toFolder(Paths.get("./docs/markdown/generated"));
+                .toFolder(Paths.get("src/docs/markdown/generated"));
     }
 
     /**
@@ -88,7 +88,7 @@ public class Swagger2Html {
         Swagger2MarkupConverter.from(new URL("http://localhost:8080/v2/api-docs"))
                 .withConfig(config)
                 .build()
-                .toFolder(Paths.get("./docs/confluence/generated"));
+                .toFolder(Paths.get("src/docs/confluence/generated"));
     }
 
     /**
@@ -132,6 +132,6 @@ public class Swagger2Html {
         Swagger2MarkupConverter.from(new URL("http://localhost:8080/v2/api-docs"))
                 .withConfig(config)
                 .build()
-                .toFile(Paths.get("./docs/markdown/generated/all"));
+                .toFile(Paths.get("src/docs/markdown/generated/all"));
     }
 }

@@ -65,6 +65,7 @@ public class ZtSwaggerConfig {
                 .securitySchemes(securitySchemas())
                 .securityContexts(securityContexts())
                 .additionalModels(resolver.resolve(ZtBasicNumberIdEntity4Swagger.class))
+                .additionalModels(resolver.resolve(List.class))
                 .pathMapping("/")
                 .enable(enable);
     }

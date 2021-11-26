@@ -17,10 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "按钮", description = "ZtButtonInfoController")
+@Api(tags = "按钮", value = "按钮", description = "ZtButtonInfoController")
 @RestController
 @RequestMapping(value = "/ZtButtonInfo")
 public class ZtButtonInfoController extends ZtRbacSimpleBaseController<ZtButtonInfo> {
 
+    // @ApiResponses(value = {
+    //         @ApiResponse(code = 200, message = "返回的消息体", response = ZtPage.class)
+    // })
+    // @Override
+    // public ZtResBeanEx<ZtPage<ZtButtonInfo>> selectSimple(@RequestBody ZtButtonInfo entity) throws Exception {
+    //     return super.selectSimple(entity);
+    // }
+    //
+    // @ApiResponses(value = {
+    //         @ApiResponse(code = 200, message = "返回的消息体", response = ZtButtonInfo.class)
+    // })
+    // @Override
+    // public ZtResBeanEx<ZtButtonInfo> selectIdSimple(@RequestBody ZtButtonInfo entity) throws Exception {
+    //     return super.selectIdSimple(entity);
+    // }
 }
 

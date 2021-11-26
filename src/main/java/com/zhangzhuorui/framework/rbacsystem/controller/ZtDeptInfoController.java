@@ -28,7 +28,7 @@ import java.util.List;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "部门", description = "ZtDeptInfoController")
+@Api(tags = "部门", value = "部门", description = "ZtDeptInfoController")
 @RestController
 @RequestMapping(value = "/ZtDeptInfo")
 @ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.DEPT_MANAGE_CODE})
