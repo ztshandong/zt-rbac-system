@@ -20,6 +20,8 @@ import com.zhangzhuorui.framework.rbacsystem.service.IZtRoleInfoService;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtUserInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperationSupport;
+import io.swagger.annotations.ApiSort;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -62,6 +64,7 @@ import java.util.UUID;
  * @updateDate :
  * @updateRemark :
  */
+@ApiSort(value = 1)
 @Api(tags = "登录及首页", value = "登录及首页", description = "ZtIndexController")
 @RestController
 @RequestMapping(value = "/ZtIndex")
@@ -109,6 +112,11 @@ public class ZtIndexController {
         }
     }
 
+    @ApiOperation(value = "本地登录", notes = "入参:\n{\n" +
+            "\t\"username\": \"admin\"\n" +
+            "\t\"password\": \"123456\",\n" +
+            "}")
+    @ApiOperationSupport(order = 100)
     @SneakyThrows
     @ResponseBody
     @RequestMapping(value = "login", method = RequestMethod.POST)
@@ -134,6 +142,41 @@ public class ZtIndexController {
         return ok;
     }
 
+    @ApiOperation(value = "uni登录", notes = "入参:\n{\n" +
+            "\t\"username\": \"admin\"\n" +
+            "\t\"password\": \"123456\",\n" +
+            "}")
+    @ApiOperationSupport(order = 100)
+    @PostMapping("uniLogin")
+    @ResponseBody
+    public ZtResBeanEx uniLogin(@RequestBody JSONObject obj) {
+        obj.put("appid", cloudFunctionAppId);
+        //{"appid":"ggg","action":"login","clientInfo":{"CLIENTIP":"xx.xx.xx.xx","OS":"ios","PLATFORM":"h5","DEVICEID":"aaa"},"params":{"scene":"login","username":"testuser","password":"12345678"},"uniIdToken":"xxx"}
+        log.info(JSON.toJSONString(obj));
+        String url = cloudFunctionDomain + cloudFunctionPath;
+        String result2 = HttpRequest.post(url)
+                .body(JSON.toJSONString(obj))
+                .execute().body();
+        System.out.println(result2);
+        Object params = obj.get("params");
+        JSONObject paramsJsonObject = JSONObject.parseObject(JSON.toJSONString(params));
+        StringBuilder signOriStr = ZtStrUtils.getSignOriStr(paramsJsonObject);
+        String action = obj.getString("action");
+        //password12345678sceneloginusernametestuser
+        System.out.println(signOriStr);
+        // String username = obj.getString("username");
+        // String password = obj.getString("password");
+        // String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=login&appid=" + cloudFunctionAppId + "&username=" + username + "&password=" + password;
+        // System.out.println(url);
+        // String s = HttpUtil.get(url);
+        // System.out.println(s);
+        //{"code":0,"msg":"","token":"bbb","uid":"fff","username":"name","type":"login","userInfo":{"_id":"fff","username":"name","password":"aaa","role":["admin"],"register_date":1636175395497,"register_ip":"116.224.234.97","token":["bbb","bbb"],"last_login_date":1636199523185,"last_login_ip":"116.224.234.97","login_ip_limit":[]},"tokenExpired":1636206723185,"errCode":0,"errMsg":"","message":"","needCaptcha":false}
+        JSONObject jsonObject = JSON.parseObject(result2);
+        return ZtResBeanEx.ok(jsonObject);
+    }
+
+    @ApiOperation(value = "注销")
+    @ApiOperationSupport(order = 200)
     @ResponseBody
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     public ZtResBeanEx logout() {
@@ -150,16 +193,8 @@ public class ZtIndexController {
         return ZtResBeanEx.ok("refreshAllCache");
     }
 
-    @ResponseBody
-    @RequestMapping(value = "getCurUserRouteAfterLogin", method = RequestMethod.POST)
-    public ZtResBeanEx<List<ZtComponentInfo>> getCurUserRouteAfterLogin(@RequestBody(required = false) ZtUserInfo userInfo) {
-        if (userInfo == null) {
-            userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
-        }
-        List<ZtComponentInfo> curUserRouteAfterLogin = iZtRoleInfoService.getCurUserRouteAfterLogin(userInfo);
-        return ZtResBeanEx.ok(curUserRouteAfterLogin);
-    }
-
+    @ApiOperation(value = "登录后获取用户信息", notes = "可不传参")
+    @ApiOperationSupport(order = 101)
     @ResponseBody
     @RequestMapping(value = "getUserInfoAfterLogin", method = RequestMethod.POST)
     public ZtResBeanEx<ZtUserRolePermissionVo> getUserInfoAfterLogin(@RequestBody(required = false) ZtUserInfo userInfo) {
@@ -175,6 +210,18 @@ public class ZtIndexController {
         ztUserRolePermissionVo.setRoles(curUserAllRoleCodes);
         ztUserRolePermissionVo.setUser(userInfo);
         return ZtResBeanEx.ok(ztUserRolePermissionVo);
+    }
+
+    @ApiOperation(value = "登录后获取路由", notes = "可不传参")
+    @ApiOperationSupport(order = 102)
+    @ResponseBody
+    @RequestMapping(value = "getCurUserRouteAfterLogin", method = RequestMethod.POST)
+    public ZtResBeanEx<List<ZtComponentInfo>> getCurUserRouteAfterLogin(@RequestBody(required = false) ZtUserInfo userInfo) {
+        if (userInfo == null) {
+            userInfo = ztJwtTokenUtil.getSimpleUserInfoFromToken();
+        }
+        List<ZtComponentInfo> curUserRouteAfterLogin = iZtRoleInfoService.getCurUserRouteAfterLogin(userInfo);
+        return ZtResBeanEx.ok(curUserRouteAfterLogin);
     }
 
     Map<String, String> tokenMap = new HashMap<>();
@@ -339,35 +386,6 @@ public class ZtIndexController {
         //{"code":0,"success":true,"phoneNumber":"13812345678"}
         JSONObject jsonObject = JSON.parseObject(s);
         return ZtResBeanEx.ok(jsonObject.get("phoneNumber"));
-    }
-
-    @ApiOperation(value = "uni登录")
-    @PostMapping("uniLogin")
-    @ResponseBody
-    public ZtResBeanEx uniLogin(@RequestBody JSONObject obj) {
-        obj.put("appid", cloudFunctionAppId);
-        //{"appid":"ggg","action":"login","clientInfo":{"CLIENTIP":"xx.xx.xx.xx","OS":"ios","PLATFORM":"h5","DEVICEID":"aaa"},"params":{"scene":"login","username":"testuser","password":"12345678"},"uniIdToken":"xxx"}
-        log.info(JSON.toJSONString(obj));
-        String url = cloudFunctionDomain + cloudFunctionPath;
-        String result2 = HttpRequest.post(url)
-                .body(JSON.toJSONString(obj))
-                .execute().body();
-        System.out.println(result2);
-        Object params = obj.get("params");
-        JSONObject paramsJsonObject = JSONObject.parseObject(JSON.toJSONString(params));
-        StringBuilder signOriStr = ZtStrUtils.getSignOriStr(paramsJsonObject);
-        String action = obj.getString("action");
-        //password12345678sceneloginusernametestuser
-        System.out.println(signOriStr);
-        // String username = obj.getString("username");
-        // String password = obj.getString("password");
-        // String url = cloudFunctionDomain + cloudFunctionPath + "?" + "action=login&appid=" + cloudFunctionAppId + "&username=" + username + "&password=" + password;
-        // System.out.println(url);
-        // String s = HttpUtil.get(url);
-        // System.out.println(s);
-        //{"code":0,"msg":"","token":"bbb","uid":"fff","username":"name","type":"login","userInfo":{"_id":"fff","username":"name","password":"aaa","role":["admin"],"register_date":1636175395497,"register_ip":"116.224.234.97","token":["bbb","bbb"],"last_login_date":1636199523185,"last_login_ip":"116.224.234.97","login_ip_limit":[]},"tokenExpired":1636206723185,"errCode":0,"errMsg":"","message":"","needCaptcha":false}
-        JSONObject jsonObject = JSON.parseObject(result2);
-        return ZtResBeanEx.ok(jsonObject);
     }
 
     @PostMapping("aliPayCallback")

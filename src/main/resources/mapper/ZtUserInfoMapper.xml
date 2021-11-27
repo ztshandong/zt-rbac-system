@@ -39,4 +39,10 @@
         WHERE username = #{username}
           AND password = #{password};
     </select>
+
+    <select id="selectId" resultMap="BaseResultMap">
+        SELECT *
+        FROM zt_user_info
+        WHERE id = #{id};
+    </select>
 </mapper>

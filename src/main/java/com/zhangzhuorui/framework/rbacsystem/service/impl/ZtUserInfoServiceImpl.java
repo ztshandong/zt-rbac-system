@@ -77,9 +77,13 @@ public class ZtUserInfoServiceImpl extends ZtRbacSimpleBaseServiceImpl<ZtUserInf
             {@Cacheable(cacheNames = ZtCacheUtil.CUR_USER_INFO_BY_ID, key = "#userInfoFromToken.id", cacheManager = ZtCacheManager.CAFFEINE_CACHE_MANAGER)}
     )
     public ZtUserInfo getFullUserInfoFromToken(ZtUserInfo userInfoFromToken) {
-        ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = getThisService().getInitZtParamEntity(userInfoFromToken);
-        ztUserInfoZtParamEntity = getThisService().ztSimpleSelectByPrimaryKey(ztUserInfoZtParamEntity);
-        userInfoFromToken = getThisService().getObj(ztUserInfoZtParamEntity);
+        userInfoFromToken = getZtSimpleBaseMapper().selectId(userInfoFromToken);
+        if (null != userInfoFromToken) {
+            userInfoFromToken.setPassword(null);
+        }
+        // ZtParamEntity<ZtUserInfo> ztUserInfoZtParamEntity = getThisService().getInitZtParamEntity(userInfoFromToken);
+        // ztUserInfoZtParamEntity = getThisService().ztSimpleSelectByPrimaryKey(ztUserInfoZtParamEntity);
+        // userInfoFromToken = getThisService().getObj(ztUserInfoZtParamEntity);
         return userInfoFromToken;
     }
 

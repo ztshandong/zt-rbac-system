@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiSort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
-@Api(tags = "1前端必看。返回体数据结构说明", value = "1前端必看。返回体数据结构说明", description = "ZtResBeanEntityShowController")
+@ApiSort(value = 0)
+@Api(tags = "前端必看。返回体数据结构说明", value = "前端必看。返回体数据结构说明", description = "ZtResBeanEntityShowController")
 @RestController
 @RequestMapping(value = "/ZtResBeanEntityShowController")
 public class ZtResBeanEntityShowController {

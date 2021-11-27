@@ -47,6 +47,9 @@ public class ZtBaseWebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
     LinkedList<String> excludePathPatterns4TokenInterceptor = new LinkedList<>(Arrays.asList(
             "/ZtIndex/login",
+            "/ZtIndex/uniLogin",
+            "/doc.html",
+            "/v2/api-docs-ext",
             "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",

@@ -20,4 +20,6 @@ public interface ZtUserInfoMapper extends ZtRbacSimpleBaseMapper<ZtUserInfo> {
 
     ZtUserInfo login(ZtUserInfo userInfo);
 
+    ZtUserInfo selectId(ZtUserInfo userInfo);
+
 }

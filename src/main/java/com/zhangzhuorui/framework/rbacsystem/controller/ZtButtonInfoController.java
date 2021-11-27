@@ -1,8 +1,11 @@
 package com.zhangzhuorui.framework.rbacsystem.controller;
 
+import com.zhangzhuorui.framework.rbacsystem.aspects.ZtPreAuthorize;
 import com.zhangzhuorui.framework.rbacsystem.entity.ZtButtonInfo;
+import com.zhangzhuorui.framework.rbacsystem.enums.ZtMenuCodeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiSort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
+@ApiSort(value = 600)
 @Api(tags = "按钮", value = "按钮", description = "ZtButtonInfoController")
 @RestController
 @RequestMapping(value = "/ZtButtonInfo")
+@ZtPreAuthorize(hasAnyPermi = {ZtMenuCodeEnum.BUTTON_MANAGE_CODE})
 public class ZtButtonInfoController extends ZtRbacSimpleBaseController<ZtButtonInfo> {
 
     // @ApiResponses(value = {

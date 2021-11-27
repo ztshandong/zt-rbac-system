@@ -1,6 +1,7 @@
 package com.zhangzhuorui.framework.rbacsystem.config;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.zhangzhuorui.framework.core.ZtBasicNumberIdEntity4Swagger;
@@ -33,12 +34,15 @@ import java.util.List;
  * @version :  1.0
  * @createDate :  2017-01-01
  * @description :
+ * http://ip:port/doc.html
+ * http://ip:port/swagger-ui.html
  * @updateUser :
  * @updateDate :
  * @updateRemark :
  */
 @Configuration
 @EnableSwagger2
+@EnableSwaggerBootstrapUI
 public class ZtSwaggerConfig {
 
     @Autowired

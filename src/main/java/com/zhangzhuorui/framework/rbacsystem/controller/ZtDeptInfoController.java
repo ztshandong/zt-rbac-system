@@ -10,6 +10,7 @@ import com.zhangzhuorui.framework.rbacsystem.enums.ZtMenuCodeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
 import com.zhangzhuorui.framework.rbacsystem.service.IZtDeptInfoService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiSort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,6 +29,7 @@ import java.util.List;
  * @updateDate :
  * @updateRemark :
  */
+@ApiSort(value = 100)
 @Api(tags = "部门", value = "部门", description = "ZtDeptInfoController")
 @RestController
 @RequestMapping(value = "/ZtDeptInfo")

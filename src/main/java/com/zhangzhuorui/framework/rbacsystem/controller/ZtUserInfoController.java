@@ -5,6 +5,7 @@ import com.zhangzhuorui.framework.rbacsystem.entity.ZtUserInfo;
 import com.zhangzhuorui.framework.rbacsystem.enums.ZtMenuCodeEnum;
 import com.zhangzhuorui.framework.rbacsystem.extenduse.ZtRbacSimpleBaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiSort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @updateDate :
  * @updateRemark :
  */
+@ApiSort(value = 300)
 @Api(tags = "用户", value = "用户", description = "ZtUserInfoController")
 @RestController
 @RequestMapping(value = "/ZtUserInfo")
