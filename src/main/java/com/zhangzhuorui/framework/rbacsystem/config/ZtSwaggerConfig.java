@@ -34,7 +34,7 @@ import java.util.List;
  * @version :  1.0
  * @createDate :  2017-01-01
  * @description :
- * http://ip:port/doc.html
+ * http://ip:port/doc.html  文档管理-个性化设置-启用SwaggerBootstrapUi提供的增强功能
  * http://ip:port/swagger-ui.html
  * @updateUser :
  * @updateDate :
