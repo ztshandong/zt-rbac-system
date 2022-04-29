@@ -29,7 +29,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 日志文件输出的文件名，%i：文件名从0开始，当单个文件超过maxFileSize即1M时，新建一个1的文件，依次累加 -->
-            <FileNamePattern>${LOG_PATH}/trace/log-trace-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${LOG_PATH}/trace/log-trace-%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!--日志文件保留天数 -->
             <maxHistory>30</maxHistory>
@@ -54,7 +54,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 日志文件输出的文件名，%i：文件名从0开始，当单个文件超过maxFileSize即1M时，新建一个1的文件，依次累加 -->
-            <FileNamePattern>${LOG_PATH}/debug/log-debug-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${LOG_PATH}/debug/log-debug-%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!--日志文件保留天数 -->
             <maxHistory>30</maxHistory>
@@ -79,7 +79,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 日志文件输出的文件名，%i：文件名从0开始，当单个文件超过maxFileSize即1M时，新建一个1的文件，依次累加 -->
-            <FileNamePattern>${LOG_PATH}/info/log-info-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${LOG_PATH}/info/log-info-%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!--日志文件保留天数 -->
             <maxHistory>30</maxHistory>
@@ -104,7 +104,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 日志文件输出的文件名，%i：文件名从0开始，当单个文件超过maxFileSize即1M时，新建一个1的文件，依次累加 -->
-            <FileNamePattern>${LOG_PATH}/warn/log-warn-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${LOG_PATH}/warn/log-warn-%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!--日志文件保留天数 -->
             <maxHistory>30</maxHistory>
@@ -129,7 +129,7 @@
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 日志文件输出的文件名，%i：文件名从0开始，当单个文件超过maxFileSize即1M时，新建一个1的文件，依次累加 -->
-            <FileNamePattern>${LOG_PATH}/error/log-error-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <FileNamePattern>${LOG_PATH}/error/log-error-%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <!--日志文件保留天数 -->
             <maxHistory>30</maxHistory>
