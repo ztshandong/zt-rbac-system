@@ -20,13 +20,13 @@ public class ZtDateConverter implements Converter<String, Date> {
     @Override
     public Date convert(String str) {
         String[] patterns = new String[]{
-                "yyyy-MM-dd", "yyyy-MM-dd hh:mm:ss", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss",
-                "MM-dd-yyyy", "dd-MM-yyyy"};
+                "yyyy-MM-dd", "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd hh:mm:ss.SSS", "yyyy/MM/dd", "yyyy/MM/dd hh:mm:ss",
+                "MM-dd-yyyy", "dd-MM-yyyy", "yyyy-MM-dd'T'HH:mm:ss.SSS", "yyyy-MM-dd'T'HH:mm:ss.SSSZ"};
         try {
             Date date = DateUtils.parseDate(str, patterns);
             return date;
         } catch (ParseException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return null;
     }

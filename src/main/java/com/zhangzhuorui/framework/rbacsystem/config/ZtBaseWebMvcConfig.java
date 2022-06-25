@@ -92,6 +92,6 @@ public class ZtBaseWebMvcConfig implements WebMvcConfigurer, InitializingBean {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new ZtDateConverter());
+        // registry.addConverter(new ZtDateConverter());
     }
 }
